@@ -2,8 +2,8 @@
 
 /* Static functions */
 /* Stack_isnull function
- * Return true if stack is null,
- * or return false
+ * Print info if stack is NULL, and program exits.
+ * Or do nothing.
  * */
 static void stack_isnull (pStack stack);
 
@@ -40,7 +40,6 @@ bool stack_push (pStack stack, StackElemType e) {
 
 /* Pop an Elem e out of stack */
 bool stack_pop (pStack stack) {
-    stack_isnull(stack);
     if (stack_isempty(stack)) {
         printf("Stack is already empty, and can't be popped.\n");
         printf("Program exits.\n");
@@ -55,12 +54,7 @@ bool stack_pop (pStack stack) {
 
 /* Destroy a stack completely */
 bool stack_destroy (pStack stack) {
-    stack_isnull(stack);
-    while (stack->top->next) {
-        pStackNode s = stack->top;
-        stack->top = stack->top->next;
-        free(s);
-    }
+    stack_clear(stack);
     free(stack->top);
     free(stack);
     return true;
@@ -82,11 +76,7 @@ pStack stack_clear (pStack stack) {
 /* Stack is empty or not */
 bool stack_isempty (pStack stack) {
     stack_isnull(stack);
-    if (!stack->top->next) {
-        return true;
-    } else {
-        return false;
-    }
+    return (!stack->top->next) ? true : false;
 }
 
 

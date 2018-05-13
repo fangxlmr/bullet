@@ -23,7 +23,7 @@ typedef struct Stack {      /* stack info */
 
 
 /* Create a new stack and initialize it.
- * If malloc failed, return false,
+ * If malloc failed, return NULL,
  * or return the address of malloced stack.
  * */
 pStack stack_new (void);
@@ -38,13 +38,13 @@ bool stack_push (pStack stack, StackElemType e);
 /* Pop an Elem e out of stack.
  * If NULL stack was used, print info, and program exits.
  * If stack is already empty, then print info, and program exits.
- * Or pop the top of stack, and return true
+ * Or pop the top of stack, and return true.
  * */
 bool stack_pop (pStack stack);
 
 /* Destroy a stack completely.
  * If NULL stack was used, print info, and program exits.
- * Or free all nodes (StackNodes and Stack), and return true
+ * Or free all nodes (StackNodes and Stack), and return true.
  * */
 bool stack_destroy (pStack stack);
 
@@ -62,8 +62,8 @@ bool stack_isempty (pStack stack);
 
 /* Get the top of stack.
  * If NULL stack was used, print info, and program exits.
- * Print info if stack is empty,
- * or return the top value of stack
+ * Print info if stack is empty, and program exits.
+ * Or return the top value of stack.
  * */
 StackElemType stack_gettop (pStack stack);
 
