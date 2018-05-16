@@ -23,33 +23,33 @@ typedef struct Queue {      /* queue info */
  * Return NULL if malloc failed,
  * or return the address of malloced stack.
  * */
-pQueue queue_new (void);
+pQueue queue_create (void);
 
 /* Push an Elem e into queue.
  * If NULL queue was used, print info, and program exits.
  * If malloced failed, return false,
  * or push the elem into queue and return true.
  * */
-bool queue_push (pQueue queue, QueueElemType e);
+void queue_push (pQueue queue, QueueElemType e);
 
 /* Pop an Elem e out of queue.
  * If NULL queue was used, print info, and program exits.
  * If queue is already empty, then print info, and program exits.
  * Or pop the head of queue, and return true.
  * */
-bool queue_pop (pQueue queue);
+QueueElemType queue_pop (pQueue queue);
 
 /* Destroy a stack completely.
  * If NULL queue was used, print info, and program exits.
  * Or free all nodes (QueueNode and Queue), and return true.
  * */
-bool queue_destroy (pQueue queue);
+void queue_destroy (pQueue queue);
 
 /* Clear a queue.
  * If NULL queue was used, print info, and program exits.
  * Or clear all QueueNodes in the queue, and return true.
  * */
-pQueue queue_clear (pQueue queue);
+void queue_clear (pQueue queue);
 
 /* Check the queue is empty or not.
  * If NULL queue was used, print info, and program exits.
@@ -62,6 +62,6 @@ bool queue_isempty (pQueue queue);
  * Print info if queue is empty, and program exits.
  * Or return the head value of queue.
  * */
-QueueElemType queue_gethead (pQueue queue);
+QueueElemType queue_get_head (pQueue queue);
 
 #endif /* BULLET_QUEUE_H */

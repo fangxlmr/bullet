@@ -153,22 +153,22 @@ void bst_key_delete (pBSTNode *root, BSTElemType key) {
 /**
  * Return an array of preorder traversl of BST.
  */
-BSTElemType *bst_preorder (pBSTNode root) {
-    return bt_preorder(root);
+void bst_preorder (pBSTNode root) {
+    bt_preorder(root);
 }
 
 
 /**
  * Return an array of inorder traversl of BST.
  */
-BSTElemType *bst_inorder (pBSTNode root) {
-    return bt_inorder(root);
+void bst_inorder (pBSTNode root) {
+    bt_inorder(root);
 }
 
 
 /**
  * Return an array of postorder traversl of BST.
  */
-BSTElemType *bst_postorder (pBSTNode root) {
-    return bt_postorder(root);
+void bst_postorder (pBSTNode root) {
+    bt_postorder(root);
 }

@@ -76,16 +76,16 @@ extern void bst_key_delete (pBSTNode *root, BSTElemType key);
 /**
  * Return an array of preorder traversl of BST.
  */
-extern BSTElemType *bst_preorder (pBSTNode root);
+extern void bst_preorder (pBSTNode root);
 
 /**
  * Return an array of inorder traversl of BST.
  */
-extern BSTElemType *bst_inorder (pBSTNode root);
+extern void bst_inorder (pBSTNode root);
 
 /**
  * Return an array of postorder traversl of BST.
  */
-extern BSTElemType *bst_postorder (pBSTNode root);
+extern void bst_postorder (pBSTNode root);
 
 #endif /* BULLET_BSTREE_H */

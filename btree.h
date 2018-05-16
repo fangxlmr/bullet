@@ -66,7 +66,7 @@ extern void bt_destroy (pBTNode *root);
  * Return an array of preorder traversl of btree if tree exits.
  * Or return null.
  */
-BTElemType *bt_preorder (pBTNode root);
+void bt_preorder (pBTNode root);
 
 /**
  * bt_inoder - inorder traversal of btree
@@ -74,7 +74,7 @@ BTElemType *bt_preorder (pBTNode root);
  * Return an array of preorder traversl of btree if tree exits.
  * Or return null.
  */
-BTElemType *bt_inorder (pBTNode root);
+void bt_inorder (pBTNode root);
 
 /**
  * bt_postoder - postorder traversal of btree
@@ -82,6 +82,6 @@ BTElemType *bt_inorder (pBTNode root);
  * Return an array of preorder traversl of btree if tree exits.
  * Or return null.
  */
-BTElemType *bt_postorder (pBTNode root);
+void bt_postorder (pBTNode root);
 
 #endif /* BULLET_BTREE_H */
