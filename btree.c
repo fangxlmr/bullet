@@ -1,14 +1,16 @@
 #include "btree.h"
 
-/* max of two variables */
+
+/** max of two variables */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 
-/* Create and initialize a BT.
- * Return true if success,
- * Or return false.
- * */
-pBTNode bt_new (void) {
+/**
+ * bt_creat - create and initialize a BT.
+ *
+ * Return a pBTNode if success, or return false.
+ */
+pBTNode bt_create (void) {
     pBTNode p = (pBTNode) calloc(1, sizeof(BTNode));
     if (!p)
         return NULL;
@@ -16,9 +18,12 @@ pBTNode bt_new (void) {
 }
 
 
-/* If tree is empty, return true.
+/**
+ * bt_isempty - check btree is empty or not
+ *
+ * If tree is empty, return true.
  * Or return false.
- * */
+ */
 bool bt_isempty (pBTNode root) {
     if (!root)
         return true;
@@ -26,9 +31,12 @@ bool bt_isempty (pBTNode root) {
 }
 
 
-/* Return depth of the tree (recursively).
- * Return 0, if NULL.
- * */
+/**
+ * bst_depth - find the depth of btree
+ *
+ * Return depth of the btree.
+ * Return 0 if null.
+ */
 /* TODO it iteratively */
 size_t bt_depth (pBTNode root) {
     if (!root)
@@ -37,9 +45,9 @@ size_t bt_depth (pBTNode root) {
 }
 
 
-/* Destroy a bt.
- * Do it post-order-transversely
- * */
+/**
+ * bt_destroy - destroy a btree.
+ */
 void bt_destroy (pBTNode *root) {
     pBTNode *p = root;
     if (!*root) {
@@ -53,18 +61,58 @@ void bt_destroy (pBTNode *root) {
     *p = NULL;
 }
 
-/* Return an array of preorder traversl of BT. */
-BTNodeType *bt_preorder (pBTNode root) {
+
+/**
+ * bt_preoder - preorder traversal of btree
+ *
+ * Return an array of preorder traversl of btree if tree exits.
+ * Or return null.
+ */
+void bt_preorder (pBTNode root) {
     if (!root) {
         return NULL;
     }
+    /* TODO: Define a dynamic array at the beginning
+     * TODO: save values in a dynamic array: darray_append()
+     */
+    printf("val = %d", root->b);
+    bt_preorder(root->left);
+    bt_preorder(root->right);
 
 }
 
-/* Return an array of inorder traversl of BT. */
-BTNodeType *bt_inorder (pBTNode root) {
+/**
+ * bt_inoder - inorder traversal of btree
+ *
+ * Return an array of preorder traversl of btree if tree exits.
+ * Or return null.
+ */
+void bt_inorder (pBTNode root) {
+    if (!root) {
+        return NULL;
+    }
+    /* TODO: Define a dynamic array at the beginning
+     * TODO: save values in a dynamic array: darray_append()
+     * */
+    bt_inorder(root->left);
+    printf("%d, ", root->b);
+    bt_inorder(root->right);
 }
 
-/* Return an array of postorder traversl of BT. */
-BTNodeType *bt_postorder (pBTNode root) {
+/**
+ * bt_postoder - postorder traversal of btree
+ *
+ * Return an array of preorder traversl of btree if tree exits.
+ * Or return null.
+ */
+void bt_postorder (pBTNode root) {
+    if (!root) {
+        return NULL;
+    }
+    /* TODO: Define a dynamic array at the beginning
+     * TODO: save values in a dynamic array: darray_append()
+     * */
+    bt_postorder(root->left);
+    bt_postorder(root->right);
+    printf("%d\n", root->b);
 }

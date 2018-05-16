@@ -1,5 +1,5 @@
-#ifndef LIB_QUEUE_H
-#define LIB_QUEUE_H
+#ifndef BULLET_QUEUE_H
+#define BULLET_QUEUE_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,4 +64,4 @@ bool queue_isempty (pQueue queue);
  * */
 QueueElemType queue_gethead (pQueue queue);
 
-#endif /* LIB_QUEUE_H */
+#endif /* BULLET_QUEUE_H */

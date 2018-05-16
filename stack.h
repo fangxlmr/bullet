@@ -1,5 +1,5 @@
-#ifndef LIB_STACK_H
-#define LIB_STACK_H
+#ifndef BULLET_STACK_H
+#define BULLET_STACK_H
 
 #include <stdio.h>
 #include <memory.h>
@@ -68,4 +68,4 @@ bool stack_isempty (pStack stack);
 StackElemType stack_gettop (pStack stack);
 
 
-#endif /* LIB_STACK_H */
+#endif /* BULLET_STACK_H */

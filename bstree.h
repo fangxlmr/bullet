@@ -1,74 +1,91 @@
-#ifndef LIB_BSTREE_H
-#define LIB_BSTREE_H
+#ifndef BULLET_BSTREE_H
+#define BULLET_BSTREE_H
 
 #include "btree.h"
-//     In btree.h
-//
-//    /* User defined BTNodeType */
-//    typedef int BTNodeType;
-//
-//    /* BTNode structure */
-//    typedef struct BTNode {
-//        BTNodeType b;
-//        struct BTNode *left, *right;
-//    }BTNode, *pBTNode;
-//
 
-
-/* Redefine BTNodeType in btree.h into BSTNodeType. */
-typedef BTNodeType BSTNodeType;
-
-/* Redefine BTNode in btree.h into BSTNode. */
+/**
+ * Redefine BTElemType in btnode.h into BSTElemType.
+ * Redefine BTNode in btnode.h into BSTNode.
+ *
+ * In btree.h, user defines ElemType
+ *      typedef int BTElemType;
+ *
+ *      typedef struct BTNode {
+ *          BTElemType b;
+ *          struct BTNode *left, *right;
+ *      }BTNode, *pBTNode;
+ *
+ * You should use BSTElemType, BSTNode, pBSTNode
+ * when include this file.
+ */
+typedef BTElemType BSTElemType;
 typedef BTNode BSTNode, *pBSTNode;
 
-/* Create and initialize a BST.
- * Return true if success,
- * Or return false.
- * */
-extern pBSTNode bst_new (void);
+/**
+ * bts_creat - Create and initialize a BST.
+ *
+ * Return a pointer of pBSTNode if successes, null otherwise.
+ */
+extern pBSTNode bst_create (void);
 
-/* If tree is empty, return true.
- * Or return false.
- * */
+/**
+ * bst_isempty - check bstree empty or not
+ *
+ * Return true if tree is empty, false otherwise.
+ */
 extern bool bst_isempty (pBSTNode root);
 
-/* Return depth of the bstree.
-* Return 0, if NULL.
-* */
+/**
+ * bst_depth - find the depth of bstree
+ *
+ * Return depth of the bstree.
+ * Return 0 if null.
+ */
 extern size_t bst_depth (pBSTNode root);
 
-/* Destroy a BST.*/
+/**
+ * bst_destroy - destroy a bstree
+ */
 extern void bst_destroy (pBSTNode *root);
 
-/* Search BST to find a key
- * Return true if key was find,
- * or return false.
- * */
-extern bool bst_key_search (pBSTNode root, BSTNodeType key);
+/**
+ * bst_key_search - search BST to find a key
+ *
+ * @root:   struct pointer
+ * @key:    a key value to be searched
+ *
+ * Return true if key was find, or return false.
+ */
+extern bool bst_key_search (pBSTNode root, BSTElemType key);
 
-/* Insert a key into BST
- * If there is a node with value key, then ignore it, and return true.
- * If there is no such node with key,
- * insert key, and return true.
- * Or return false.
- * */
-extern bool bst_key_insert (pBSTNode *root, BSTNodeType key);
+/**
+ * bst_key_insert - insert a key into BST
+ *
+ * @root:   struct pointer
+ * @key:    a key value to be inserted
+ */
+extern void bst_key_insert (pBSTNode *root, BSTElemType key);
 
-/* Delete a node with key.
- * If no node with key, ignore it and return true.
- * If exits a node with key, delete the node,
- * and return true.
- * Or return false;
- * */
-extern bool bst_key_delete (pBSTNode *root, BSTNodeType key);
+/**
+ * bst_key_delet - delete a node whose value equals key.
+ */
+extern void bst_key_delete (pBSTNode *root, BSTElemType key);
 
-/* Return an array of preorder traversl of BST. */
-extern BSTNodeType *bst_preorder (pBSTNode root);
 
-/* Return an array of inorder traversl of BST. */
-extern BSTNodeType *bst_inorder (pBSTNode root);
+//TODO: the following was to be continued
+/**
+ * Return an array of preorder traversl of BST.
+ */
+extern BSTElemType *bst_preorder (pBSTNode root);
 
-/* Return an array of postorder traversl of BST. */
-extern BSTNodeType *bst_postorder (pBSTNode root);
+/**
+ * Return an array of inorder traversl of BST.
+ */
+extern BSTElemType *bst_inorder (pBSTNode root);
 
-#endif /* LIB_BSTREE_H */
+/**
+ * Return an array of postorder traversl of BST.
+ */
+extern BSTElemType *bst_postorder (pBSTNode root);
+
+#endif /* BULLET_BSTREE_H */
