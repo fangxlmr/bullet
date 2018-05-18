@@ -45,7 +45,7 @@ extern pBTNode bt_create (void);
  * If tree is empty, return true.
  * Or return false.
  */
-extern bool bt_isempty (pBTNode root);
+extern bool bt_empty (pBTNode root);
 
 /**
  * bst_depth - find the depth of btree

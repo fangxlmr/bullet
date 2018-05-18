@@ -24,7 +24,7 @@ pBTNode bt_create (void) {
  * If tree is empty, return true.
  * Or return false.
  */
-bool bt_isempty (pBTNode root) {
+bool bt_empty (pBTNode root) {
     if (!root)
         return true;
     return false;
