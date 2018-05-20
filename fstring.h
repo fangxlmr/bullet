@@ -47,14 +47,14 @@ extern bool fstr_isupper (const char *s);
  * @param s 目标字符串
  * @return 返回新字符串。空字符串返回 null
  */
-extern char *fstr_lower (const char *s);
+extern char *fstr_tolower (const char *s);
 
 /**
  * @brief 将字符串中的字母全部大写
  * @param s 目标字符串
  * @return 返回新字符串。空字符串返回 null
  */
-extern char *fstr_upper (const char *s);
+extern char *fstr_toupper (const char *s);
 
 /**
  * @brief 将字符串中的字母大小写互换
@@ -69,7 +69,7 @@ extern char *fstr_swapcase (const char *s);
  * @param str 特定字符串
  * @return 返回检测结果的布尔值。
  */
-extern bool fstr_startswith (const char *s, const char *str);
+extern bool fstr_startswith (const char *s, const char *start);
 
 /**
  * @brief 检查字符串是否以特定字符串组合结尾
@@ -77,7 +77,7 @@ extern bool fstr_startswith (const char *s, const char *str);
  * @param str 特定字符串
  * @return 返回检测结果的布尔值。
  */
-extern bool fstr_endswith (const char *s, const char *str);
+extern bool fstr_endswith (const char *s, const char *end);
 
 
 /**
@@ -111,7 +111,7 @@ extern char *fstr_strip (const char *s, char c);
  * @param c 目标字符
  * @return  返回字符 c 在目标字符串中出现的次数
  */
-int fstr_count (const char *s, char c);
+extern int fstr_count (const char *s, char c);
 
 /**
  * @brief 查找目标字符在字符串中的索引
@@ -121,7 +121,7 @@ int fstr_count (const char *s, char c);
  * @return  返回索引值组成的数组。若不包含字符 c 则返回null，且size = 0
  *  * NOTE: 索引从0开始
  */
-int *fstr_index (const char *s, char c, int *size);
+extern int *fstr_index (const char *s, char c, int *size);
 
 /**
  * @brief 依照字符c，分隔字符串
@@ -130,6 +130,19 @@ int *fstr_index (const char *s, char c, int *size);
  * @return 返回新字符串数组
  */
 extern char **fstr_split (const char *s, char c, int *size);
+
+/**
+ * @brief 字符串替换
+ * @param s 目标字符串
+ * @param old 旧字符串
+ * @param new 新字符串
+ * @return  返回新字符串
+ *
+ * NOTE：将字符串中第一次出现的old字符串替换为new字符串，
+ * 若old子串不存在，返回原字符串
+ */
+extern char *fstr_replace (char *s, const char *old, const char *new);
+
 
 
 

@@ -101,7 +101,7 @@ bool fstr_isupper (const char *s) {
  * @param s 目标字符串
  * @return 返回新字符串。空字符串返回 null
  */
-char *fstr_lower (const char *s) {
+char *fstr_tolower (const char *s) {
     int len = strlen(s);
     if (len == 0) {
         return NULL;
@@ -109,9 +109,10 @@ char *fstr_lower (const char *s) {
     char *t = strdup(s);
     for (int i = 0; i < len; ++i) {
         if (isalpha(t[i]) && isupper(t[i])) {
-            t[i] += 
+            t[i] += 32;  /* 大写转小写 */
         }
     }
+    return t;
 }
 
 
@@ -120,7 +121,19 @@ char *fstr_lower (const char *s) {
  * @param s 目标字符串
  * @return 返回新字符串。空字符串返回 null
  */
-char *fstr_upper (const char *s);
+char *fstr_toupper (const char *s) {
+    int len = strlen(s);
+    if (len == 0) {
+        return NULL;
+    }
+    char *t = strdup(s);
+    for (int i = 0; i < len; ++i) {
+        if (isalpha(t[i]) && islower(t[i])) {
+            t[i] -= 32;  /* 小写转大写 */
+        }
+    }
+    return t;
+}
 
 
 /**
@@ -128,8 +141,23 @@ char *fstr_upper (const char *s);
  * @param s 目标字符串
  * @return 返回新字符串。空字符串返回 null
  */
-char *fstr_swapcase (const char *s);
-
+char *fstr_swapcase (const char *s) {
+    int len = strlen(s);
+    if (len == 0) {
+        return NULL;
+    }
+    char *t = strdup(s);
+    for (int i = 0; i < len; ++i) {
+        if (isalpha(t[i])) {    /* 确定为字母字符 */
+            if (isupper(t[i])) {
+                t[i] += 32;  /* 大写转小写 */
+            } else {
+                t[i] -= 32;  /* 小写转大写 */
+            }
+        }
+    }
+    return t;
+}
 
 /**
  * @brief 检查字符串是否以特定字符串组合开头
@@ -137,18 +165,17 @@ char *fstr_swapcase (const char *s);
  * @param str 特定字符串
  * @return 返回检测结果的布尔值。
  */
-//bool fstr_startswith (const char *s, const char *start) {
-//    int len = strlen(str);
-//    if (len > strlen(s)) {
-//        return false;
-//    }
-//    for (int i = 0; i < len && ; ++i) {
-//        if (str[i] != s[i]) {
-//            return false;
-//        }
-//    }
-//    return true;
-//}
+bool fstr_startswith (const char *s, const char *start) {
+    int i = 0;
+    while (start[i] && start[i] == s[i]) {
+        ++i;
+    }
+    if (start[i]) {
+        return false;
+    } else {
+        return true;
+    }
+}
 
 
 /**
@@ -157,14 +184,19 @@ char *fstr_swapcase (const char *s);
  * @param str 特定字符串
  * @return 返回检测结果的布尔值。
  */
-//TODO 判断函数strrev是否复制源字符串
-//bool fstr_endswith (const char *s, const char *end) {
-//    char *s_rev = strrev(s);
-//    char *str_rev = strrev(start);
-//
-//    return true;
-//}
-
+bool fstr_endswith (const char *s, const char *end) {
+    int s_len = strlen(s), end_len = strlen(end);
+    while (s_len >= 0 && end_len >= 0
+           && s[s_len] == end[end_len]) {
+        --s_len;
+        --end_len;
+    }
+    if (end_len >= 0) {
+        return false;
+    } else {
+        return true;
+    }
+}
 
 /**
  * @brief 去除字符串开头的所有字符c，返回新字符串
@@ -280,8 +312,9 @@ int *fstr_index (const char *s, char c, int *size) {
  * @return 返回新字符串数组，不包含字符 c，则size = 0, 返回 null。
  */
 char **fstr_split (const char *s, char c, int *size) {
+    /* 先去掉两端多余的字符 */
     char *t = fstr_strip(s, c);
-    printf("t = %s", t);
+
     int count = 0;    /* 字符 c 出现位置的计数 */
     /* 找到对应字符的索引数组 */
     int *index = fstr_index(t, c, &count);
@@ -305,7 +338,29 @@ char **fstr_split (const char *s, char c, int *size) {
 }
 
 
-
-
-
-
+/**
+ * @brief 字符串替换
+ * @param s 目标字符串
+ * @param old 旧字符串
+ * @param new 新字符串
+ * @return  返回新字符串
+ *
+ * NOTE：将字符串中第一次出现的old字符串替换为new字符串。
+ * 若old子串不存在，返回原字符串
+ */
+char *fstr_replace (char *s, const char *old, const char *new) {
+    char *t = strdup(s);
+    char *pos = strstr(t, old);     /* old子串位置标记 */
+    if (!pos) {
+        return t;
+    }
+    *pos = '\0';    /* 发现子串的位置做结尾标记 */
+    int old_len = strlen(old);
+    /* 新串长度 */
+    int len = strlen(s) - old_len + strlen(new) + 1;
+    char *res = (char *) calloc(len, sizeof(char));
+    strcat(res, t);
+    strcat(res, new);
+    strcat(res, pos + old_len);
+    return res;
+}
