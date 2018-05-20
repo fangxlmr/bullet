@@ -135,7 +135,7 @@ size_t queue_size (pQueue queue) {
     isnull(queue);
     size_t size = 0;
     if (!queue_empty(queue)) {
-        pQueueNode walk = queue->front->next;
+        pQueueNode walk = queue->front;
         while (walk) {
             ++size;
             walk = walk->next;

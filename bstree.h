@@ -33,7 +33,7 @@ extern pBSTNode bst_create (void);
  *
  * Return true if tree is empty, false otherwise.
  */
-extern bool bst_isempty (pBSTNode root);
+extern bool bst_empty (pBSTNode root);
 
 /**
  * bst_depth - find the depth of bstree

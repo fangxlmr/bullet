@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "darray.h"
+#include <string.h>
 
 /**
  * This head file defined the basic node struct, functions
@@ -38,6 +38,9 @@ typedef struct BTNode {
  * Return a pBTNode if success, or return false.
  */
 extern pBTNode bt_create (void);
+
+
+extern pBTNode bt_created_with_array (BTElemType *array, size_t len);
 
 /**
  * bt_isempty - check btree is empty or not

@@ -6,7 +6,7 @@
  * Handle 3 conditions:
  * [1]  left child is  null
  * [2]  right child is null
- * [3]  p have both left and right childs
+ * [3]  p have both left and right children
  */
 static void delete (pBSTNode *node) {
     pBSTNode p, q;
@@ -57,7 +57,7 @@ pBSTNode bst_create (void) {
  *
  * Return true if tree is empty, false otherwise.
  */
-bool bst_isempty (pBSTNode root) {
+bool bst_empty (pBSTNode root) {
     if (!root)
         return true;
     return false;
