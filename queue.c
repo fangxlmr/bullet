@@ -1,19 +1,6 @@
 #include "queue.h"
 
 /**
- * @brief 判断队列是否为 null
- * @param queue 待检测队列
- */
-static void isnull (pQueue queue) {
-    if (!queue) {
-        printf("Queue of null is used.\n"
-               "Program exits with code -1.");
-        exit(-1);
-    }
-}
-
-
-/**
  * @brief 新建队列，并初始化
  * @return 成功则返回队列指针，失败则返回nll
  *
@@ -37,7 +24,6 @@ pQueue queue_create (void) {
  * 入队，是将元素链接到尾结点后
  */
 void queue_push (pQueue queue, QueueElemType e) {
-    isnull(queue);
     pQueueNode q = (pQueueNode) malloc(sizeof(QueueNode));
     if (!q){
         return;
@@ -58,7 +44,6 @@ void queue_push (pQueue queue, QueueElemType e) {
  * @param queue 队列指针
  */
 void queue_pop (pQueue queue) {
-    isnull(queue);
     pQueueNode node;
     if (queue->front == queue->rear) {
          /* 队列只有一个元素 */
@@ -78,8 +63,6 @@ void queue_pop (pQueue queue) {
  * @param queue 指针队列
  */
 void queue_clear (pQueue queue) {
-    isnull(queue);
-
     /* 队列已经为空队列 */
     if (!queue->front) {
         return;
@@ -100,7 +83,6 @@ void queue_clear (pQueue queue) {
  * @brief 销毁队列
  */
 void queue_destroy (pQueue queue) {
-    isnull(queue);
     queue_clear(queue);
     free(queue);
     queue = NULL;
@@ -110,7 +92,6 @@ void queue_destroy (pQueue queue) {
  * @brief 判断队列是否为空
  */
 bool queue_empty (pQueue queue) {
-    isnull(queue);
     return (!queue->front) ? true : false;
 }
 
@@ -118,7 +99,6 @@ bool queue_empty (pQueue queue) {
  * @brief 获取队列头
  */
 QueueElemType queue_front (pQueue queue) {
-    isnull(queue);
     if (!queue_empty(queue)) {
         return queue->front->e;
     } else {
@@ -132,7 +112,6 @@ QueueElemType queue_front (pQueue queue) {
  * @brief 查找队列长度
  */
 size_t queue_size (pQueue queue) {
-    isnull(queue);
     size_t size = 0;
     if (!queue_empty(queue)) {
         pQueueNode walk = queue->front;

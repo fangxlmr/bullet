@@ -21,7 +21,6 @@ typedef struct QueueNode {
     struct QueueNode *next;
 }QueueNode, *pQueueNode;
 
-
 /**
  * @brief 队列信息，包括头尾结点
  *

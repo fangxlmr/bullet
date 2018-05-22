@@ -27,7 +27,7 @@ static void create_tree (pBTNode *root, BTElemType *array, int len, int index);
  * 然后返回数组 s1
  * 若字符串 s 为空，则返回 null
  */
-static char *str_split (char s);
+//static char *str_split (char s);
 
 
 
@@ -190,13 +190,13 @@ static void create_tree (pBTNode *root, BTElemType *array, int len, int index) {
  * @param s 字符串
  * @return 返回一个字符串指针数组
  */
-static char *str_split (char s) {
-    size_t s_len = strlen(&s);
-    if (!s_len) {
-        return NULL;
-    }
-    size_t t_len = s_len - 2;   /* 去掉开头和结尾的 2 个中括号的长度 */
-    char *t = (char *) calloc(t_len, sizeof(char));
-    strncpy(t, &s + 1, t_len);
-    strs
-}
+//static char *str_split (char s) {
+//    size_t s_len = strlen(&s);
+//    if (!s_len) {
+//        return NULL;
+//    }
+//    size_t t_len = s_len - 2;   /* 去掉开头和结尾的 2 个中括号的长度 */
+//    char *t = (char *) calloc(t_len, sizeof(char));
+//    strncpy(t, &s + 1, t_len);
+//    strs
+//}

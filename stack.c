@@ -1,13 +1,5 @@
 #include "stack.h"
 
-/* Static functions */
-/* Stack_isnull function
- * Print info if stack is NULL, and program exits.
- * Or do nothing.
- * */
-static void stack_isnull (pStack stack);
-
-
 /* External functions */
 /* Create a new stack and initialize it */
 pStack stack_new (void){
@@ -26,7 +18,6 @@ pStack stack_new (void){
 
 /* Push an Elem e into stack */
 bool stack_push (pStack stack, StackElemType e) {
-    stack_isnull(stack);
     pStackNode s = (pStackNode) malloc(sizeof(StackNode));
     if (!s) {
         return false;
@@ -63,7 +54,6 @@ bool stack_destroy (pStack stack) {
 
 /* Clear a stack */
 pStack stack_clear (pStack stack) {
-    stack_isnull(stack);
     while (stack->top->next) {
         pStackNode s = stack->top;
         stack->top = stack->top->next;
@@ -75,14 +65,12 @@ pStack stack_clear (pStack stack) {
 
 /* Stack is empty or not */
 bool stack_isempty (pStack stack) {
-    stack_isnull(stack);
     return (!stack->top->next) ? true : false;
 }
 
 
 /* Get the top of stack */
 StackElemType stack_gettop (pStack stack) {
-    stack_isnull(stack);
     if (stack_isempty(stack)) {
         printf("Stack is empty, no top value. Program exits.\n");
         exit(-1);
