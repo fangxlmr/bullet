@@ -1,85 +1,26 @@
 #ifndef BULLET_QUEUE_H
 #define BULLET_QUEUE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <memory.h>
+#define T Queue_T
+typedef struct T *T;
 
-/**
- * @brief 用户自定义队列元素类型
- */
-typedef int QueueElemType;
+/* 新建队列，并初始化 */
+extern T queue_new (void);
 
-/**
- * @brief 队列结点结构
- *
- * 用户可以根据自己的需要，增加新的数据
- */
-typedef struct QueueNode {
-    QueueElemType e;
-    struct QueueNode *next;
-}QueueNode, *pQueueNode;
+/* 判断队列是否为空 */
+extern int queue_empty (T que);
 
-/**
- * @brief 队列信息，包括头尾结点
- *
- * 这实际上是对外的接口，引用队列时，都使用 pQueue
- * 用户可以根据自己的需要，增加新的数据
- */
-typedef struct Queue {
-    pQueueNode front, rear;
-}Queue, *pQueue;
+/* 队列长度 */
+extern int queue_size (T que);
 
-/**
- * @brief 生成队列并初始化
- */
-extern pQueue queue_create (void);
+/* 元素入队 */
+extern void enqueue (T que, void *x);
 
-/**
- * @brief 入队操作
- * @param queue 队列指针
- * @param e     入队元素
- *
- * 入队，是将元素链接到尾结点后
- */
-extern void queue_push (pQueue queue, QueueElemType e);
+/* 元素出队 */
+extern void *dequeue (T que);
 
-/**
- * @brief 出队操作
- * @param queue 队列指针
- * @return 空队列，返回null。队列不空，返回队头元素
- */
-extern void queue_pop (pQueue queue);
+/* 释放队列，并置NULL */
+extern void queue_free (T *que);
 
-/**
- * @brief 销毁队列
- * @param queue 队列指针
- */
-extern void queue_destroy (pQueue queue);
-
-/**
- * @brief 清空队列
- * @param queue 指针队列
- */
-extern void queue_clear (pQueue queue);
-
-/**
- * @brief 判断队列是否为空
- * @return 空队列返回0.
- */
-extern bool queue_empty (pQueue queue);
-
-/**
- * @brief 求队列的长度
- * @param queue
- * @return 空队列返回0。
- */
-extern size_t queue_size (pQueue queue);
-
-/**
- * @brief 获取队列头
- */
-extern QueueElemType queue_front (pQueue queue);
-
+#undef T
 #endif /* BULLET_QUEUE_H */

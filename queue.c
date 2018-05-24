@@ -1,124 +1,96 @@
+#include <stdlib.h>
+#include <assert.h>
 #include "queue.h"
 
-/**
- * @brief 新建队列，并初始化
- * @return 成功则返回队列指针，失败则返回nll
- *
- * 队列头尾指针保存在结构体 queue中
- */
-pQueue queue_create (void) {
-    pQueue queue = (pQueue) malloc(sizeof(Queue));
-    if (!queue) {
-        return NULL;
-    }
-    queue->front = queue->rear = NULL;
-    return queue;
+#define T Queue_T
+
+typedef struct elem {
+    void *x;
+    struct elem *next;
+}elem;
+
+struct T {
+    int count;
+    elem *front, *rear;
+};
+
+
+/* 新建队列，并初始化 */
+T queue_new (void) {
+    T que;
+
+    que = (T) malloc(sizeof(struct T));
+    que->count = 0;
+    que->front = que->rear = NULL;
+    return que;
 }
 
 
-/**
- * @brief 入队操作
- * @param queue 队列指针
- * @param e     入队元素
- *
- * 入队，是将元素链接到尾结点后
- */
-void queue_push (pQueue queue, QueueElemType e) {
-    pQueueNode q = (pQueueNode) malloc(sizeof(QueueNode));
-    if (!q){
-        return;
-    }
-    q->e = e;
-    q->next = NULL;
-    if (!queue->front) {    /* 空队列 */
-        queue->front = queue->rear = q;
-    } else {         /* 队列非空 */
-        queue->rear->next = q;
-        queue->rear = q;
-    }
+/* 判断队列是否为空 */
+int queue_empty (T que) {
+    return que->count == 0;
 }
 
 
-/**
- * @brief 出队操作
- * @param queue 队列指针
- */
-void queue_pop (pQueue queue) {
-    pQueueNode node;
-    if (queue->front == queue->rear) {
+/* 队列长度 */
+int queue_size (T que) {
+    assert(que);
+    return que->count;
+}
+
+
+/* 元素入队 */
+void enqueue (T que, void *x) {
+    elem *t;
+
+    t = (elem *)malloc(sizeof(elem));
+    t->x = x;
+    t->next = NULL;
+
+    if (queue_empty(que)) {
+        que->rear->next = t;
+        que->rear = t;
+        que->front = que->rear;
+    } else {
+        que->rear->next = t;
+        que->rear = t;
+    }
+    que->count++;
+}
+
+
+/* 元素出队 */
+void *dequeue (T que) {
+    void *x;
+    elem *t;
+
+    assert(que);
+    assert(que->count > 0);
+    if (que->count == 1) {
          /* 队列只有一个元素 */
-        node = queue->rear;
-        queue->rear = queue->front = NULL;
+        t = que->front;
+        que->rear = que->front = NULL;
     } else {
         /* 队列有2个及以上的元素 */
-        node  = queue->front;
-        queue->front = node->next;
+        t  = que->front;
+        que->front = t->next;
     }
-    free(node);
+    que->count--;
+    x = t->x;
+    free(t);
+    return x;
 }
 
 
-/**
- * @brief 清空队列
- * @param queue 指针队列
- */
-void queue_clear (pQueue queue) {
-    /* 队列已经为空队列 */
-    if (!queue->front) {
-        return;
+/* 释放队列 */
+void queue_free (T *que) {
+    elem *t, *u;
+
+    assert(que && *que);
+    for (t = (*que)->front; t; t = u) {
+        u = t->next;
+        free(t);
     }
-
-    /* 队列不空，则清空队列 */
-    pQueueNode q;
-    while (!queue->front) {
-        q = queue->front;
-        queue->front = q->next;
-        free(q);
-    }
-    queue->rear = queue->front = NULL;
-}
-
-
-/**
- * @brief 销毁队列
- */
-void queue_destroy (pQueue queue) {
-    queue_clear(queue);
-    free(queue);
-    queue = NULL;
-}
-
-/**
- * @brief 判断队列是否为空
- */
-bool queue_empty (pQueue queue) {
-    return (!queue->front) ? true : false;
-}
-
-/**
- * @brief 获取队列头
- */
-QueueElemType queue_front (pQueue queue) {
-    if (!queue_empty(queue)) {
-        return queue->front->e;
-    } else {
-        printf("Warning: Queue is empty. NULL was returned.\n");
-        return NULL;
-    }
-}
-
-
-/**
- * @brief 查找队列长度
- */
-size_t queue_size (pQueue queue) {
-    size_t size = 0;
-    if (!queue_empty(queue)) {
-        pQueueNode walk = queue->front;
-        while (walk) {
-            ++size;
-            walk = walk->next;
-        }
-    }
-    return size;
+    free(*que);
+    *que = NULL;
 }

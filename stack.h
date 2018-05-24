@@ -1,71 +1,26 @@
 #ifndef BULLET_STACK_H
 #define BULLET_STACK_H
 
-#include <stdio.h>
-#include <memory.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#define T Stack_T
+typedef struct T *T;
 
-/* User defined StackElemType.
- * Here is int, you can redefine it.
- */
-typedef int StackElemType;
+/* 新建并初始化栈 */
+extern T stack_new (void);
 
-typedef struct StackNode {    /* stack node */
-    StackElemType e;
-    struct StackNode *next;
-}StackNode, *pStackNode;
+/* 判断栈是否为空，空返回0，不空返回1 */
+extern int stack_empty (T stk);
 
-typedef struct Stack {      /* stack info */
-    pStackNode top;     /* top of the stack */
-    /* Maybe some other info, say, count of stack nodes */
-}Stack, *pStack;
+/* 栈深度 */
+extern int stack_size (T stk);
 
+/* 元素入栈 */
+extern void stack_push (T stk, void *x);
 
-/* Create a new stack and initialize it.
- * If malloc failed, return NULL,
- * or return the address of malloced stack.
- * */
-pStack stack_new (void);
+/* 元素出栈 */
+extern void *stack_pop (T stk);
 
-/* Push an Elem e into stack.
- * If NULL stack was used, print info, and program exits.
- * If malloced failed, return false,
- * or push the elem into stack and return true.
- * */
-bool stack_push (pStack stack, StackElemType e);
+/* 释放栈，并置NULL */
+extern void stack_free (T *stk);
 
-/* Pop an Elem e out of stack.
- * If NULL stack was used, print info, and program exits.
- * If stack is already empty, then print info, and program exits.
- * Or pop the top of stack, and return true.
- * */
-bool stack_pop (pStack stack);
-
-/* Destroy a stack completely.
- * If NULL stack was used, print info, and program exits.
- * Or free all nodes (StackNodes and Stack), and return true.
- * */
-bool stack_destroy (pStack stack);
-
-/* Clear a stack.
- * If NULL stack was used, print info, and program exits.
- * Or clear all StackNodes in the stack, and return true.
- * */
-pStack stack_clear (pStack stack);
-
-/* Check the stack is empty or not.
- * If NULL stack was used, print info, and program exits.
- * Return true if empty, or return false.
- * */
-bool stack_isempty (pStack stack);
-
-/* Get the top of stack.
- * If NULL stack was used, print info, and program exits.
- * Print info if stack is empty, and program exits.
- * Or return the top value of stack.
- * */
-StackElemType stack_gettop (pStack stack);
-
-
+#undef T
 #endif /* BULLET_STACK_H */

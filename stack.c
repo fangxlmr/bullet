@@ -1,87 +1,82 @@
+#include <stdlib.h>
+#include <assert.h> /* 待自己实现的assert.h */
 #include "stack.h"
 
-/* External functions */
-/* Create a new stack and initialize it */
-pStack stack_new (void){
-    pStackNode s = (pStackNode) malloc(sizeof(StackNode));
-    if (!s)
-        return NULL;
-    memset(s, 0, sizeof(StackNode));
-    pStack stack = (pStack) malloc(sizeof(Stack));
-    if (!stack) {
-        return NULL;
+#define T Stack_T
+
+typedef struct elem {
+    void *x;
+    struct elem *next;
+}elem;
+
+struct T {
+    int count;     /* 栈深度 */
+    elem *top;        /* 栈顶 */
+};
+
+/* 新建并初始化栈 */
+T stack_new (void) {
+    T stk;
+
+    stk = (T) malloc(sizeof(struct T));
+    stk->count = 0;
+    stk->top = NULL;
+    return stk;
+}
+
+
+/* 判断栈是否为空，空返回0，不空返回1 */
+int stack_empty (T stk) {
+    assert(stk);
+    return stk->count == 0;
+}
+
+
+/* 栈深度 */
+int stack_size (T stk) {
+    assert(stk);
+    return stk->count;
+}
+
+
+/* 元素入栈 */
+void stack_push (T stk, void *x) {
+    elem *t;
+
+    assert(stk);
+    t = (elem *) malloc(sizeof(elem));
+    t->x = x;
+    t->next = stk->top;
+    stk->top = t;
+    stk->count++;
+}
+
+
+/* 元素出栈 */
+void *stack_pop (T stk) {
+    void *x;
+    elem *t;
+
+    assert(stk);
+    assert(stk->count > 0);
+    t = stk->top;
+    stk->top = t->next;
+    stk->count--;
+    x = t->x;
+    free(t);
+    return x;
+}
+
+
+/* 释放栈 */
+void stack_free (T *stk) {
+    elem *t, *u;
+
+    assert(stk && *stk);
+    for (t = (*stk)->top; t ; t = u) {
+        u = t->next;
+        free(t);
     }
-    stack->top = s;
-    return stack;
-}
-
-
-/* Push an Elem e into stack */
-bool stack_push (pStack stack, StackElemType e) {
-    pStackNode s = (pStackNode) malloc(sizeof(StackNode));
-    if (!s) {
-        return false;
-    }
-    s->e = e;
-    s->next = stack->top;
-    stack->top = s;
-    return true;
-}
-
-
-/* Pop an Elem e out of stack */
-bool stack_pop (pStack stack) {
-    if (stack_isempty(stack)) {
-        printf("Stack is already empty, and can't be popped.\n");
-        printf("Program exits.\n");
-        exit(-1);
-    }
-    pStackNode s = stack->top;
-    stack->top = stack->top->next;
-    free(s);
-    return true;
-}
-
-
-/* Destroy a stack completely */
-bool stack_destroy (pStack stack) {
-    stack_clear(stack);
-    free(stack->top);
-    free(stack);
-    return true;
-}
-
-
-/* Clear a stack */
-pStack stack_clear (pStack stack) {
-    while (stack->top->next) {
-        pStackNode s = stack->top;
-        stack->top = stack->top->next;
-        free(s);
-    }
-    return stack;
-}
-
-
-/* Stack is empty or not */
-bool stack_isempty (pStack stack) {
-    return (!stack->top->next) ? true : false;
-}
-
-
-/* Get the top of stack */
-StackElemType stack_gettop (pStack stack) {
-    if (stack_isempty(stack)) {
-        printf("Stack is empty, no top value. Program exits.\n");
-        exit(-1);
-    }
-    return stack->top->e;
-}
-
-
-static void stack_isnull (pStack stack) {
-    if (!stack) {
-        printf("NULL stack was used. Program exits.\n");
-        exit(-1);
-    }
+    free(*stk);
+    *stk = NULL;
 }
