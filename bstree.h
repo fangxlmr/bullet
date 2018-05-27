@@ -1,91 +1,54 @@
 #ifndef BULLET_BSTREE_H
 #define BULLET_BSTREE_H
 
-#include "btree.h"
+#include <stdlib.h>
+#include <stdio.h>
+#define T BSTree_T
 
-/**
- * Redefine BTElemType in btnode.h into BSTElemType.
- * Redefine BTNode in btnode.h into BSTNode.
- *
- * In btree.h, user defines ElemType
- *      typedef int BTElemType;
- *
- *      typedef struct BTNode {
- *          BTElemType b;
- *          struct BTNode *left, *right;
- *      }BTNode, *pBTNode;
- *
- * You should use BSTElemType, BSTNode, pBSTNode
- * when include this file.
+typedef struct T *T;
+
+/* 新建二叉树根结点并初始化 */
+extern T bst_new (void);
+
+/* 判断二叉树是否为空 */
+extern int bst_empty (T bst);
+
+/* 求二叉树最大深度 */
+extern int bt_depth (T bst);
+
+/* 释放二叉树 */
+extern void bst_free (T *bst);
+
+/* 二叉树的前序遍历，标准输出结果 */
+extern void bst_preorder (T bst);
+
+/* 二叉树的中序遍历，标准输出结果*/
+extern void bst_inorder (T bst);
+
+/* 二叉树的后序遍历，标准输出结果*/
+extern void bst_postorder (T bst);
+
+/* 比较大小的回调函数 */
+
+/*
+ * int (*sort)(void *key1, void *key2)
+ * 是用户定义的回调函数。
+ * 当key1 > key2 时，返回1，
+ * 相等返回0，
+ * 小于则返回-1。
  */
-typedef BTElemType BSTElemType;
-typedef BTNode BSTNode, *pBSTNode;
 
-/**
- * bts_creat - Create and initialize a BST.
- *
- * Return a pointer of pBSTNode if successes, null otherwise.
- */
-extern pBSTNode bst_create (void);
+/* 查找结点 */
+extern int bst_key_search (T bst, void *key,
+                           int (*sort)(void *key1, void *key2));
 
-/**
- * bst_isempty - check bstree empty or not
- *
- * Return true if tree is empty, false otherwise.
- */
-extern bool bst_empty (pBSTNode root);
+/* 插入结点 */
+extern void bst_key_insert (T bst, void *key,
+                            int (*sort)(void *key1, void *key2));
 
-/**
- * bst_depth - find the depth of bstree
- *
- * Return depth of the bstree.
- * Return 0 if null.
- */
-extern size_t bst_depth (pBSTNode root);
+/* 删除结点 */
+extern void bst_key_delete (T bst, void *key,
+                            int (*sort)(void *key1, void *key2));
 
-/**
- * bst_destroy - destroy a bstree
- */
-extern void bst_destroy (pBSTNode *root);
-
-/**
- * bst_key_search - search BST to find a key
- *
- * @root:   struct pointer
- * @key:    a key value to be searched
- *
- * Return true if key was find, or return false.
- */
-extern bool bst_key_search (pBSTNode root, BSTElemType key);
-
-/**
- * bst_key_insert - insert a key into BST
- *
- * @root:   struct pointer
- * @key:    a key value to be inserted
- */
-extern void bst_key_insert (pBSTNode *root, BSTElemType key);
-
-/**
- * bst_key_delet - delete a node whose value equals key.
- */
-extern void bst_key_delete (pBSTNode *root, BSTElemType key);
-
-
-//TODO: the following was to be continued
-/**
- * Return an array of preorder traversl of BST.
- */
-extern void bst_preorder (pBSTNode root);
-
-/**
- * Return an array of inorder traversl of BST.
- */
-extern void bst_inorder (pBSTNode root);
-
-/**
- * Return an array of postorder traversl of BST.
- */
-extern void bst_postorder (pBSTNode root);
-
+#undef T
 #endif /* BULLET_BSTREE_H */

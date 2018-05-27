@@ -48,7 +48,6 @@ void enqueue (T que, void *x) {
     t->next = NULL;
 
     if (queue_empty(que)) {
-        que->rear->next = t;
         que->rear = t;
         que->front = que->rear;
     } else {
