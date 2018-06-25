@@ -1,82 +1,102 @@
 #include <stdlib.h>
-#include <assert.h> /* 待自己实现的assert.h */
 #include "stack.h"
 
-#define T Stack_T
+/*
+ * 栈结点结构
+ */
+typedef struct _StackEntry StackEntry;
 
-typedef struct elem {
-    void *x;
-    struct elem *next;
-}elem;
-
-struct T {
-    int count;     /* 栈深度 */
-    elem *top;        /* 栈顶 */
+struct _StackEntry {
+    StackValue data;
+    StackEntry *next;
 };
 
-/* 新建并初始化栈 */
-T stack_new (void) {
-    T stk;
+/*
+ * 栈
+ */
+struct _Stack {
+    StackEntry *top;    /* 栈顶 */
+};
 
-    stk = (T) malloc(sizeof(struct T));
-    stk->count = 0;
-    stk->top = NULL;
-    return stk;
-}
+Stack *stack_new(void) {
+    Stack *stack;
 
-
-/* 判断栈是否为空，空返回0，不空返回1 */
-int stack_empty (T stk) {
-    assert(stk);
-    return stk->count == 0;
-}
-
-
-/* 栈深度 */
-int stack_size (T stk) {
-    assert(stk);
-    return stk->count;
-}
-
-
-/* 元素入栈 */
-void stack_push (T stk, void *x) {
-    elem *t;
-
-    assert(stk);
-    t = (elem *) malloc(sizeof(elem));
-    t->x = x;
-    t->next = stk->top;
-    stk->top = t;
-    stk->count++;
-}
-
-
-/* 元素出栈 */
-void *stack_pop (T stk) {
-    void *x;
-    elem *t;
-
-    assert(stk);
-    assert(stk->count > 0);
-    t = stk->top;
-    stk->top = t->next;
-    stk->count--;
-    x = t->x;
-    free(t);
-    return x;
-}
-
-
-/* 释放栈 */
-void stack_free (T *stk) {
-    elem *t, *u;
-
-    assert(stk && *stk);
-    for (t = (*stk)->top; t ; t = u) {
-        u = t->next;
-        free(t);
+    stack = (Stack *) malloc(sizeof(Stack));
+    if (stack == NULL) {
+        return STACK_NULL;
     }
-    free(*stk);
-    *stk = NULL;
+    stack->top = NULL;
+    return stack;
+}
+
+void stack_free(Stack *stack) {
+    /*
+     * 释放栈结点
+     */
+    while (!stack_is_empty(stack)) {
+        stack_pop(stack);
+    }
+    /*
+     * 释放栈表
+     */
+    free(stack);
+}
+
+int stack_push(Stack *stack, StackValue data) {
+    StackEntry *new_entry;
+
+    /*
+     * 新建栈结点，并写入数据
+     */
+    new_entry = (StackEntry *) malloc(sizeof(StackEntry));
+
+    if (!new_entry) {
+        return 0;
+    }
+
+    new_entry->data = data;
+    new_entry->next = stack->top;
+    /*
+     * 压栈
+     */
+    stack->top = new_entry;
+
+    return 1;
+}
+
+StackValue stack_pop(Stack *stack) {
+    StackEntry *entry;
+    StackValue result;
+
+    /*
+     * 判断是否空栈
+     */
+    if (stack_is_empty(stack)) {
+        return STACK_NULL;
+    }
+    /*
+     * 元素弹出栈
+     */
+    entry = stack->top;
+    stack->top = entry->next;
+    result = entry->data;
+    free(entry);
+
+    return result;
+}
+
+StackValue stack_get_top(Stack *stack)
+{
+    StackValue result;
+
+    if (!stack_is_empty(stack)) {
+        return STACK_NULL;
+    }
+
+    return stack->top->data;
+}
+
+
+int stack_is_empty (Stack *stack) {
+    return stack->top == NULL;
 }
