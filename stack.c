@@ -18,7 +18,8 @@ struct _Stack {
     StackEntry *top;    /* 栈顶 */
 };
 
-Stack *stack_new(void) {
+Stack *stack_new(void)
+{
     Stack *stack;
 
     stack = (Stack *) malloc(sizeof(Stack));
@@ -29,7 +30,8 @@ Stack *stack_new(void) {
     return stack;
 }
 
-void stack_free(Stack *stack) {
+void stack_free(Stack *stack)
+{
     /*
      * 释放栈结点
      */
@@ -42,7 +44,8 @@ void stack_free(Stack *stack) {
     free(stack);
 }
 
-int stack_push(Stack *stack, StackValue data) {
+int stack_push(Stack *stack, StackValue data)
+{
     StackEntry *new_entry;
 
     /*
@@ -64,7 +67,8 @@ int stack_push(Stack *stack, StackValue data) {
     return 1;
 }
 
-StackValue stack_pop(Stack *stack) {
+StackValue stack_pop(Stack *stack)
+{
     StackEntry *entry;
     StackValue result;
 

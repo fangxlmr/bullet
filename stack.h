@@ -60,7 +60,7 @@ extern StackValue stack_get_top(Stack *stack);
 /**
  * stack_is_empty   判断栈是否为空
  *
- * @return          空栈返回0，非空返回非0值。
+ * @return          空栈返回非0值，非空返回0。
  */
 extern int stack_is_empty (Stack *stack);
 
