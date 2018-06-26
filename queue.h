@@ -1,26 +1,79 @@
 #ifndef BULLET_QUEUE_H
 #define BULLET_QUEUE_H
 
-#define T Queue_T
-typedef struct T *T;
+/**
+ * 单向队列
+ */
+typedef struct _Queue Queue;
 
-/* 新建队列，并初始化 */
-extern T queue_new (void);
+/**
+ * 队列元素类型
+ */
+typedef void *QueueValue;
 
-/* 判断队列是否为空 */
-extern int queue_empty (T que);
+/**
+ * 队列内部空指针
+ */
+#define QUEUE_NULL ((void *) 0)
 
-/* 队列长度 */
-extern int queue_size (T que);
+/**
+ * queue_new        新建队列，并初始化
+ *
+ * @return          新建队列成功，返回新队列地址。
+ *                  否则，返回QUEUE_NULL。
+ */
+extern Queue *queue_new(void);
 
-/* 元素入队 */
-extern void enqueue (T que, void *x);
+/**
+ * queue_free       释放队列
+ *
+ * @param queue     待销毁队列
+ */
+extern void queue_free(Queue *queue);
 
-/* 元素出队 */
-extern void *dequeue (T que);
+/**
+ * queue_push       入队
+ *
+ * @param queue     队列
+ * @param data      待入队元素
+ * @return          元素入队成功，返回非0值，
+ *                  失败（内存分配失败），返回0。
+ */
+extern int queue_push(Queue *queue, QueueValue data);
 
-/* 释放队列，并置NULL */
-extern void queue_free (T *que);
+/**
+ * queue_pop        出队
+ *
+ * @param queue     队列
+ * @return          若队列不空，则返回队头元素，
+ *                  若队列为空，则返回QUEUE_NULL。
+ */
+extern QueueValue queue_pop(Queue *queue);
 
-#undef T
+/**
+ * queue_get_head   获取队头元素
+ *
+ * @param queue     队列
+ * @return          队列不空，返回队头元素，
+ *                  若为空队列，则返回QUEUE_NULL。
+ */
+extern QueueValue queue_get_head(Queue *queue);
+
+/**
+ * queue_get_tail   获取队尾元素
+ * @param queue     队列
+ * @return          队列不空，则返回队尾元素，
+ *                  若为空队列，则返回QUEUE_NULL。
+ */
+extern QueueValue queue_get_tail(Queue *queue);
+
+/**
+ * queue_empty      判断队列是否为空
+ *
+ * @param queue     队列
+ * @return          空队列，返回非0值。
+ *                  队列不空，则返回0。
+ */
+extern int queue_is_empty(Queue *queue);
+
 #endif /* BULLET_QUEUE_H */

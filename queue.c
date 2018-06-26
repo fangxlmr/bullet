@@ -1,95 +1,128 @@
 #include <stdlib.h>
-#include <assert.h>
 #include "queue.h"
 
-#define T Queue_T
+/*
+ * 队列结点结构
+ */
+typedef struct _QueueEntry QueueEntry;
 
-typedef struct elem {
-    void *x;
-    struct elem *next;
-}elem;
-
-struct T {
-    int count;
-    elem *front, *rear;
+struct _QueueEntry {
+    QueueValue data;
+    QueueEntry *next;
 };
 
+/*
+ * 队列
+ */
+struct _Queue {
+    QueueEntry *head;
+    QueueEntry *tail;
+};
 
-/* 新建队列，并初始化 */
-T queue_new (void) {
-    T que;
+Queue *queue_new(void)
+{
+    Queue *queue;
 
-    que = (T) malloc(sizeof(struct T));
-    que->count = 0;
-    que->front = que->rear = NULL;
-    return que;
+    queue = (Queue *) malloc(sizeof(Queue));
+
+    if (!queue) {
+        return QUEUE_NULL;
+    }
+
+    queue->head = NULL;
+    queue->tail = NULL;
+    return queue;
 }
 
+void queue_free(Queue *queue)
+{
+    while (!queue_is_empty(queue)) {
+        queue_pop(queue);
+    }
 
-/* 判断队列是否为空 */
-int queue_empty (T que) {
-    return que->count == 0;
+    free(queue);
 }
 
+int queue_push(Queue *queue, QueueValue data)
+{
+    QueueEntry *new_entry;
 
-/* 队列长度 */
-int queue_size (T que) {
-    assert(que);
-    return que->count;
-}
+    new_entry = (QueueEntry *) malloc(sizeof(QueueEntry));
 
+    if (!new_entry) {
+        return 0;
+    }
 
-/* 元素入队 */
-void enqueue (T que, void *x) {
-    elem *t;
+    /*
+     * 给结点赋值
+     */
+    new_entry->data = data;
+    new_entry->next = NULL;
 
-    t = (elem *)malloc(sizeof(elem));
-    t->x = x;
-    t->next = NULL;
+    /*
+     * 插入队列。
+     */
+    if (queue_is_empty(queue)) {
+        /*
+         * 空队列
+         */
+        queue->tail = new_entry;
+        queue->head = new_entry;
 
-    if (queue_empty(que)) {
-        que->rear = t;
-        que->front = que->rear;
     } else {
-        que->rear->next = t;
-        que->rear = t;
+        /*
+         * 非空队列
+         */
+        queue->tail->next = new_entry;
+        queue->tail = new_entry;
     }
-    que->count++;
+
+    return 1;
 }
 
+QueueValue queue_pop(Queue *queue) {
+    QueueEntry *entry;
+    QueueValue result;
 
-/* 元素出队 */
-void *dequeue (T que) {
-    void *x;
-    elem *t;
-
-    assert(que);
-    assert(que->count > 0);
-    if (que->count == 1) {
-         /* 队列只有一个元素 */
-        t = que->front;
-        que->rear = que->front = NULL;
-    } else {
-        /* 队列有2个及以上的元素 */
-        t  = que->front;
-        que->front = t->next;
+    if (queue_is_empty(queue)) {
+        return QUEUE_NULL;
     }
-    que->count--;
-    x = t->x;
-    free(t);
-    return x;
+
+    entry = queue->head;
+    queue->head = entry->next;
+    result = entry->data;
+
+    /*
+     * 释放最后一个元素，
+     * 则需要把队尾结点也置空
+     */
+    if (queue->head == NULL) {
+        queue->tail = NULL;
+    }
+
+    free(entry);
+    return result;
 }
 
-
-/* 释放队列 */
-void queue_free (T *que) {
-    elem *t, *u;
-
-    assert(que && *que);
-    for (t = (*que)->front; t; t = u) {
-        u = t->next;
-        free(t);
+QueueValue queue_get_head(Queue *queue)
+{
+    if (queue_is_empty(queue)) {
+        return QUEUE_NULL;
     }
-    free(*que);
-    *que = NULL;
+
+    return queue->head->data;
+}
+
+QueueValue queue_get_tail(Queue *queue)
+{
+    if (queue_is_empty(queue)) {
+        return QUEUE_NULL;
+    }
+
+    return queue->tail->data;
+}
+
+int queue_is_empty(Queue *queue)
+{
+    return queue->head == NULL;
 }
