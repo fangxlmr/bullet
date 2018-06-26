@@ -1,354 +1,311 @@
+/*
+ * 字符串解析库fstring的代码实现
+ */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include "fstring.h"
 
-/**
- * @brief 判断是否全部为字母或数字字符
- * @param s 目标字符串
- * @return 返回判断结果布尔值。空字符串返回 false
- */
-bool fstr_isalnum (const char *s) {
-    int len = strlen(s);
-    if (len == 0) {
-        return false;
+int fstr_isalnum(const char *s) {
+    char *walk;
+
+    walk = (char *) s;
+
+    /*
+     * 空指针字符串，返回0
+     */
+    if (!walk || *walk == 0) {
+        return 0;
     }
-    printf("len = %d\n", strlen(s));
-    for (int i = 0; i < len; ++i) {
-        if (!isalnum(s[i])) {
-            return false;
+    while (*walk != '\0') {
+        /*
+         * 判断是否为数字、字母
+         */
+        if (!isalnum(*walk)) {
+            return 0;
         }
+        ++walk;
     }
-    return true;
+    return 1;
 }
 
+int fstr_isalpha(const char *s) {
+    char *walk;
 
-/**
- * @brief 判断是否全部为字母字符
- * @param s 目标字符串
- * @return 返回判断结果布尔值.空字符串返回 false
- */
-bool fstr_isalpha (const char *s) {
-    int len = strlen(s);
-    if (len == 0) {
-        return false;
+    walk = (char *) s;
+
+    if (!walk || *walk == '\0') {
+        return 0;
     }
-    for (int i = 0; i < len; ++i) {
-        if (!isalpha(s[i])) {
-            return false;
+    while (*walk != '\0') {
+        if (!isalnum(*walk)) {
+            return 0;
         }
+        ++walk;
     }
-    return true;
+    return 1;
 }
 
+int fstr_isdigit(const char *s) {
+    char *walk;
 
-/**
- * @brief 判断是否全部为数字字符
- * @param s 目标字符串
- * @return 返回判断结果布尔值.空字符串返回 false
- */
-bool fstr_isdigit (const char *s) {
-    int len = strlen(s);
-    if (len == 0) {
-        return false;
+    walk = (char *) s;
+
+    if (!walk || *walk == '\0') {
+        return 0;
     }
-    for (int i = 0; i < len; ++i) {
-        if (!isdigit(s[i])) {
-            return false;
+    while (*walk != '\0') {
+        if (!isdigit(*walk)) {
+            return 0;
         }
+        ++walk;
     }
-    return true;
+    return 1;
 }
 
+int fstr_islower(const char *s) {
+    char *walk;
 
-/**
- * @brief 判断字符串中的字母是否全部为小写
- * @param s 目标字符串
- * @return 返回判断结果布尔值,空字符串返回 false
- */
-bool fstr_islower (const char *s) {
-    int len = strlen(s);
-    if (len == 0) {
-        return false;
+    walk = (char *) s;
+
+    if (!walk || *walk == '\0') {
+        return 0;
     }
-    for (int i = 0; i < len; ++i) {
-        if (isalpha(s[i]) && isupper(s[i])) {
-            return false;
+    while (*walk != '\0') {
+        if (!islower(*walk)) {
+            return 0;
         }
+        ++walk;
     }
-    return true;
+    return 1;
 }
 
+int fstr_isupper(const char *s) {
+    char *walk;
 
-/**
- * @brief 判断字符串中的字母是否全部为大写
- * @param s 目标字符串
- * @return 返回判断结果布尔值,空字符串返回 false
- */
-bool fstr_isupper (const char *s) {
-    int len = strlen(s);
-    if (len == 0) {
-        return false;
+    walk = (char *)s;
+
+    if (!walk || *walk == '\0') {
+        return 0;
     }
-    for (int i = 0; i < len; ++i) {
-        if (isalpha(s[i]) && islower(s[i])) {
-            return false;
+    while (*walk != '\0') {
+        if (!isupper(*walk)) {
+            return 0;
         }
+        ++walk;
     }
-    return true;
+    return 1;
 }
 
+void fstr_tolower(char *s) {
+    char *walk;
 
-/**
- * @brief 将字符串中的字母全部小写
- * @param s 目标字符串
- * @return 返回新字符串。空字符串返回 null
- */
-char *fstr_tolower (const char *s) {
-    int len = strlen(s);
-    if (len == 0) {
-        return NULL;
+    walk = s;
+
+    if (!walk) {
+        return;
     }
-    char *t = strdup(s);
-    for (int i = 0; i < len; ++i) {
-        if (isalpha(t[i]) && isupper(t[i])) {
-            t[i] += 32;  /* 大写转小写 */
-        }
+    while (*walk != '\0') {
+        *walk = (char) tolower(*walk);
     }
-    return t;
 }
 
+void fstr_toupper(char *s) {
+    char *walk;
 
-/**
- * @brief 将字符串中的字母全部大写
- * @param s 目标字符串
- * @return 返回新字符串。空字符串返回 null
- */
-char *fstr_toupper (const char *s) {
-    int len = strlen(s);
-    if (len == 0) {
-        return NULL;
+    walk = s;
+
+    if (!walk) {
+        return;
     }
-    char *t = strdup(s);
-    for (int i = 0; i < len; ++i) {
-        if (isalpha(t[i]) && islower(t[i])) {
-            t[i] -= 32;  /* 小写转大写 */
-        }
+    while (*walk != '\0') {
+        *walk = (char) toupper(*walk);
     }
-    return t;
 }
 
+void fstr_swapcase(char *s) {
+    char *walk;
 
-/**
- * @brief 将字符串中的字母大小写互换
- * @param s 目标字符串
- * @return 返回新字符串。空字符串返回 null
- */
-char *fstr_swapcase (const char *s) {
-    int len = strlen(s);
-    if (len == 0) {
-        return NULL;
+    walk = s;
+
+    if (!walk) {
+        return;
     }
-    char *t = strdup(s);
-    for (int i = 0; i < len; ++i) {
-        if (isalpha(t[i])) {    /* 确定为字母字符 */
-            if (isupper(t[i])) {
-                t[i] += 32;  /* 大写转小写 */
-            } else {
-                t[i] -= 32;  /* 小写转大写 */
-            }
-        }
+
+    /*
+     * 转换大小写
+     */
+    while (*walk != '\0') {
+        *walk = (char) (islower(*walk) ? toupper(*walk) : tolower(*walk));
+        ++walk;
     }
-    return t;
 }
 
-/**
- * @brief 检查字符串是否以特定字符串组合开头
- * @param s 目标字符串
- * @param str 特定字符串
- * @return 返回检测结果的布尔值。
- */
-bool fstr_startswith (const char *s, const char *start) {
-    int i = 0;
-    while (start[i] && start[i] == s[i]) {
+int fstr_startswith(const char *s, const char *start) {
+    int i;
+
+    i = 0;
+    /*
+     * 判断s是否以start开头
+     */
+    while (s[i] != '\0' && start[i] != '\0' && start[i] == s[i]) {
         ++i;
     }
-    if (start[i]) {
-        return false;
-    } else {
-        return true;
+    if (start[i] == '\0') { /* 是 */
+        return 1;
+    } else {        /* 否 */
+        return 0;
     }
 }
 
+int fstr_endswith(const char *s, const char *end) {
+    int s_len;
+    int end_len;
 
-/**
- * @brief 检查字符串是否以特定字符串组合结尾
- * @param s 目标字符串
- * @param str 特定字符串
- * @return 返回检测结果的布尔值。
- */
-bool fstr_endswith (const char *s, const char *end) {
-    int s_len = strlen(s), end_len = strlen(end);
+    s_len = strlen(s);
+    end_len = strlen(end);
+
+    /*
+     * 判断s是否以end结尾
+     */
     while (s_len >= 0 && end_len >= 0
            && s[s_len] == end[end_len]) {
         --s_len;
         --end_len;
     }
-    if (end_len >= 0) {
-        return false;
-    } else {
-        return true;
+    if (end_len < 0) { /* 是 */
+        return 1;
+    } else {            /* 否 */
+        return 0;
     }
 }
 
-/**
- * @brief 去除字符串开头的所有字符c，返回新字符串
- * @param s 目标字符串
- * @param c 目标字符
- * @return 返回新字符串
- */
-char *fstr_lstrip (const char *s, char c) {
-    int s_len = strlen(s);
-    char *start, *end;
-    start = (char *)s;
-    end = (char *) (s + s_len - 1);
-    while (*start == c && end >= start) {
-        ++start;
+char *fstr_lstrip(char *s, char c) {
+    char *walk;
+
+    /*
+     * 直接抛弃左侧的若干字符c，
+     * 可能会造成内存泄露。
+     */
+    walk = s;
+    while (*walk != '\0' && *walk == c) {
+        ++walk;
     }
-    size_t t_len = end - start + 1;
-    char *t = (char *) calloc((t_len + 1), sizeof(char));
-    strncpy(t, start, t_len);
-    return t;
+
+    return walk;
 }
 
+char *fstr_rstrip(char *s, char c) {
+    char *walk;
 
-/**
- * @brief 去除字符串结尾的所有字符c，返回新字符串
- * @param s 目标字符串
- * @param c 目标字符
- * @return 返回新字符串
- */
-char *fstr_rstrip (const char *s, char c) {
-    int s_len = strlen(s);
-    char *start, *end;
-    start = (char *)s;
-    end = (char *) (s + s_len - 1);
-    while (*end == c && start <= end) {
-        --end;
+    /*
+     * 直接抛弃右侧若干字符c，
+     * 可能会造成内存泄露。
+     */
+    walk = s + strlen(s) - 1;
+    while (walk >= s && *walk == c) {
+        *walk = '\0';
+        --walk;
     }
-    size_t t_len = end - start + 1;
-    char *t = (char *) calloc((t_len + 1), sizeof(char));
-    strncpy(t, start, t_len);
-    return t;
 
+    return walk;
 }
 
+char *fstr_strip(char *s, char c) {
+    char *walk;
+    char *result;
 
-/**
- * @brief 去除字符串开头个结尾的字符 c，返回新字符串
- * @param s 目标字符串
- * @param c  目标字符
- * @return  返回新字符串
- */
-char *fstr_strip (const char *s, char c) {
-    int s_len = strlen(s);
-    char *start, *end;
-    start = (char *)s;
-    end = (char *) (s + s_len - 1);
-    while (*start == c && start <= end) {
-        ++start;
+    /*
+     * 抛弃两侧的若干字符c，
+     * 可能会造成内存泄露。
+     */
+    walk = s;
+    while (*walk != '\0' && *walk == c) {   /* 左侧 */
+        ++walk;
     }
-    while (*end == c && start <= end) {
-        --end;
+
+    result = walk;
+    walk = result + strlen(result) - 1;
+    while (walk >= result && *walk == c) {  /* 右侧 */
+        *walk = '\0';
+        --walk;
     }
-    size_t t_len = end - start + 1;
-    char *t = (char *) calloc((t_len + 1), sizeof(char));
-    strncpy(t, start, t_len);
-    return t;
+
+    return result;
 }
 
+int fstr_count(const char *s, char c) {
+    int count;
+    char *walk;
 
-/**
- * @brief 查找字符 c 在字符串中出现的次数
- * @param s 目标字符串
- * @param c 目标字符
- * @return  返回字符 c 在目标字符串中出现的次数
- */
-int fstr_count (const char *s, char c) {
-    int count = 0;
-    for (int i = 0; i < strlen(s); ++i) {
-        if (*(s + i) == c) {
+    count = 0;
+    walk = (char *) s;
+
+    while (*walk != '\0') {
+        if (*walk == c) {
             ++count;
         }
+        ++walk;
     }
+
     return count;
 }
 
-/**
- * @brief 查找目标字符在字符串中的索引
- * @param s 目标字符串
- * @param c 目标字符
- * @param size 返回数组的大小
- * @return  返回索引值组成的数组。若不包含字符 c 则返回null，且size = 0
- * NOTE: 索引从0开始
- */
-int *fstr_index (const char *s, char c, int *size) {
-    *size = fstr_count(s, c);
-    int *res;
-    if (*size == 0) {
-        return NULL;
-    } else {
-        res = (int *) malloc(*size * sizeof(int));
-        for (int i = 0, k = 0; i < strlen(s); ++i) {
-            if (s[i] == c) {
-                res[k++] = i;
+char *fstr_split(char *s, char c) {
+    static char *next = NULL;   /* 保存上次解析到的位置 */
+    char *token;
+    int i;
+
+    i = 0;
+    token = NULL;
+
+    /*
+     * 若输入的字符串指针为NULL，
+     * 则将指针s重置为上一次的解析位置，
+     * 继续解析步骤。
+     */
+    if (s == NULL) {
+        s = next;
+    }
+    if (s != NULL) {
+        /*
+         * 找到第一个非字符c的位置，
+         * 赋值给token，也即为函数的返回值。
+         */
+        while (s[i] != '\0') {
+            if (s[i] != c) {
+                token = s + i++;
+                break;
             }
+            ++i;
+        }
+        /*
+         * 找到之后的第一个匹配字符c的位置，
+         * 将该位置重置为'\0'，并将next指针
+         * 指向下一个字符。
+         */
+        while (s[i] != '\0') {
+            if (s[i] == c) {
+                s[i++] = '\0';
+                next = s + i;
+                break;
+            }
+            ++i;
+        }
+        /*
+         * 若已到结尾，则next指针置空。
+         */
+        if (s[i] == '\0') {
+            next = NULL;
         }
     }
-    return res;
+
+    return token;
 }
 
-/**
- * @brief 依照字符c，分隔字符串
- * @param s 目标字符串
- * @param c 目标字符
- * @return 返回新字符串数组，不包含字符 c，则size = 0, 返回 null。
- */
-char **fstr_split (const char *s, char c, int *size) {
-    /* 先去掉两端多余的字符 */
-    char *t = fstr_strip(s, c);
-
-    int count = 0;    /* 字符 c 出现位置的计数 */
-    /* 找到对应字符的索引数组 */
-    int *index = fstr_index(t, c, &count);
-
-    char **res = NULL;
-    if (count != 0) {
-        /* 在每个出现的位置，将字符 c 置换为结束符 */
-        for (int i = 0; i < count; ++i) {
-            *(t + index[i]) = '\0';
-        }
-
-        /* 保存每个字符串的起始指针 */
-        *size = count + 1;  /* count 个位置，将字符串分成 count + 1 段*/
-        res = (char **) malloc(*size * sizeof(char *));
-        res[0] = t;
-        for (int i = 0; i < count; ++i) {
-            res[i + 1] = t + index[i] + 1;
-        }
-    }
-    return res;
-}
-
-
-/**
- * @brief 字符串替换
- * @param s 目标字符串
- * @param old 旧字符串
- * @param new 新字符串
- * @return  返回新字符串
- *
- * NOTE：将字符串中第一次出现的old字符串替换为new字符串。
- * 若old子串不存在，返回原字符串
- */
-char *fstr_replace (char *s, const char *old, const char *new) {
+char *fstr_replace(char *s, const char *old, const char *new) {
     char *t = strdup(s);
     char *pos = strstr(t, old);     /* old子串位置标记 */
     if (!pos) {
