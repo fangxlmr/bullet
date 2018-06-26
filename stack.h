@@ -1,3 +1,18 @@
+/**
+ * @file    stack.h
+ *
+ * @brief   栈(stack)
+ *
+ * 栈是一种数据结构，遵循后进先出(LIFO)的规则。
+ *
+ * 使用stack_new创建新栈，使用stack_free释放栈。
+ * 使用stack_push将元素压栈，使用stack_pop将元素弹栈。
+ *
+ * 使用stack_get_top获取栈顶元素，注意，此时并不释放栈顶元素。
+ *
+ * 使用stack_is_empty判断栈是否为空栈
+ */
+
 #ifndef BULLET_STACK_H
 #define BULLET_STACK_H
 

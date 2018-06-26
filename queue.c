@@ -1,3 +1,7 @@
+/*
+ * 队列(queue)的代码实现
+ */
+
 #include <stdlib.h>
 #include "queue.h"
 

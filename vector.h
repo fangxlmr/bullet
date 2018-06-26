@@ -1,3 +1,23 @@
+/**
+ * @file    vector.h
+ *
+ * @brief   动态数组(vector)
+ *
+ * 动态数组是C语言原生数组的一种扩展。
+ *
+ * C语言原生数组，一旦确定大小，那么久不可变动。而动态数组
+ * 支持自动扩容机制。当所需的空间超过了原本分配的空间大小时，
+ * 动态数组可以自动将原先的数组扩容，以满足需要。
+ *
+ * 使用vector_new创建动态数组，使用vector_free销毁动态数组。
+ * 使用vector_init初始化动态数组的所有元素为“0”。
+ *
+ * 使用vector_len获取当前动态数组已使用的长度。
+ *
+ * 使用vector_get获取指定下标位置的元素值。
+ * 使用vector_set重置或修改指定下标位置的元素值。
+ */
+
 #ifndef BULLET_VECTOR_H
 #define BULLET_VECTOR_H
 

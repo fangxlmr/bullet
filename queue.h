@@ -1,3 +1,20 @@
+/**
+ * @file    queue.h
+ *
+ * @brief   队列(queue)
+ *
+ * 队列是一种数据结构，遵循先进先出(FIFO)的原则。
+ *
+ * 使用queue_new创建新队列，使用queue_free销毁队列。
+ *
+ * 使用queue_push将元素入队尾，使用queue_pop弹出队头元素。
+ *
+ * 使用queue_get_head获取队头元素，使用queue_get_tail获取队尾元素，
+ * 注意，queue_get_head与queue_get_tail并不释放元素。
+ *
+ * 使用queue_is_empty判断队列是否为空。
+ */
+
 #ifndef BULLET_QUEUE_H
 #define BULLET_QUEUE_H
 

@@ -1,3 +1,7 @@
+/*
+ * 栈(stack)的代码实现
+ */
+
 #include <stdlib.h>
 #include "stack.h"
 

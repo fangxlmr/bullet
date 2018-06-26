@@ -1,3 +1,7 @@
+/*
+ * 动态数组(vector)的代码实现
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include "vector.h"
