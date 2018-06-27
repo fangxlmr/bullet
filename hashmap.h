@@ -1,75 +1,122 @@
-/*
- * 该自定义库文件实现了 hashmap 功能。
- * 在 hashmap 中，存储键值对。
- * 支持创建、查找、删除、销毁 hashmap 的功能函数
- * 
+/**
+ * @file    hashmap.h
+ *
+ * @brief   哈希表
+ *
+ * 哈希表是一种数据结构，也较散列表，其访问效率很高。
+ *
+ * 哈希表根据关键码值(Key value)而直接进行访问的数据结构。
+ * 它通过把关键码值映射到表中一个位置来访问记录，以加快查找的速度。
+ * hashmap库通过拉链法处理哈希冲突。
+ *
+ * 使用HashMapHashFunc函数类型来自定义哈希回调函数，
+ * 使用HashMapEqualFunc函数类型来定义键比较函数。
+ *
+ * 使用hashmap_new创建新的哈希表，而使用hashmap_free销毁已存在的哈希表。
+ *
+ * 使用hashmap_put插入键值对，使用hashmap_get获取键所对应值，
+ * 而使用hashmap_del删除键值对。
  */
 
-#ifndef _HASHMAP_H_
-#define _HASHMAP_H_
+#ifndef BULLET_HASHMAP_H
+#define BULLET_HASHMAP_H
 
-/* 定义求余hash函数中的偏置值。 hash(key) = (key + OFFSET) % M 
- * M 为static。且：M = n, n 为hash表长度
- **/
-#define OFFSET 1000
-typedef int ElemType;
-
-
-/* 采用链接发解决冲突问题 */
-typedef struct Node     /* Node为链表节点的数据结构 */
-{
-    ElemType key;
-    ElemType value;
-    struct Node *next;
-}Node, *pNode;
-
-
-/* Hash表每个槽的数据结构 */
-typedef struct Bucket
-{
-    pNode first;    /* 指向Bucket内链表的第一个节点 */
-}Bucket, *HashTable;
-
-
-/*
- * 创建 n 个槽的Hash表，成功返回hash表的HashTable型指针，并将散列法的模数设置为 n.
- * n < 10时，将 n = 10
- * 不成功程序 打印"hashtable malloc faild,program exit..."
- * 再返回 NULL
+/**
+ * 哈希表
  */
-HashTable new(int);
+typedef struct _HashMap HashMap;
 
-
-/*
- * 在给定Hash表中查找数据
- * 成功返回该键值对的链表地址
- * 失败则返回 NULL
+/**
+ * 哈希表的键
  */
-pNode get(HashTable, ElemType);
+typedef void *HashMapKey;
 
-
-/*
- * 插入键值对到哈希表
- * 插入成功，返回true
- * hash表不存在，或键值对已存在，返回false
- * 若插入失败，打印"pNew malloc faild,program exit...",再返回false
+/**
+ * 哈希表的键对应的值
  */
-bool put(HashTable, ElemType, ElemType);
+typedef void *HashMapValue;
 
-
-/* 
- * 从哈希表删除数据
- * 成功，则返回true
- * 若给定的hash表不存在，返回false
+/**
+ * 哈希表键值对结构
  */
-bool del(HashTable, ElemType);
+typedef struct _HashMapPair {
+    HashMapKey key;
+    HashMapValue value;
+}HashMapPair;
 
-
-/*
- * 销毁哈希表
- * 若该 hash 表不存在，返回false
- * 若销毁成功，返回true
+/**
+ * 定义哈希表的空指针
  */
-void destroy(HashTable, int);
+#define HASH_MAP_NULL ((void *) 0)
 
-#endif
+/**
+ * HashMapHashFunc      定义回调函数，哈希函数
+ *
+ * @param key           键值
+ * @return              返回key对应的hash值
+ */
+typedef unsigned int (*HashMapHashFunc)(HashMapKey key);
+
+/**
+ * HashMapEqualFunc     定义回调函数，比较两个键值
+ *
+ * @param key1          键值1
+ * @param key2          键值2
+ * @return              若key1 == key2，返回非0值，
+ *                      若key1 != key2，返回0。
+ */
+typedef int (*HashMapEqualFunc)(HashMapKey key1, HashMapKey key2);
+
+/**
+ * hashmap_new          创建哈希表
+ *
+ * @param hash_func     哈希函数
+ * @param equal_func    判断键值是否相等的比较函数
+ * @return              创建成功，则返回哈希表指针，
+ *                      失败，则返回HASHMAP_NULL。
+ */
+extern HashMap *hashmap_new(HashMapHashFunc  hash_func,
+                            HashMapEqualFunc equal_func);
+
+/**
+ * hashap_free          销毁哈希表
+ *
+ * @param               待销毁的哈希表
+ */
+extern void hashmap_free(HashMap *hashmap);
+
+/**
+ * hashmap_put          将键值对插入或修改已存在的键值对
+ *
+ * @param hashmap       哈希表
+ * @param key           键
+ * @param value         键对应的值
+ * @return              插入或修改成功，则返回非0值，
+ *                      失败（主要是内存分配失败），则返回0。
+ */
+extern int hashmap_put(HashMap      *hashmap,
+                       HashMapKey   key,
+                       HashMapValue value);
+
+/**
+ * hashmap_get          获取键所对应的值
+ *
+ * @param hashmap       哈希表
+ * @param key           键
+ * @return              若键值对存在，则返回键所对应的值，
+ *                      若键值对不存在，则返回HASHMAP_NULL。
+ */
+extern HashMapValue hashmap_get(HashMap    *hashmap,
+                                HashMapKey key);
+
+/**
+ * hashmap_del          删除键值对
+ *
+ * @param hashmap       哈希表
+ * @param key           键
+ * @return              键值对存在，并删除成功，则返回非0值，
+ *                      若键值对不存在，则返回0。
+ */
+extern int hashmap_del(HashMap *hashmap, HashMapKey key);
+
+#endif /* BULLET_HASHMAP_H */
