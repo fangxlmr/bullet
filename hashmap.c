@@ -1,5 +1,12 @@
 /*
  * 哈希表的代码实现
+ * 
+ * hashmap库通过拉链法处理哈希冲突。
+ * 使用hash_func返回的哈希码，通过除以哈希表长度求余来计算哈希值。
+ * 
+ * 哈希表可以动态扩容。
+ * 当元素充满哈希表超过内部定义的装填因子时，
+ * 哈希表将自动扩容。
  */
 
 #include <stdlib.h>
@@ -48,10 +55,14 @@ static const unsigned int primes[] = {
 static const unsigned int primes_size
         = sizeof(primes) / sizeof(primes[0]);
 
-/*
- * 请求分配桶数组的内存
+/**
+ * hashmap_alloc_buckets    请求分配桶数组的内存
+ *
+ * @param hashmap           哈希表
+ * @return                  分配成功，返回非0值，
+ *                          失败，则返回0。
  */
-static int allocte_table(HashMap *hashmap)
+static int hashmap_alloc_buckets(HashMap *hashmap)
 {
     unsigned int new_size;
 
@@ -104,7 +115,7 @@ HashMap *hashmap_new(HashMapHashFunc  hash_func,
     /*
      * 给桶分配内存
      */
-    if (!allocte_table(hashmap)) {
+    if (!hashmap_alloc_buckets(hashmap)) {
         /* 分配失败 */
         free(hashmap);
 
@@ -143,6 +154,74 @@ void hashmap_free(HashMap *hashmap)
     free(hashmap);
 }
 
+/**
+ * hashmap_resize       哈希表扩容函数
+ *
+ * @param hashmap       哈希表
+ * @return              扩容成功，则返回非0值，
+ *                      失败则返回0。
+ */
+static int hashmap_resize(HashMap *hashmap)
+{
+    HashMapEntry **old_buckets;
+    unsigned int old_size;
+    unsigned int old_index;
+    HashMapEntry *walk;
+    HashMapEntry *next;
+    HashMapPair  *pair;
+    unsigned int i;
+
+    /*
+     * 保存旧哈希表的重要信息
+     */
+    old_buckets = hashmap->buckets;
+    old_size    = hashmap->size;
+    old_index   = hashmap->index;
+
+    /*
+     * 更新哈希表
+     */
+    ++hashmap->index;
+    if (!hashmap_alloc_buckets(hashmap)) {
+        /*
+         * 扩容失败，恢复现场
+         */
+        hashmap->buckets = old_buckets;
+        hashmap->size    = old_size;
+        hashmap->index   = old_index;
+        return 0;
+    }
+
+    /*
+     * 将旧哈希表的链表链接到新哈希表中
+     */
+    for (int j = 0; j < old_size; ++j) {
+        walk = old_buckets[j];
+
+        while (walk != NULL) {
+            pair = &(walk->pair);
+            /*
+             * 每个键值对计算
+             * 新哈希表的哈希值
+             */
+            i = hashmap->hash_func(pair->key) % hashmap->size;
+            /*
+             * 将节点链接到新的哈希表
+             */
+            next = walk->next;
+            walk->next = hashmap->buckets[i];
+            hashmap->buckets[i] = walk;
+            /*
+             * 继续下一个查找
+             */
+            walk = next;
+        }
+    }
+
+    free(old_buckets);
+    return 1;
+}
+
 int hashmap_put(HashMap      *hashmap,
                 HashMapKey   key,
                 HashMapValue value)
@@ -151,7 +230,17 @@ int hashmap_put(HashMap      *hashmap,
     HashMapEntry *walk;
     HashMapPair  *pair;
     unsigned int i;
-
+    
+    /*
+     * 判断当前哈希表内的键值对数量是否超过装填因子限制
+     */
+    if (hashmap->count > hashmap->size * LOAD_FACTOR) {
+        /* 超过装填因子限制，自动扩容 */
+        if (!hashmap_resize(hashmap)) {
+            return 0;           /* 扩容失败 */
+        }
+    }
+    
     /*
      * 生成哈希值，查找哈希表
      */
