@@ -1,5 +1,9 @@
 /*
  * 二叉排序树(bstree)的代码实现
+ *
+ * 节点的添加、查找与删除的方法
+ * 有递归与非递归，在本库中均有实现。
+ * 默认使用可靠性更好的非递归迭代版本。
  */
 
 #include <stdlib.h>
@@ -68,6 +72,7 @@ static void subtree_free(BSTreeEntry *root)
 void bstree_free(BSTree *bstree)
 {
     subtree_free(bstree->root);
+    free(bstree);
 }
 
 /**
@@ -90,8 +95,11 @@ static int subtree_add(BSTreeEntry **root,
      * 非递归查找添加，系统性能更好
      */
     while (*root != NULL && cmp(value, (*root)->data)) {
+        /* 查找左子树 */
         if (cmp(value, (*root)->data) < 0) {
             root = &(*root)->left;
+
+            /* 查找右子树 */
         } else {
             root = &(*root)->right;
         }
@@ -101,7 +109,10 @@ static int subtree_add(BSTreeEntry **root,
         /* 忽略重复值 */
         return 0;
 
-        /* 新建节点，并添加 */
+        /*
+         * 不存在匹配节点，则
+         * 新建节点，并添加进二叉树
+         */
     } else {
         new_entry = (BSTreeEntry *) malloc(sizeof(BSTreeEntry));
 
@@ -380,4 +391,47 @@ int bstree_depth(BSTree *bstree)
 int bstree_is_empty(BSTree *bstree)
 {
     return bstree->root == NULL;
+}
+
+BSTreeValue bstree_min(BSTree *bstree)
+{
+    BSTreeEntry *entry;
+
+    entry = bstree->root;
+
+    /* 向左，查找最小值 */
+    while (entry != NULL && entry->left != NULL) {
+        entry = entry->left;
+    }
+
+    /* 空树 */
+    if (!entry) {
+        return BSTREE_NULL;
+
+        /* 树非空，存在最小值*/
+    } else {
+        return entry->data;
+    }
+}
+
+BSTreeValue bstree_max(BSTree *bstree)
+{
+    BSTreeEntry *entry;
+
+    entry = bstree->root;
+
+    /* 向右，查找最大 值 */
+    while (entry != NULL && entry->right != NULL) {
+        entry = entry->right;
+    }
+
+    /* 空树 */
+    if (!entry) {
+        return BSTREE_NULL;
+
+        /* 树非空，存在最大值*/
+    } else {
+        return entry->data;
+    }
+
 }
