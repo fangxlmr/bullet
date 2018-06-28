@@ -14,7 +14,7 @@
  */
 typedef struct _BSTreeEntry BSTreeEntry;
 
-typedef struct _BSTreeEntry {
+struct _BSTreeEntry {
     BSTreeValue data;
     BSTreeEntry *left;
     BSTreeEntry *right;
@@ -77,7 +77,8 @@ void bstree_free(BSTree *bstree)
  * @param value     带添加的元素
  * @param cmp       节点元素比较大小函数
  * @return          添加成功，则返回非0值，
- *                  添加失败（内存分配失败）则返回0。
+ *                  添加失败（内存分配失败，
+ *                  或已存在该节点）则返回0。
  */
 static int subtree_add(BSTreeEntry **root,
                        BSTreeValue value,
@@ -86,9 +87,22 @@ static int subtree_add(BSTreeEntry **root,
     BSTreeEntry *new_entry;
 
     /*
-     * 没有匹配的节点，新建节点，并插入二叉排序树
+     * 非递归查找添加，系统性能更好
      */
-    if (!*root) {
+    while (*root != NULL && cmp(value, (*root)->data)) {
+        if (cmp(value, (*root)->data) < 0) {
+            root = &(*root)->left;
+        } else {
+            root = &(*root)->right;
+        }
+    }
+
+    if (*root != NULL) {
+        /* 忽略重复值 */
+        return 0;
+
+        /* 新建节点，并添加 */
+    } else {
         new_entry = (BSTreeEntry *) malloc(sizeof(BSTreeEntry));
 
         if (!new_entry) {   /* 内存分配失败 */
@@ -104,17 +118,40 @@ static int subtree_add(BSTreeEntry **root,
         return 1;
     }
 
-    if (cmp(value, (*root)->data) == 0) {
-        return 0;     /* 忽略重复值 */
 
-    /* 查找左子树 */
-    } else if (cmp(value, (*root)->data) < 0) {
-        subtree_add(&(*root)->left, value, cmp);
-
-    /* 查找右子树 */
-    } else {
-        subtree_add(&(*root)->right, value, cmp);
-    }
+    /*
+     * 递归查找，增加系统开销，且大数据量时可能造成栈溢出
+     */
+//    /*
+//     * 没有匹配的节点，新建节点，并插入二叉排序树
+//     */
+//    if (!*root) {
+//        new_entry = (BSTreeEntry *) malloc(sizeof(BSTreeEntry));
+//
+//        if (!new_entry) {   /* 内存分配失败 */
+//            return 0;
+//        }
+//
+//        /* 新节点 */
+//        new_entry->data  = value;
+//        new_entry->left  = NULL;
+//        new_entry->right = NULL;
+//
+//        *root = new_entry;  /* 插入 */
+//        return 1;
+//    }
+//
+//    if (cmp(value, (*root)->data) == 0) {
+//        return 0;     /* 忽略重复值 */
+//
+//    /* 查找左子树 */
+//    } else if (cmp(value, (*root)->data) < 0) {
+//        subtree_add(&(*root)->left, value, cmp);
+//
+//    /* 查找右子树 */
+//    } else {
+//        subtree_add(&(*root)->right, value, cmp);
+//    }
 }
 
 int bstree_add(BSTree *bstree, BSTreeValue value)
@@ -135,23 +172,44 @@ static int subtree_find(BSTreeEntry *root,
                         BSTreeValue value,
                         BSTreeCompareFunc cmp)
 {
-    /* 已经遍历完毕子树的所有节点，未匹配，返回0 */
-    if (!root) {
-        return 0;
+    /*
+     * 非递归查找，系统性能更好
+     */
+    while (root != NULL && cmp(value, root->data) != 0) {
+        /* 继续查找左子树 */
+        if (cmp(value, root->data) < 0) {
+            root = root->left;
+
+            /* 继续查找右子树 */
+        } else {
+            root = root->right;
+        }
     }
 
-    /* 当前节点即匹配 */
-    if (cmp(value, root->data) == 0) {
-        return 1;
+    /*
+     * 没有匹配值，返回0，
+     * 存在匹配值，返回1
+     */
+    return root != NULL;
 
-    /* 查找左子树 */
-    } else if (cmp(value, root->data) < 0) {
-        return subtree_find(root->left, value, cmp);
 
-    /* 查找有子树 */
-    } else {
-        return subtree_find(root->right, value, cmp);
-    }
+    /*
+     * 递归查找，增加系统开销，
+     * 且当数据量过大时，可能造成栈溢出
+     */
+//    if (!root) {
+//        return 0;
+//    }
+//
+//    if (cmp(value, root->data) == 0) {
+//        return 1;
+//
+//    } else if (cmp(value, root->data) < 0) {
+//        return subtree_find(root->left, value, cmp);
+//
+//    } else {
+//        return subtree_find(root->right, value, cmp);
+//    }
 }
 
 int bstree_find(BSTree *bstree, BSTreeValue value)
@@ -231,36 +289,65 @@ static void delete_node(BSTreeEntry **node) {
  * @param value     目标元素值
  * @param cmp       节点元素比较大小函数
  * @return          删除成功，则返回非0值，
- *                  删除失败，则返回0。
+ *                  没有匹配值，则返回0。
  */
 static int subtree_del(BSTreeEntry **root,
                         BSTreeValue value,
                         BSTreeCompareFunc cmp)
 {
     /*
-     * 不存在值为value的节点
+     * 非递归查找，系统性能更好
      */
-    if (!*root) {
+    while (*root != NULL && cmp(value, (*root)->data) != 0) {
+        /* 继续查找左子树 */
+        if (cmp(value, (*root)->data) < 0) {
+            root = &(*root)->left;
+
+            /* 继续查找右子树 */
+        } else {
+            root = &(*root)->right;
+        }
+    }
+
+    if (*root != NULL) {
+        /* 找到匹配值，删除之 */
+        delete_node(root);
+        return 1;
+
+        /* 没有匹配值 */
+    } else {
         return 0;
     }
 
-    if (cmp(value, (*root)->data) == 0) {
-        /*
-         * 节点匹配，删除之
-         */
-        delete_node(root);
-        return 1;
-        /*
-         * 查找左子树
-         */
-    } else if (cmp(value, (*root)->data) < 0) {
-        subtree_del(&(*root)->left, value, cmp);
-        /*
-         * 查找右子树
-         */
-    } else {
-        subtree_del(&(*root)->right, value, cmp);
-    }
+      /*
+       * 递归查找删除，增加系统开销，
+       * 且当数据量大时，可能造成栈溢出。
+       */
+
+//    /*
+//     * 不存在值为value的节点
+//     */
+//    if (!*root) {
+//        return 0;
+//    }
+//
+//    if (cmp(value, (*root)->data) == 0) {
+//        /*
+//         * 节点匹配，删除之
+//         */
+//        delete_node(root);
+//        return 1;
+//        /*
+//         * 查找左子树
+//         */
+//    } else if (cmp(value, (*root)->data) < 0) {
+//        subtree_del(&(*root)->left, value, cmp);
+//        /*
+//         * 查找右子树
+//         */
+//    } else {
+//        subtree_del(&(*root)->right, value, cmp);
+//    }
 }
 
 int bstree_del(BSTree *bstree, BSTreeValue value)
@@ -272,7 +359,7 @@ int bstree_del(BSTree *bstree, BSTreeValue value)
  * subtree_depth    求子树的高度
  *
  * @param root      子树根节点
- * @return          若子树为空，则饭会0，
+ * @return          若子树为空，则返回0，
  *                  若子树不空，返回子树的高度。
  */
 static int subtree_depth(BSTreeEntry *root)
@@ -292,9 +379,5 @@ int bstree_depth(BSTree *bstree)
 
 int bstree_is_empty(BSTree *bstree)
 {
-    if (bstree->root == NULL) {
-        return 1;
-    } else {
-        return 0;
-    }
+    return bstree->root == NULL;
 }
