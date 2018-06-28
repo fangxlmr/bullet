@@ -6,7 +6,7 @@
 #include "queue.h"
 
 /*
- * 队列结点结构
+ * 队列节点结构
  */
 typedef struct _QueueEntry QueueEntry;
 
@@ -58,7 +58,7 @@ int queue_push(Queue *queue, QueueValue data)
     }
 
     /*
-     * 给结点赋值
+     * 给节点赋值
      */
     new_entry->data = data;
     new_entry->next = NULL;
@@ -98,7 +98,7 @@ QueueValue queue_pop(Queue *queue) {
 
     /*
      * 释放最后一个元素，
-     * 则需要把队尾结点也置空
+     * 则需要把队尾节点也置空
      */
     if (queue->head == NULL) {
         queue->tail = NULL;

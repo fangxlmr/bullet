@@ -6,7 +6,7 @@
 #include "stack.h"
 
 /*
- * 栈结点结构
+ * 栈节点结构
  */
 typedef struct _StackEntry StackEntry;
 
@@ -37,7 +37,7 @@ Stack *stack_new(void)
 void stack_free(Stack *stack)
 {
     /*
-     * 释放栈结点
+     * 释放栈节点
      */
     while (!stack_is_empty(stack)) {
         stack_pop(stack);
@@ -53,7 +53,7 @@ int stack_push(Stack *stack, StackValue data)
     StackEntry *new_entry;
 
     /*
-     * 新建栈结点，并写入数据
+     * 新建栈节点，并写入数据
      */
     new_entry = (StackEntry *) malloc(sizeof(StackEntry));
 
