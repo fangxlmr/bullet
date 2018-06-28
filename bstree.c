@@ -70,74 +70,6 @@ void bstree_free(BSTree *bstree)
     subtree_free(bstree->root);
 }
 
-int bstree_is_empty(BSTree *bstree)
-{
-    if (bstree->root == NULL) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-/**
- * subtree_depth    求子树的高度
- *
- * @param root      子树根节点
- * @return          若子树为空，则饭会0，
- *                  若子树不空，返回子树的高度。
- */
-static int subtree_depth(BSTreeEntry *root)
-{
-    if (!root)
-        return 0;
-    /*
-     * 当前子树的高度为左右子树的最大值 + 1
-     */
-    return MAX(subtree_depth(root->left), subtree_depth(root->right)) + 1;
-}
-
-int bstree_depth(BSTree *bstree)
-{
-    return subtree_depth(bstree->root);
-}
-
-/**
- * subtree_find     查找子树中是否存在节点值等于value
- *
- * @param root      子树根节点
- * @param value     待查找的元素
- * @param cmp       节点元素比较函数
- * @return          若子树中含有元素value，则返回非0值，
- *                  否则返回0。
- */
-static int subtree_find(BSTreeEntry *root,
-                        BSTreeValue value,
-                        BSTreeCompareFunc cmp)
-{
-    /* 已经遍历完毕子树的所有节点，未匹配，返回0 */
-    if (!root) {
-        return 0;
-    }
-
-    /* 当前节点即匹配 */
-    if (cmp(value, root->data) == 0) {
-        return 1;
-
-    /* 查找左子树 */
-    } else if (cmp(value, root->data) < 0) {
-        return subtree_find(root->left, value, cmp);
-
-    /* 查找有子树 */
-    } else {
-        return subtree_find(root->right, value, cmp);
-    }
-}
-
-int bstree_find(BSTree *bstree, BSTreeValue value)
-{
-    return subtree_find(bstree->root, value, bstree->cmp);
-}
-
 /**
  * subtree_add      向子树中添加元素value
  *
@@ -190,7 +122,42 @@ int bstree_add(BSTree *bstree, BSTreeValue value)
     return subtree_add(&bstree->root, value, bstree->cmp);
 }
 
+/**
+ * subtree_find     查找子树中是否存在节点值等于value
+ *
+ * @param root      子树根节点
+ * @param value     待查找的元素
+ * @param cmp       节点元素比较函数
+ * @return          若子树中含有元素value，则返回非0值，
+ *                  否则返回0。
+ */
+static int subtree_find(BSTreeEntry *root,
+                        BSTreeValue value,
+                        BSTreeCompareFunc cmp)
+{
+    /* 已经遍历完毕子树的所有节点，未匹配，返回0 */
+    if (!root) {
+        return 0;
+    }
 
+    /* 当前节点即匹配 */
+    if (cmp(value, root->data) == 0) {
+        return 1;
+
+    /* 查找左子树 */
+    } else if (cmp(value, root->data) < 0) {
+        return subtree_find(root->left, value, cmp);
+
+    /* 查找有子树 */
+    } else {
+        return subtree_find(root->right, value, cmp);
+    }
+}
+
+int bstree_find(BSTree *bstree, BSTreeValue value)
+{
+    return subtree_find(bstree->root, value, bstree->cmp);
+}
 
 /**
  * delete_node      删除二叉排序树中的单个节点
@@ -296,7 +263,38 @@ static int subtree_del(BSTreeEntry **root,
     }
 }
 
-int bstree_del(BSTree *bstree, void *value)
+int bstree_del(BSTree *bstree, BSTreeValue value)
 {
     return subtree_del(&bstree->root, value, bstree->cmp);
+}
+
+/**
+ * subtree_depth    求子树的高度
+ *
+ * @param root      子树根节点
+ * @return          若子树为空，则饭会0，
+ *                  若子树不空，返回子树的高度。
+ */
+static int subtree_depth(BSTreeEntry *root)
+{
+    if (!root)
+        return 0;
+    /*
+     * 当前子树的高度为左右子树的最大值 + 1
+     */
+    return MAX(subtree_depth(root->left), subtree_depth(root->right)) + 1;
+}
+
+int bstree_depth(BSTree *bstree)
+{
+    return subtree_depth(bstree->root);
+}
+
+int bstree_is_empty(BSTree *bstree)
+{
+    if (bstree->root == NULL) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
