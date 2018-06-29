@@ -109,7 +109,7 @@ HashMap *hashmap_new(HashMapHashFunc  hash_func,
     hashmap = (HashMap *) malloc(sizeof(HashMap));
 
     if (!hashmap) {
-        return HASH_MAP_NULL;
+        return HASHMAP_NULL;
     }
 
     hashmap->hash_func  = hash_func;
@@ -123,7 +123,7 @@ HashMap *hashmap_new(HashMapHashFunc  hash_func,
         /* 分配失败 */
         free(hashmap);
 
-        return HASH_MAP_NULL;
+        return HASHMAP_NULL;
     }
     /* 分配成功，则返回哈希表 */
     return hashmap;
@@ -313,9 +313,9 @@ HashMapValue hashmap_get(HashMap *hashmap, HashMapKey key)
     }
 
     /*
-     * 没有匹配键值对，返回HASH_MAP_NULL。
+     * 没有匹配键值对，返回HASHMAP_NULL。
      */
-    return HASH_MAP_NULL;
+    return HASHMAP_NULL;
 }
 
 int hashmap_del(HashMap *hashmap, HashMapKey key)

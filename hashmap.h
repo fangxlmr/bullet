@@ -46,7 +46,7 @@ typedef struct _HashMapPair {
 /**
  * 定义哈希表的空指针
  */
-#define HASH_MAP_NULL ((void *) 0)
+#define HASHMAP_NULL ((void *) 0)
 
 /**
  * HashMapHashFunc      定义回调函数，哈希函数
