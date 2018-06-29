@@ -16,19 +16,19 @@
 /*
  * 节点结构
  */
-typedef struct _BSTreeEntry BSTreeEntry;
+typedef struct _BSTreeNode BSTreeNode;
 
-struct _BSTreeEntry {
+struct _BSTreeNode {
     BSTreeValue data;
-    BSTreeEntry *left;
-    BSTreeEntry *right;
+    BSTreeNode *left;
+    BSTreeNode *right;
 };
 
 /*
  * 二叉排序树
  */
 struct _BSTree {
-    BSTreeEntry *root;           /* 根节点 */
+    BSTreeNode *root;           /* 根节点 */
     BSTreeCompareFunc cmp;  /* 节点大小比较函数 */
 };
 
@@ -53,7 +53,7 @@ BSTree *bstree_new(BSTreeCompareFunc cmp)
  *
  * @param root      子树根节点
  */
-static void subtree_free(BSTreeEntry *root)
+static void subtree_free(BSTreeNode *root)
 {
     if (!root) {
         return;
@@ -85,11 +85,11 @@ void bstree_free(BSTree *bstree)
  *                  添加失败（内存分配失败，
  *                  或已存在该节点）则返回0。
  */
-static int subtree_add(BSTreeEntry **root,
+static int subtree_add(BSTreeNode **root,
                        BSTreeValue value,
                        BSTreeCompareFunc cmp)
 {
-    BSTreeEntry *new_entry;
+    BSTreeNode *new_node;
 
     /*
      * 非递归查找添加，系统性能更好
@@ -114,18 +114,18 @@ static int subtree_add(BSTreeEntry **root,
          * 新建节点，并添加进二叉树
          */
     } else {
-        new_entry = (BSTreeEntry *) malloc(sizeof(BSTreeEntry));
+        new_node = (BSTreeNode *) malloc(sizeof(BSTreeNode));
 
-        if (!new_entry) {   /* 内存分配失败 */
+        if (!new_node) {   /* 内存分配失败 */
             return 0;
         }
 
         /* 新节点 */
-        new_entry->data  = value;
-        new_entry->left  = NULL;
-        new_entry->right = NULL;
+        new_node->data  = value;
+        new_node->left  = NULL;
+        new_node->right = NULL;
 
-        *root = new_entry;  /* 插入 */
+        *root = new_node;  /* 插入 */
         return 1;
     }
 
@@ -137,18 +137,18 @@ static int subtree_add(BSTreeEntry **root,
 //     * 没有匹配的节点，新建节点，并插入二叉排序树
 //     */
 //    if (!*root) {
-//        new_entry = (BSTreeEntry *) malloc(sizeof(BSTreeEntry));
+//        new_node = (BSTreeNode *) malloc(sizeof(BSTreeNode));
 //
-//        if (!new_entry) {   /* 内存分配失败 */
+//        if (!new_node) {   /* 内存分配失败 */
 //            return 0;
 //        }
 //
 //        /* 新节点 */
-//        new_entry->data  = value;
-//        new_entry->left  = NULL;
-//        new_entry->right = NULL;
+//        new_node->data  = value;
+//        new_node->left  = NULL;
+//        new_node->right = NULL;
 //
-//        *root = new_entry;  /* 插入 */
+//        *root = new_node;  /* 插入 */
 //        return 1;
 //    }
 //
@@ -179,7 +179,7 @@ int bstree_add(BSTree *bstree, BSTreeValue value)
  * @return          若子树中含有元素value，则返回非0值，
  *                  否则返回0。
  */
-static int subtree_find(BSTreeEntry *root,
+static int subtree_find(BSTreeNode *root,
                         BSTreeValue value,
                         BSTreeCompareFunc cmp)
 {
@@ -238,8 +238,8 @@ int bstree_find(BSTree *bstree, BSTreeValue value)
  *                  [2]  右孩子为空
  *                  [3]  左右孩子都不空
  */
-static void delete_node(BSTreeEntry **node) {
-    BSTreeEntry *p, *q;
+static void delete_node(BSTreeNode **node) {
+    BSTreeNode *p, *q;
 
     /* [1] */
     if (!(*node)->left) {
@@ -302,7 +302,7 @@ static void delete_node(BSTreeEntry **node) {
  * @return          删除成功，则返回非0值，
  *                  没有匹配值，则返回0。
  */
-static int subtree_del(BSTreeEntry **root,
+static int subtree_del(BSTreeNode **root,
                         BSTreeValue value,
                         BSTreeCompareFunc cmp)
 {
@@ -373,7 +373,7 @@ int bstree_del(BSTree *bstree, BSTreeValue value)
  * @return          若子树为空，则返回0，
  *                  若子树不空，返回子树的高度。
  */
-static int subtree_depth(BSTreeEntry *root)
+static int subtree_depth(BSTreeNode *root)
 {
     if (!root)
         return 0;
@@ -395,43 +395,43 @@ int bstree_is_empty(BSTree *bstree)
 
 BSTreeValue bstree_min(BSTree *bstree)
 {
-    BSTreeEntry *entry;
+    BSTreeNode *node;
 
-    entry = bstree->root;
+    node = bstree->root;
 
     /* 向左，查找最小值 */
-    while (entry != NULL && entry->left != NULL) {
-        entry = entry->left;
+    while (node != NULL && node->left != NULL) {
+        node = node->left;
     }
 
     /* 空树 */
-    if (!entry) {
+    if (!node) {
         return BSTREE_NULL;
 
         /* 树非空，存在最小值*/
     } else {
-        return entry->data;
+        return node->data;
     }
 }
 
 BSTreeValue bstree_max(BSTree *bstree)
 {
-    BSTreeEntry *entry;
+    BSTreeNode *node;
 
-    entry = bstree->root;
+    node = bstree->root;
 
     /* 向右，查找最大 值 */
-    while (entry != NULL && entry->right != NULL) {
-        entry = entry->right;
+    while (node != NULL && node->right != NULL) {
+        node = node->right;
     }
 
     /* 空树 */
-    if (!entry) {
+    if (!node) {
         return BSTREE_NULL;
 
         /* 树非空，存在最大值*/
     } else {
-        return entry->data;
+        return node->data;
     }
 
 }
