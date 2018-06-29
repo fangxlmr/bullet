@@ -8,6 +8,8 @@
  * （2）若右子树不空，则右子树上所有结点的值均大于或等于它的根结点的值；
  * （3）左、右子树也分别为二叉排序树
  *
+ * 使用BSTreeCompareFunc定义回调函数，用来判断元素大小。
+ *
  * 使用bstree_new创建新的二叉排序树，
  * 使用bstree_free销毁已存在的二叉排序树。
  *
@@ -17,6 +19,9 @@
  * 使用bstree_depth获取二叉排序树的最大深度。
  *
  * 使用bstree_is_empty判断二叉排序树是否为空。
+ *
+ * 使用bstree_min查找当前二叉排序树中的最小值，
+ * 使用bstree_max查找当前二叉排序树中的最大值。
  */
 
 #ifndef BULLET_BSTREE_H
@@ -111,5 +116,23 @@ extern int bstree_depth(BSTree *bstree);
  *                      若二叉排序树为空，则返回非0值。
  */
 extern int bstree_is_empty(BSTree *bstree);
+
+/**
+ * bstree_min           查找二叉排序树最小值
+ *
+ * @param bstree        二叉排序树
+ * @return              若查找最小值成功，则返回最小值，
+ *                      若二叉排序树为空，则返回BSTREE_NULL。
+ */
+extern BSTreeValue bstree_min(BSTree *bstree);
+
+/**
+ * bstree_max           查找二叉排序树最大值
+ *
+ * @param bstree        二叉排序树
+ * @return              若查找最大值成功，则返回最大值，
+ *                      若二叉排序树为空，则返回BSTREE_NULL。
+ */
+extern BSTreeValue bstree_max(BSTree *bstree);
 
 #endif /* BULLET_BSTREE_H */
