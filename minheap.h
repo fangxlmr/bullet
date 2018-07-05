@@ -53,12 +53,13 @@ extern MinHeap *minheap_new(unsigned int n, MinHeapCompareFunc cmp);
  * @param minheap       最小堆
  * @param value         待添加元素
  * @return              添加成功，返回非0值，
- *                      若添加失败（内存分配失败），返回0。
+ *                      若添加失败，返回0。
+ * @note                插入失败的可能原因为：当最小堆已满，且value值小于堆顶。
  */
 extern int minheap_add(MinHeap *minheap, MinHeapValue value);
 
 /**
- * minheap_fin          在最小堆中查找元素
+ * minheap_find         在最小堆中查找元素
  *
  * @param minheap       最小堆
  * @param value         待查找的元素
