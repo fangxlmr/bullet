@@ -107,4 +107,22 @@ extern int avltree_depth(AVLTree *avltree);
  */
 extern int avltree_is_empty(AVLTree *avltree);
 
+/**
+ * avltree_min           查找AVL树最小值
+ *
+ * @param avltree        AVL树
+ * @return              若查找最小值成功，则返回最小值，
+ *                      若AVL树为空，则返回AVLTREE_NULL。
+ */
+extern AVLTreeValue avltree_min(AVLTree *avltree);
+
+/**
+ * avltree_max           查找AVL树最大值
+ *
+ * @param avltree        AVL树
+ * @return              若查找最大值成功，则返回最大值，
+ *                      若AVL树为空，则返回AVLTREE_NULL。
+ */
+extern AVLTreeValue avltree_max(AVLTree *avltree);
+
 #endif /* BULLET_AVLTREE_H */
