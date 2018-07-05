@@ -66,34 +66,3 @@ void swap(int *v, int x, int y)
     v[x] = v[y];
     v[y] = temp;
 }
-
-
-int main(void)
-{
-    int ary[] = {
-            99, 5, 36, 7, 22,
-            17, 46, 12, 2, 19,
-            25, 28, 1, 92
-    };
-    int i, len;
-
-    i = 0;
-    len = sizeof(ary) / sizeof(ary[0]);
-
-    for (i = len / 2; i >= 0; --i) {
-        shiftdown(ary, len, i);
-    }
-
-    int dummy[len];
-    int n = len;
-    for (i = 0; i < len && n >= 0; ++i) {
-        dummy[i] = ary[0];
-        ary[0] = ary[--n];
-        shiftdown(ary, n, 0);
-    }
-    for (i = 0; i < len; ++i) {
-        printf("%d, ", dummy[i]);
-    }
-    printf("\n");
-    return 0;
-}
