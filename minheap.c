@@ -106,12 +106,12 @@ static void shiftup(MinHeap *minheap, int i)
     cmp = minheap->cmp;
 
     /* 下标不得超过堆数组长度 */
-    if (i > n) {
+    if (i >= n) {
         return;
     }
 
     /* 存在父节点 */
-    while (parent > 0) {
+    while (parent >= 0) {
         /*
          * 与父节点比较大小,
          * 当不满足最小堆特性时，
@@ -186,7 +186,8 @@ int minheap_add(MinHeap *minheap, MinHeapValue value) {
         /* 维持最小堆的结构信息 */
         ++minheap->used;
         --minheap->free;
-        shiftup(minheap, minheap->used);        /* 上浮新元素 */
+
+        shiftup(minheap, minheap->used - 1);        /* 上浮新元素 */
 
         return 1;
     }
@@ -215,10 +216,15 @@ int minheap_find(MinHeap *minheap, MinHeapValue value) {
          */
     } else {
         for (int i = 0; i < minheap->used; ++i) {
+
+            /* 存在匹配值 */
             if (cmp(value, h[i]) == 0) {
                 return 1;
             }
         }
+
+        /* 未查找到匹配值 */
+        return 0;
     }
 }
 
