@@ -211,7 +211,7 @@ int minheap_find(MinHeap *minheap, MinHeapValue value) {
         return 0;
 
         /*
-         * 堆不空，且value值大于堆顶，
+         * 堆不空，且value值不大于堆顶，
          * 则在最小堆内查找。
          */
     } else {
@@ -247,7 +247,7 @@ int minheap_del(MinHeap *minheap, MinHeapValue value)
         return 0;
 
         /*
-         * 堆不空，且value值大于堆顶，
+         * 堆不空，且value值不大于堆顶，
          * 则在最小堆内查找。
          */
     } else {
