@@ -11,14 +11,14 @@
 typedef struct _AVLTreeNode AVLTreeNode;
 
 struct _AVLTreeNode {
-    AVLTreeValue data;     /* 数据元素 */
-    int height;                /* 平衡因子 */
-    AVLTreeNode *left;     /* 左孩子 */
-    AVLTreeNode *right;    /* 右孩子 */
+    AVLTreeValue data;      /* 数据元素 */
+    int height;             /* 平衡因子 */
+    AVLTreeNode *left;      /* 左孩子 */
+    AVLTreeNode *right;     /* 右孩子 */
 };
 
 struct _AVLTree {
-    AVLTreeNode *root;         /* 根结点 */
+    AVLTreeNode *root;          /* 根结点 */
     AVLTreeCompareFunc cmp;     /* 节点元素比较大小函数 */
 };
 
