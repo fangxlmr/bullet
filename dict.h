@@ -3,8 +3,8 @@
  *
  */
 
-#ifndef BULLET_HASHMAP_H
-#define BULLET_HASHMAP_H
+#ifndef BULLET_DICT_H
+#define BULLET_DICT_H
 
 /**
  * define a dict
@@ -19,7 +19,7 @@ typedef struct _dict dict_t;
 typedef unsigned int (*hash_f)(void *key);
 
 /**
- * dict_cf - Hashmap comparing function (call back function)
+ * dict_cf - Dict comparing function (call back function)
  *
  * @k1: key1
  * @k2: key2
@@ -29,7 +29,7 @@ typedef unsigned int (*hash_f)(void *key);
  * k1 = k2, return  0.
  * k1 > k2, return  1.
  */
-typedef int (*dict_cf)(void *key1, void *key2);
+typedef int (*dict_cf)(void *k1, void *k2);
 
 /**
  * dict_new - Create a new dict
@@ -42,44 +42,46 @@ typedef int (*dict_cf)(void *key1, void *key2);
 extern dict_t *dict_new(hash_f hash, dict_cf cmp);
 
 /**
- * hashap_free - Destroy a dict
+ * dict_free - Destroy a dict
  *
  * @dict: the dict
  */
 extern void dict_free(dict_t *dict);
 
 /**
- * dict_put          将键值对插入或修改已存在的键值对
+ * dict_put - Add a new key-value pair
  *
  * @dict: the dict
- * @key           键
- * @value         键对应的值
- * @return              插入或修改成功，则返回非0值，
- *                      失败（主要是内存分配失败），则返回0。
+ * @k: the key
+ * @v: the value
+ *
+ * Return 0 if success, -1 otherwise.
+ *
+ * If given key can be found in dict, this function
+ * will update (overlay) the old value by the new given one.
  */
-extern int dict_put(dict_t *dict,
-                       void *  key,
-                       void *value);
+extern int dict_put(dict_t *dict, void *k, void *v);
 
 /**
- * dict_get          获取键所对应的值
+ * dict_get - Get value by key
  *
  * @dict: the dict
- * @key           键
- * @return              若键值对存在，则返回键所对应的值，
- *                      若键值对不存在，则返回HASHMAP_NULL。
+ * @k: the key
+ *
+ * Return value if key-value pairs exists in dict,
+ * NULL otherwise.
  */
-extern void *dict_get(dict_t *dict,
-                                void *key);
+extern void *dict_get(dict_t *dict, void *k);
 
 /**
- * dict_del          删除键值对
+ * dict_pop - Remove key-value pair by given key
  *
  * @dict: the dict
- * @key           键
- * @return              键值对存在，并删除成功，则返回非0值，
- *                      若键值对不存在，则返回0。
+ * @k: the key
+ *
+ * Return 0 if key-value pair exists and be removed successfully,
+ * -1 if key-value doesn't exists.
  */
-extern int dict_del(dict_t *dict, void *key);
+extern int dict_pop(dict_t *dict, void *k);
 
-#endif /* BULLET_HASHMAP_H */
+#endif /* BULLET_DICT_H */
