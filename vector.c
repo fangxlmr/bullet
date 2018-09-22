@@ -1,148 +1,142 @@
-/*
- * 动态数组(vector)的代码实现
- */
+/* Implementation of vector  */
 
-#include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "vector.h"
 #define RESIZE_FACTOR 2
 
-/**
- * 动态数组
- */
-struct _Vector {
-    VectorValue *array;     /* 动态数组指针 */
-    unsigned int capacity;  /* 动态数组当前容量 */
-    unsigned int length;             /* 动态数组实际使用的长度 */
+struct _vector {
+    void **array;
+    size_t capacity;  /* capacity of the array  */
+    size_t size;      /* used space of the array  */
 };
 
-Vector *vector_new(unsigned int size)
+vector_t *vector_new(const size_t n)
 {
-    VectorValue *new_array;
-    Vector *vector;
+    void **new_array;
+    vector_t *vector;
 
-    new_array  = (VectorValue *) malloc(size * sizeof(VectorValue));
-    vector = (Vector *) malloc(sizeof(Vector));
-
-    if (!new_array || !vector) {
-        return VECTOR_NULL;
+    vector = (vector_t *) malloc(sizeof(*vector));
+    if (vector == NULL) {
+        return NULL;
+    } else {
+        vector->capacity = n;
+        vector->size = 0;
     }
 
-    vector->array    = new_array;
-    vector->capacity = size;
-    vector->length   = 0;
-
-    return vector;
+    new_array  = (void **) malloc(n * sizeof(void *));
+    if (new_array == NULL) {
+        free(vector);
+        return NULL;
+    } else {
+        vector->array = new_array;
+        return vector;
+    }
 }
 
-void vector_init(Vector *vector)
+void vector_init(vector_t *vector)
 {
-    VectorValue *array;
-    unsigned int size;
+    void **array;
+    size_t n;
 
+    assert(vector);
     array = vector->array;
-    size  = vector->capacity;
+    n  = vector->capacity;
 
-    /*
-     * 初始化数组为0
-     */
-    memset(array, 0, size * sizeof(VectorValue));
-    vector->length = 0;     /* 重置数组实际使用的长度 */
+    memset(array, 0, n * sizeof(void *));
+    vector->size = 0;
 }
 
-void vector_free(Vector *vector)
+void vector_free(vector_t *vector)
 {
+    assert(vector);
     free(vector->array);
     free(vector);
 }
 
-unsigned int vector_len(Vector *vector)
+size_t vector_size(vector_t *vector)
 {
-    return vector->length;
+    assert(vector);
+    return vector->size;
 }
 
-VectorValue vector_get(Vector *vector, int index)
+void *vector_get(vector_t *vector, const int idx)
 {
-    return (vector->array)[index];
+    assert(vector);
+    assert(idx >=0 && idx < vector->size);
+    return (vector->array)[idx];
 }
 
 /**
- * vector_resize        自动扩容动态数组
+ * vector_resize - Resize vector
  *
- * @param vector        动态数组
- * @return              扩容成功，返回非0值，否则，返回0。
- * @note                新数组的大小是原数组的RESIZE_FACTOR倍。
- *                      RESIZE_FACTOR由#define定义
+ * Resize factor is pre-defined at the beginning
+ * of this file. Default value is 2.
+ *
+ * Return 0 if resize success, -1 if failed.
+ * If resize failed, variable "vector" still
+ * hold the pointer of old vector.
  */
-static int vector_resize(Vector *vector)
+static int vector_resize(vector_t *vector)
 {
-    unsigned int old_capacity;
-    unsigned int new_capacity;
-    VectorValue *old_array;
-    VectorValue *new_array;
+    size_t old_capacity;
+    size_t new_capacity;
+    void **old_array;
+    void **new_array;
 
+    assert(vector);
     old_array = vector->array;
     old_capacity = vector->capacity;
-    /*
-     * 申请新的内存。
-     */
-    new_capacity = RESIZE_FACTOR * old_capacity;
-    new_array = (VectorValue *) malloc(new_capacity * sizeof(VectorValue));
 
-    /*
-     * 扩容失败，返回0。
-     */
-    if (!new_array) {
+    new_capacity = RESIZE_FACTOR * old_capacity;
+    new_array = (void **) malloc(new_capacity * sizeof(void *));
+
+    if (new_array == NULL) {  /* resize failed.  */
+        return -1;
+
+    } else {        /* resize success  */
+        memcpy(new_array, old_array, old_capacity * sizeof(void *));
+        memset(new_array + old_capacity, 0,(new_capacity - old_capacity) * sizeof(void *));
+
+        vector->capacity = new_capacity;
+        vector->array = new_array;
+        free(old_array);
+
         return 0;
     }
-
-    /*
-     * 扩容成功，则拷贝原始数组的数据，
-     * 初始化新数组多出的部分为0，并释放旧的数组。
-     */
-    memcpy(new_array, old_array, old_capacity * sizeof(VectorValue));
-    memset(new_array + old_capacity, 0,(new_capacity - old_capacity) * sizeof(VectorValue));
-
-    vector->capacity = new_capacity;
-    free(vector->array);
-    vector->array = new_array;
-
-    return 1;
 }
 
-int vector_set(Vector *vector, int index, VectorValue data)
+int vector_set(vector_t *vector, const int idx, const void *x)
 {
-    /*
-     * 当index值不超过数组容量时，
-     * 直接赋值。
-     */
-    if (index < vector->capacity) {
-        (vector->array)[index] = data;
-        /*
-         * 判断动态数组已使用的长度
-         */
-        vector->length = (unsigned int) index + 1 > vector->length ?
-                         (unsigned int) index + 1 : vector->length;
-        return 1;
+    assert(vector);
+    assert(idx >= 0 && idx < vector->size);
+    assert(x);
+
+    void **array;
+    size_t size;
+
+    array = vector->array;
+    size = vector->size;
+
+    if ((size_t) idx < vector->capacity) {
+        array[idx] = (void *) x;
+
+        if ((size_t )idx + 1 > size) {
+            memset(array + size, 0, idx + 1 - size);
+            vector->size = idx + 1;
+        }
+        return 0;
 
     } else {
-        /*
-         * 当index超过数组容量时，
-         * 对数组扩容，并重新赋值。
-         */
+        /* resize  */
         if (vector_resize(vector)) {
-            /* 扩容成功 */
-            (vector->array)[index] = data;
-            /*
-             * 判断动态数组已使用的长度
-             */
-            vector->length = (unsigned int) index + 1 > vector->length ?
-                             (unsigned int) index + 1 : vector->length;
-            return 1;
+            vector->array[idx] = (void *) x;
+            vector->size = (size_t) idx + 1 > vector->size ? \
+                           (size_t) idx + 1 : vector->size;
+            return 0;
 
         } else {
-            /* 扩容失败 */
-            return 0;
+            return -1;
         }
     }
 }

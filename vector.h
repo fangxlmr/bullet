@@ -1,94 +1,83 @@
 /**
- * @file    vector.h
+ * vector.h
  *
- * @brief   动态数组(vector)
- *
- * 动态数组是C语言原生数组的一种扩展。
- *
- * C语言原生数组，一旦确定大小，那么久不可变动。而动态数组
- * 支持自动扩容机制。当所需的空间超过了原本分配的空间大小时，
- * 动态数组可以自动将原先的数组扩容，以满足需要。
- *
- * 使用vector_new创建动态数组，使用vector_free销毁动态数组。
- * 使用vector_init初始化动态数组的所有元素为“0”。
- *
- * 使用vector_len获取当前动态数组已使用的长度。
- *
- * 使用vector_get获取指定下标位置的元素值。
- * 使用vector_set重置或修改指定下标位置的元素值。
  */
 
 #ifndef BULLET_VECTOR_H
 #define BULLET_VECTOR_H
 
-/**
- * 动态数组
- */
-typedef struct _Vector Vector;
+#include <stdlib.h>
 
 /**
- * 数组元素类型
+ * define a dynamic array structure - vector
  */
-typedef void *VectorValue;
+typedef struct _vector vector_t;
 
 /**
- * 动态数组空指针
- */
-#define VECTOR_NULL ((void *) 0)
-
-/**
- * vector_new       新建动态数组
+ * vector_new - Create a new vector
  *
- * @param size      新建动态数组的容量大小
- * @return          创建动态数组成功，返回动态数组指针，
- *                  内存分配失败，则返回VECTOR_NULL。
+ * @n: size of vetor
+ *
+ * Return vector_t pointer if success, NULL
+ * pointer if failed.
+ *
+ * The vector will not be initialized. If you
+ * want to do so, please initialize it 
+ * by vector_init();
  */
-extern Vector *vector_new(unsigned int size);
+extern vector_t *vector_new(const size_t n);
 
 /**
- * vector_init      初始化动态数组
+ * vector_init - Initialize a vector
  *
- * @param vector    待初始化的动态数组
- * @note            将数组所有字节初始化为0
+ * @vector: the vector
+ *
+ * All elements in vector will be set to 0.
+ * And size of vector will be reset to 0.
  */
-extern void vector_init(Vector *vector);
+extern void vector_init(vector_t *vector);
 
 /**
- * vector_free      销毁动态数组
+ * vector_free - Destroy a vector
  *
- * @param vector    待销毁的动态数组
+ * @vector: the vector
  */
-extern void vector_free(Vector *vector);
+extern void vector_free(vector_t *vector);
 
 /**
- * vector_size      查询动态数组的长度
+ * vector_size - Get used space of vector
  *
- * @param vector    动态数组
- * @return          返回动态数组长度
+ * @vector: the vector
+ *
+ * Return used space of vector.
  */
-extern unsigned int vector_len(Vector *vector);
+extern size_t vector_size(vector_t *vector);
 
 /**
- * vector_get       获取动态数组的元素值
+ * vector_get - Get value from vector
  *
- * @param vector    动态数组
- * @param index     动态数组对应下标
- * @return          成功，则返回动态数组对应下标的值，
- *                  否则，返回VECTOR_NULL。
+ * @vector: the vector
+ * @idx: the index
+ *
+ * Get value from vector by a given index.
  */
-extern VectorValue vector_get(Vector *vector, int index);
+extern void *vector_get(vector_t *vector, const int idx);
 
 /**
- * vector_set       修改动态数组元素值
+ * vector_set - Set value in vector
  *
- * @param vector    动态数组
- * @param index     待修改元素下标
- * @param data      重新设定的参数
- * @return          修改成功，返回非0值，修改失败，则返回0。
- * @note            1). 扩容后的数组地址可能是变化的；
- *                  2). 扩容后，超出原数组长度，且没有被赋值的部分，
- *                  会被初始化为0。
+ * @vector: the vector
+ * @idx: the index
+ * @x: set value
+ *
+ * Return 0 if success, -1 otherwise.
+ *
+ * Note:
+ * 1) Pointer of the vestor may vary after resize,
+ *    but variable "vector" still hold it.
+ * 2) If idx is too big for vector, making blanks
+ *    in the vector. These blanks will be init to 0.
  */
-extern int vector_set(Vector *vector, int index, VectorValue data);
+extern int vector_set(vector_t *vector, int idx, void *x);
 
 #endif /* BULLET_VECTOR_H */
