@@ -11,8 +11,12 @@
 
 #include <stdlib.h>
 #include "hashmap.h"
-#define LOAD_FACTOR 0.75    /* 装填因子 */
+#define LOAD_FACTOR 0.75
 
+typedef struct _hashmap_tPair {
+    void *key;
+    void *value;
+} hashmap_tPair;
 /*
  * 哈希表的元素
  */
@@ -62,7 +66,7 @@ static const unsigned int primes_size
 /**
  * hashmap_alloc_buckets    请求分配桶数组的内存
  *
- * @param hashmap           哈希表
+ * @hashmap: the hashmap
  * @return                  分配成功，返回非0值，
  *                          失败，则返回0。
  */
@@ -161,7 +165,7 @@ void hashmap_free(HashMap *hashmap)
 /**
  * hashmap_resize       哈希表扩容函数
  *
- * @param hashmap       哈希表
+ * @hashmap: the hashmap
  * @return              扩容成功，则返回非0值，
  *                      失败则返回0。
  */
