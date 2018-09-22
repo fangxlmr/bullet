@@ -1,82 +1,101 @@
-/**
- * @file    stack.h
+/*
+ * stack.h
  *
- * @brief   栈(stack)
+ * Written by fangxl (fangxlmr@foxmail.com) on 22/09/2018.
  *
- * 栈是一种数据结构，遵循后进先出(LIFO)的规则。
- *
- * 使用stack_new创建新栈，使用stack_free释放栈。
- * 使用stack_push将元素压栈，使用stack_pop将元素弹栈。
- *
- * 使用stack_get_top获取栈顶元素，注意，此时并不释放栈顶元素。
- *
- * 使用stack_is_empty判断栈是否为空栈
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3.0 of the License, or
+ * (at your option) any later version.
+ *   
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *     
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see the file COPYING, or write
+ * to the Free Software Foundation, Inc.
  */
 
 #ifndef BULLET_STACK_H
 #define BULLET_STACK_H
 
-/**
- * 栈
- */
-typedef struct _Stack Stack;
+#include <stdlib.h>
 
 /**
- * 栈内部数据类型
+ * define a stack_t structure
  */
-typedef void *StackValue;
+typedef struct _stack stack_t;
 
 /**
- * 空指针
- */
-#define STACK_NULL ((void *) 0)
-
-/**
- * stack_new        新建并初始化栈
+ * stack_new - Create a new stack
  *
- * @return          新建栈成功，返回新栈地址
- *                  否则，返回STACK_NULL。
+ * Return a stack_t pointer if success,
+ * NULL pointer otherwise.
  */
-extern Stack *stack_new(void);
+extern stack_t *stack_new(void);
 
 /**
- * stack_free       销毁栈
+ * stack_free - Destroy a stack
  *
- * @param           待销毁的栈
+ * @stack: a stack to be destroyed
  */
-extern void stack_free(Stack *stack);
+extern void stack_free(stack_t *stack);
 
 /**
- * stack_push       入栈
+ * stack_push - Stack push
  *
- * @param stack     栈
- * @param data      待入栈数据
- * @return          数据入栈成功返回非0值，
- *                  若失败，则返回0。
+ * @stack: the stack
+ * @x: value to be stored
+ *
+ * Return 0 if success, -1 otherwise.
+ *
+ * Note that NULL stack or NULL x are invalid.
  */
-extern int stack_push(Stack *stack, StackValue data);
+extern int stack_push(stack_t *stack, const void *x);
 
 /**
- * stack_pop        出栈
+ * stack_pop - Stack pop
  *
- * @param stack     栈
- * @return          返回栈顶元素，若栈空，则返回STACK_NULL。
+ * @stack: the stack
+ *
+ * Return stack top value, NULL pointer if the stack is empty.
+ *
+ * The top entry (if exists) of the stack will be
+ * removed after this operation. 
  */
-extern StackValue stack_pop(Stack *stack);
+extern void *stack_pop(stack_t *stack);
 
 /**
- * stack_get_top    获取栈顶元素值
+ * stack_peek - Peek top value of the stack
  *
- * @param stack     栈
- * @return          返回栈顶元素值，若栈空，则返回STACK_NULL。
+ * @stack: the stack
+ *
+ * Return stack top value, NULL pointer if the stack is empty.
+ *
+ * The top entry (if exists) of the stack will not be
+ * remove unlike function stack_pop(), so that the
+ * stack will remain unchanged.
  */
-extern StackValue stack_get_top(Stack *stack);
+extern void *stack_peek(stack_t *stack);
 
 /**
- * stack_is_empty   判断栈是否为空
+ * stack_isempty - Check stack is empty or not
  *
- * @return          空栈返回非0值，非空返回0。
+ * @stack: the stack
+ *
+ * Return 0 if the stack is empty, -1 if not.
  */
-extern int stack_is_empty (Stack *stack);
+extern int stack_isempty(stack_t *stack);
+
+/**
+ * stack_size - Get size of the stack
+ *
+ * @stack: the stack
+ *
+ * Return size of the stack. Return 0 if stack is empty.
+ */
+extern size_t stack_size(stack_t *stack);
 
 #endif /* BULLET_STACK_H */

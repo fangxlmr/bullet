@@ -1,96 +1,97 @@
-/**
- * @file    queue.h
- *
- * @brief   队列(queue)
- *
- * 队列是一种数据结构，遵循先进先出(FIFO)的原则。
- *
- * 使用queue_new创建新队列，使用queue_free销毁队列。
- *
- * 使用queue_push将元素入队尾，使用queue_pop弹出队头元素。
- *
- * 使用queue_get_head获取队头元素，使用queue_get_tail获取队尾元素，
- * 注意，queue_get_head与queue_get_tail并不释放元素。
- *
- * 使用queue_is_empty判断队列是否为空。
+/*
+ * queue.h
+ * 
+ * Written by fangxl (fangxlmr@foxmail.com) on 22/09/2018.
+ *                                                                      
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3.0 of the License, or
+ * (at your option) any later version.
+ *   
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *     
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see the file COPYING, or write
+ * to the Free Software Foundation, Inc.
  */
 
 #ifndef BULLET_QUEUE_H
 #define BULLET_QUEUE_H
 
-/**
- * 单向队列
- */
-typedef struct _Queue Queue;
+#include <stdlib.h>
 
 /**
- * 队列元素类型
+ * define a queue_t structure
  */
-typedef void *QueueValue;
+typedef struct _queue queue_t;
 
 /**
- * 队列内部空指针
- */
-#define QUEUE_NULL ((void *) 0)
-
-/**
- * queue_new        新建队列，并初始化
+ * queue_new - Create a new queue
  *
- * @return          新建队列成功，返回新队列地址。
- *                  否则，返回QUEUE_NULL。
+ * Return a queue_t pointer if success,
+ * NULL pointer otherwise.
  */
-extern Queue *queue_new(void);
+extern queue_t *queue_new(void);
 
 /**
- * queue_free       释放队列
+ * queue_free - Destroy a queue
  *
- * @param queue     待销毁队列
+ * @queue: the queue to be destoyed
  */
-extern void queue_free(Queue *queue);
+extern void queue_free(queue_t *queue);
 
 /**
- * queue_push       入队
+ * enqueue - Enqueue an element
  *
- * @param queue     队列
- * @param data      待入队元素
- * @return          元素入队成功，返回非0值，
- *                  失败（内存分配失败），返回0。
- */
-extern int queue_push(Queue *queue, QueueValue data);
-
-/**
- * queue_pop        出队
+ * @queue: the queue
+ * @x: value to be stored
  *
- * @param queue     队列
- * @return          若队列不空，则返回队头元素，
- *                  若队列为空，则返回QUEUE_NULL。
- */
-extern QueueValue queue_pop(Queue *queue);
-
-/**
- * queue_get_head   获取队头元素
+ * Return 0 if success, -1 otherwise.
  *
- * @param queue     队列
- * @return          队列不空，返回队头元素，
- *                  若为空队列，则返回QUEUE_NULL。
+ * Note that NULL queue or NULL x are invalid.
  */
-extern QueueValue queue_get_head(Queue *queue);
+extern int enqueue(queue_t *queue, const void *x);
 
 /**
- * queue_get_tail   获取队尾元素
- * @param queue     队列
- * @return          队列不空，则返回队尾元素，
- *                  若为空队列，则返回QUEUE_NULL。
- */
-extern QueueValue queue_get_tail(Queue *queue);
-
-/**
- * queue_empty      判断队列是否为空
+ * dequeue - Dequeue an element
  *
- * @param queue     队列
- * @return          空队列，返回非0值。
- *                  队列不空，则返回0。
+ * @queue: the queue
+ *
+ * Return an element and remove it from queue.
+ * If the queue is already empty, return NULL.
  */
-extern int queue_is_empty(Queue *queue);
+extern void *dequeue(queue_t *queue);
+
+/**
+ * queue_peek_head - Peek value of head node
+ *
+ * @queue: the queue
+ *
+ * Return value of head node and queue remain 
+ * unchanged. Return NULL if the queue is empty.
+ */
+extern void *queue_peek(queue_t *queue);
+
+/**
+ * queue_isempty - Check queue is empty or not
+ *
+ * @queue: the queue
+ *
+ * Return 1 if the queue is empty, 0 otherwise.
+ */
+extern int queue_isempty(queue_t *queue);
+
+/**
+ * queue_size - Get size of queue
+ *
+ * @queue: the queue
+ *
+ * Return size of the queue, and return 0 if
+ * queue is already empty.
+ */
+extern size_t queue_size(queue_t *queue);
 
 #endif /* BULLET_QUEUE_H */

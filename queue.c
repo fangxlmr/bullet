@@ -1,132 +1,111 @@
-/*
- * 队列(queue)的代码实现
- */
+/* Implementation of queue  */
 
-#include <stdlib.h>
+#include <assert.h>
 #include "queue.h"
 
-/*
- * 队列节点结构
- */
-typedef struct _QueueEntry QueueEntry;
-
-struct _QueueEntry {
-    QueueValue data;
-    QueueEntry *next;
+struct entry {
+    void *x;
+    struct entry *next;
 };
 
-/*
- * 队列
- */
-struct _Queue {
-    QueueEntry *head;
-    QueueEntry *tail;
+struct _queue {
+    struct entry *head;
+    struct entry *tail;
+    size_t size;
 };
 
-Queue *queue_new(void)
+queue_t *queue_new(void)
 {
-    Queue *queue;
+    queue_t *queue;
 
-    queue = (Queue *) malloc(sizeof(Queue));
+    queue = (queue_t *) malloc(sizeof(*queue));
 
-    if (!queue) {
-        return QUEUE_NULL;
+    if (queue == NULL) {
+        return NULL;
+    } else {
+        queue->head = NULL;
+        queue->tail = NULL;
+        queue->size = 0;
+        return queue;
     }
-
-    queue->head = NULL;
-    queue->tail = NULL;
-    return queue;
 }
 
-void queue_free(Queue *queue)
+void queue_free(queue_t *queue)
 {
-    while (!queue_is_empty(queue)) {
-        queue_pop(queue);
+    assert(queue);
+    while (! queue_isempty(queue)) {
+        dequeue(queue);
     }
-
     free(queue);
 }
 
-int queue_push(Queue *queue, QueueValue data)
+int enqueue(queue_t *queue, const void *x)
 {
-    QueueEntry *new_entry;
+    struct entry *e;
 
-    new_entry = (QueueEntry *) malloc(sizeof(QueueEntry));
+    assert(queue);
+    assert(x);
 
-    if (!new_entry) {
-        return 0;
+    e = (struct entry *) malloc(sizeof(*e));
+    if (e == NULL) {
+        return -1;
+    } else {
+        e->x = (void *) x;
+        e->next = NULL;
     }
 
-    /*
-     * 给节点赋值
-     */
-    new_entry->data = data;
-    new_entry->next = NULL;
+    if (queue_isempty(queue)) {
+        queue->tail = e;
+        queue->head = e;
+    } else {
+        queue->tail->next = e;
+        queue->tail = e;
+    }
+    queue->size++;
+    return 0;
+}
 
-    /*
-     * 插入队列。
-     */
-    if (queue_is_empty(queue)) {
-        /*
-         * 空队列
-         */
-        queue->tail = new_entry;
-        queue->head = new_entry;
+void *dequeue(queue_t *queue) {
+    struct entry *e;
+    void *x;
+
+    assert(queue);
+
+    if (queue_isempty(queue)) {
+        return NULL;
 
     } else {
-        /*
-         * 非空队列
-         */
-        queue->tail->next = new_entry;
-        queue->tail = new_entry;
-    }
+        e = queue->head;
+        queue->head = e->next;
+        x = e->x;
+        free(e);
 
-    return 1;
+        if (queue->head == NULL) {
+            queue->tail = NULL;
+        }
+        queue->size--;
+        return x;
+    }
 }
 
-QueueValue queue_pop(Queue *queue) {
-    QueueEntry *entry;
-    QueueValue result;
-
-    if (queue_is_empty(queue)) {
-        return QUEUE_NULL;
-    }
-
-    entry = queue->head;
-    queue->head = entry->next;
-    result = entry->data;
-
-    /*
-     * 释放最后一个元素，
-     * 则需要把队尾节点也置空
-     */
-    if (queue->head == NULL) {
-        queue->tail = NULL;
-    }
-
-    free(entry);
-    return result;
-}
-
-QueueValue queue_get_head(Queue *queue)
+void *queue_peek(queue_t *queue)
 {
-    if (queue_is_empty(queue)) {
-        return QUEUE_NULL;
+    assert(queue);
+    if (queue_isempty(queue)) {
+        return NULL;
+    } else {
+        return queue->head->x;
     }
-
-    return queue->head->data;
 }
 
-QueueValue queue_get_tail(Queue *queue)
+int queue_isempty(queue_t *queue)
 {
-    if (queue_is_empty(queue)) {
-        return QUEUE_NULL;
-    }
-
-    return queue->tail->data;
-}
-
-int queue_is_empty(Queue *queue)
-{
+    assert(queue);
     return queue->head == NULL;
+}
+
+size_t queue_size(queue_t *queue)
+{
+    assert(queue);
+    return queue->size;
 }
