@@ -2,3 +2,4 @@ test*
 cmake-build-debug/
 CMakeLists.txt
 .idea/
+license_script
