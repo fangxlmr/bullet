@@ -1,138 +1,106 @@
 /**
- * @file bstree.h
- *
- * @brief   二叉排序树
- *
- * 二叉排序树或者是一棵空树，或者是具有下列性质的二叉树：
- * （1）若左子树不空，则左子树上所有结点的值均小于或等于它的根结点的值；
- * （2）若右子树不空，则右子树上所有结点的值均大于或等于它的根结点的值；
- * （3）左、右子树也分别为二叉排序树
- *
- * 使用BSTreeCompareFunc定义回调函数，用来判断元素大小。
- *
- * 使用bstree_new创建新的二叉排序树，
- * 使用bstree_free销毁已存在的二叉排序树。
- *
- * 使用bstree_add插入节点，使用bstree_fin查找已存在的树中是否存在节点，
- * 使用bstree_del删除节点。
- *
- * 使用bstree_depth获取二叉排序树的最大深度。
- *
- * 使用bstree_is_empty判断二叉排序树是否为空。
- *
- * 使用bstree_min查找当前二叉排序树中的最小值，
- * 使用bstree_max查找当前二叉排序树中的最大值。
+ * bstree - binary search tree
  */
 
 #ifndef BULLET_BSTREE_H
 #define BULLET_BSTREE_H
 
 /**
- * 二叉排序树
+ * define a bstree_t
  */
-typedef struct _BSTree BSTree;
+typedef struct _bstree bstree_t;
 
 /**
- * 节点数据类型
- */
-typedef void *BSTreeValue;
-
-/**
- * 定义二叉排序树空指针
- */
-#define BSTREE_NULL ((void *) 0)
-
-/**
- * BSTreeCompareFunc    回调函数，用于节点数据元素比较大小
+ * bstree_cf - bstree comparing function (call back function)
  *
- * @param value1        元素1
- * @param value2        元素2
- * @return              若value1  < value2，则返回值小于0，
- *                      若value1 == value2，则返回值等于0，
- *                      若value1  > value2，则返回值大于0。
+ * If *x1 < *x2, return -1.
+ * If *x1 = *x2, return  0.
+ * If *x1 > *x2, retutn  1.
  */
-typedef int (*BSTreeCompareFunc)(BSTreeValue value1, BSTreeValue value2);
+typedef int (*bstree_cf)(void *x1, void *x2);
 
 /**
- * bstree_new           创建二叉排序树
+ * bstree_new - Create a new bstree
  *
- * @param cmp           节点元素比较函数
- * @return              创建二叉排序树成功，返回非0值，
- *                      失败，则返回0。
+ * @cmp: comparing function
+ *
+ * Return 0 if success, -1 otherwise.
  */
-extern BSTree *bstree_new(BSTreeCompareFunc cmp);
+extern bstree_t *bstree_new(bstree_cf cmp);
 
 /**
- * bstree_free          销毁二叉排序树
+ * bstree_free - Destroy a bstree
  *
- * @param bstree        待销毁的二叉排序树
+ * @bstree: the bstree
  */
-extern void bstree_free(BSTree *bstree);
+extern void bstree_free(bstree_t *bstree);
 
 /**
- * bstee_add            插入节点
+ * bstee_add - Add an element into bstree
  *
- * @param bstree        二叉排序树
- * @param value         待插入的元素值
- * @return              插入成功，则返回非0值，
- *                      失败（内存分配失败），则返回0。
+ * @bstree: the bstree
+ * @x: the value
+ *
+ * Return 0 if success, -1 otherwise.
+ * Return 0 if duplicated.
  */
-extern int bstree_add(BSTree *bstree, BSTreeValue value);
+extern int bstree_add(bstree_t *bstree, void *x);
 
 /**
- * bstree_find          查找节点
+ * bstree_remove - Remove an element from bstree
  *
- * @param bstree        二叉排序树
- * @param value         待查找的元素值
- * @return              若二叉排序树中存在节点值为value，则返回非0值，
- *                      若不存在，则返回0。
+ * @bstree: the bstree
+ * @x: the value
+ *
+ * Return 0 if the match node is removed successfully,
+ * -1 if no match node exists
  */
-extern int bstree_find(BSTree *bstree, BSTreeValue value);
+extern int bstree_remove(bstree_t *bstree, void *x);
 
 /**
- * bstree_del           删除节点
+ * bstree_contains
  *
- * @param bstree        二叉排序树
- * @param value         待删除的节点元素值
- * @return              若删除成功，则返回非0值，
- *                      否则，二叉树中不存在该节点，返回0。
+ * @bstree: the bstree
+ * @x: the value
+ *
+ * Return 1 if the value is in bstree, 0 otherwise.
  */
-extern int bstree_del(BSTree *bstree, BSTreeValue value);
+extern int bstree_contains(bstree_t *bstree, void *x);
 
 /**
- * bstree_depth         二叉树的最大深度
+ * bstree_depth - Find depth of bstree
  *
- * @param bstree        二叉排序树
- * @return              返回二叉排序树的深度，
- *                      树为空则返回0。
+ * @bstree: the bstree
+ *
+ * Return depth of the bstree, 0 if bstree is empty.
  */
-extern int bstree_depth(BSTree *bstree);
+extern int bstree_depth(bstree_t *bstree);
 
 /**
- * bstree_is_empty      判断二叉树是否为空
+ * bstree_isempty - Check bstree is empty or not
  *
- * @param bstree        二叉排序树
- * @return              若二叉排序树不空，则返回0，
- *                      若二叉排序树为空，则返回非0值。
+ * @bstree: the bstree
+ *
+ * Return 1 if bstree is empty, 0 otherwise.
  */
-extern int bstree_is_empty(BSTree *bstree);
+extern int bstree_isempty(bstree_t *bstree);
 
 /**
- * bstree_min           查找二叉排序树最小值
+ * bstree_min - Find min value in bstree
  *
- * @param bstree        二叉排序树
- * @return              若查找最小值成功，则返回最小值，
- *                      若二叉排序树为空，则返回BSTREE_NULL。
+ * @bstree: the bstree
+ *
+ * Return min value in bstree, NULL if bstree is empty.
  */
-extern BSTreeValue bstree_min(BSTree *bstree);
+extern void *bstree_min(bstree_t *bstree);
 
 /**
- * bstree_max           查找二叉排序树最大值
+ * bstree_max - Find max value in bstree
  *
- * @param bstree        二叉排序树
- * @return              若查找最大值成功，则返回最大值，
- *                      若二叉排序树为空，则返回BSTREE_NULL。
+ * @bstree: the bstree
+ *
+ * Return max value in bstree, NULL if bstree is empty.
  */
-extern BSTreeValue bstree_max(BSTree *bstree);
+extern void *bstree_max(bstree_t *bstree);
 
 #endif /* BULLET_BSTREE_H */
