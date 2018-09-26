@@ -168,7 +168,7 @@ static int dict_resize(dict_t *dict)
 
 }
 
-int dict_put(dict_t *dict, void *k, void *v)
+int dict_add(dict_t *dict, void *k, void *v)
 {
     struct entry *e, *walk;
     pairs *pair;

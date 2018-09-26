@@ -49,7 +49,7 @@ extern dict_t *dict_new(hash_f hash, dict_cf cmp);
 extern void dict_free(dict_t *dict);
 
 /**
- * dict_put - Add a new key-value pair
+ * dict_add - Add a new key-value pair
  *
  * @dict: the dict
  * @k: the key
@@ -60,7 +60,7 @@ extern void dict_free(dict_t *dict);
  * If given key can be found in dict, this function
  * will update (overlay) the old value by the new given one.
  */
-extern int dict_put(dict_t *dict, void *k, void *v);
+extern int dict_add(dict_t *dict, void *k, void *v);
 
 /**
  * dict_get - Get value by key
