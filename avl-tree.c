@@ -1,48 +1,40 @@
-/*
- * AVL树的代码实现
- */
+/* Implementation of avl-tree. */
 
 #include <stdlib.h>
 #include "avl-tree.h"
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
-/*
- * AVL树的节点结构
- */
-typedef struct _AVLTreeNode AVLTreeNode;
 
-struct _AVLTreeNode {
-    AVLTreeValue data;      /* 数据元素 */
-    int height;             /* 平衡因子 */
-    AVLTreeNode *left;      /* 左孩子 */
-    AVLTreeNode *right;     /* 右孩子 */
+struct entry {
+    void *x;                /* data */
+    int height;             /* balance factor */
+    struct entry *left;     /* left child of the node */
+    struct entry *right;    /* right child of the node */
 };
 
-struct _AVLTree {
-    AVLTreeNode *root;          /* 根结点 */
-    AVLTreeCompareFunc cmp;     /* 节点元素比较大小函数 */
+struct _avltree {
+    struct entry *root;
+    avltree_cf cmp;
 };
 
-AVLTree *avltree_new(AVLTreeCompareFunc cmp)
+avltree_t *avltree_new(avltree_cf cmp)
 {
-    AVLTree *avltree;
+    avltree_t *avl;
 
-    avltree = (AVLTree *) malloc(sizeof(AVLTree));
-    if (!avltree) {
+    avl = (avltree_t *) malloc(sizeof(avltree_t));
+    if (!avl) {
         return NULL;
+
+    } else {
+        avl->root = NULL;
+        avl->cmp  = cmp;
+        return avl;
     }
-
-    avltree->root = NULL;
-    avltree->cmp  = cmp;
-
-    return avltree;
 }
 
-/**
- * subtree_free     销毁子树
- * 
- * @param root      子树根结点
+/*
+ * subtree_free - Destroy a subtree
  */
-static void subtree_free(AVLTreeNode *root)
+static void subtree_free(struct entry *root)
 {
     if (!root) {
         return;
@@ -50,393 +42,322 @@ static void subtree_free(AVLTreeNode *root)
     
     subtree_free(root->left);
     subtree_free(root->right);
-    
     free(root);
 }
 
-void avltree_free(AVLTree *avltree)
+void avltree_free(avltree_t *avl)
 {
-    subtree_free(avltree->root);
+    subtree_free(avl->root);
 }
 
-/**
- * height           求子树的高度
- *
- * @param node      子树根结点
- * @return          返回子树的高度。如果节点位空，则返回0。
+/*
+ * get_height - Get height of an avl-tree
  */
-static int height(AVLTreeNode *node)
+static int get_height(struct entry *e)
 {
-    if (node == NULL) {
+    if (e == NULL) {
         return 0;
     } else {
-        return node->height;
+        return e->height;
     }
 }
 
-/**
- * rr_rotation          右右旋转（左旋）
- *
- * @param node          最小不平衡子树根结点的二级指针
- * @note                新节点插入到根结点右子树的右子树
+/*
+ * rr_rotate - Right-right rotate (left rotation)
  */
-static void rr_rotation(AVLTreeNode **node)
+static void rr_rotate(struct entry **e)
 {
-    AVLTreeNode *root;
-    AVLTreeNode *tmp;
+    struct entry *root;
+    struct entry *tmp;
 
-    root = *node;
-    tmp = root->right;          /* 保存根结点的右子树 */
-    root->right = tmp->left;    /* 根结点的右子树重接为右子树的左子树 */
+    /* rr rotate */
+    root = *e;
+    tmp = root->right;
+    root->right = tmp->left;
     tmp->left = root;
 
-    /*
-     * 更新节点树的深度
-     */
-    root->height = MAX(height(root->left), height(root->right)) + 1;
-    tmp->height  = MAX(height(tmp->left),  height(tmp->right)) + 1;
+    /* Update height of nodes */
+    root->height = MAX(get_height(root->left), get_height(root->right)) + 1;
+    tmp->height  = MAX(get_height(tmp->left),  get_height(tmp->right)) + 1;
 
-    *node = tmp;           /* 更新根结点 */
+    /* Update root node */
+    *e = tmp;
 }
 
-/**
- * ll_rotation         左左情况（右旋）
- *
- * @param node         最小不平衡子树根结点的二级指针
- * @note               新节点插入到根结点左子树的左子树
+/*
+ * ll_rotate - Left-left rotate (right rotation)
  */
-static void ll_rotation(AVLTreeNode **node)
+static void ll_rotate(struct entry **e)
 {
-    AVLTreeNode *root;
-    AVLTreeNode *tmp;
+    struct entry *root;
+    struct entry *tmp;
 
-    root = *node;
-    tmp = root->left;           /* 保存根结点的左子树 */
-    root->left = tmp->right;    /* 根结点的左子树重接为左子树的右子树 */
+    /* ll rotate */
+    root = *e;
+    tmp = root->left;
+    root->left = tmp->right;
     tmp->right = root;
     
-    /*
-     * 更新节点的子树深度
-     */
-    root->height = MAX(height(root->left), height(root->right)) + 1;
-    tmp->height  = MAX(height(tmp->left),  height(tmp->right)) + 1;
+    /* Update height of nodes */
+    root->height = MAX(get_height(root->left), get_height(root->right)) + 1;
+    tmp->height  = MAX(get_height(tmp->left),  get_height(tmp->right)) + 1;
     
-    *node = tmp;           /* 更新根结点 */
+    /* Update root node */
+    *e = tmp;
 }
 
-/**
- * lr_rotation      左右情况（左右双旋）
- *
- * @param node      最小不平衡子树的二级指针
- * @note            新节点插入到根结点左子树的右子树
+/*
+ * lr_rotate - Left-right double rotation
  */
-static void lr_rotation(AVLTreeNode **node)
+static void lr_rotate(struct entry **node)
 {
     /*
-     * lr的情况：
-     * 对于node->left，是rr情况，进行rr_rotation，
+     * 
+     * 
      */
-    rr_rotation(&(*node)->left);
+    rr_rotate(&(*node)->left);
     /*
-     * ll旋转之后，对于node，是ll情况，进行ll_rotation。
+     * 
      */
-    ll_rotation(node);
+    ll_rotate(node);
 }
 
-/**
- * rl_rotation      左右情况（左右双旋）
- *
- * @param node      最小不平衡子树的二级指针
- * @note            新节点插入到根结点右子树的左子树
+/*
+ * rl_rotate - Right-left double rotation
  */
-static void rl_rotation(AVLTreeNode **node)
+static void rl_rotate(struct entry **node)
 {
     /*
-     * rl的情况：
-     * 对于node->right，是ll情况，进行ll_rotation，
+     * 
+     * 
      */
-    ll_rotation(&(*node)->right);
+    ll_rotate(&(*node)->right);
     /*
-     * ll旋转之后，对于node，是rr情况，进行rr_rotation。
+     * 
      */
-    rr_rotation(node);
+    rr_rotate(node);
 }
 
-/**
- * subtree_add      添加新节点
- *
- * @param node      根结点的二级指针
- * @param value     待插入的元素值
- * @param cmp       节点元素比较大小函数
- * @return          插入成功，则返回非0值。插入失败（内存分配失败，或
- *                  已存在相同元素），则返回0。
+/*
+ * subtree_add - Add a new node
  */
-static int subtree_add(AVLTreeNode **node, AVLTreeValue value,
-                       AVLTreeCompareFunc cmp)
+static int subtree_add(struct entry **e, void *x, avltree_cf cmp)
 {
-    AVLTreeNode *new_node;
+    struct entry *new_e;
 
-    if (*node == NULL) {
-        /*
-         * 新建并插入节点
-         */
-        new_node = (AVLTreeNode *) malloc(sizeof(AVLTreeNode));
+    if (*e == NULL) {
+        new_e = (struct entry *) malloc(sizeof(struct entry));
+        if (!new_e) {
+            return -1;
 
-        if (!new_node) {
-            return 0;
+        } else {
+            new_e->x = x;
+            new_e->height = 1;
+            new_e->left = NULL;
+            new_e->right = NULL;
+
+            *e = new_e;
         }
-        new_node->data   = value;
-        new_node->height = 1;
-        new_node->left   = NULL;
-        new_node->right  = NULL;
 
-        *node = new_node;   /* 插入新节点 */
+    } else if (cmp(x, (*e)->x) < 0) {
+        subtree_add(&(*e)->left, x, cmp);
 
-        /*
-         * 插入左子树
-         */
-    } else if (cmp(value, (*node)->data) < 0) {
-        subtree_add(&(*node)->left, value, cmp);
-
-        /* 失去平衡，调整使其重新平衡 */
-        if (height((*node)->left) - height((*node)->right) == 2) {
-            if (cmp(value, (*node)->left) < 0) {
-                ll_rotation(node);
+        /* Re-balance */
+        if (get_height((*e)->left) - get_height((*e)->right) == 2) {
+            if (cmp(x, (*e)->left) < 0) {
+                ll_rotate(e);
             } else {
-                lr_rotation(node);
+                lr_rotate(e);
             }
         }
 
-        /*
-         * 插入右子树
-         */
-    } else if (cmp(value, (*node)->data) > 0) {
-        subtree_add(&(*node)->right, value, cmp);
+    } else if (cmp(x, (*e)->x) > 0) {
+        subtree_add(&(*e)->right, x, cmp);
 
-        if (height((*node)->right) - height((*node)->left) == 2) {
-            if (cmp(value, (*node)->data) < 0) {
-                rl_rotation(node);
+        /* Re-balance */
+        if (get_height((*e)->right) - get_height((*e)->left) == 2) {
+            if (cmp(x, (*e)->x) < 0) {
+                rl_rotate(e);
             } else {
-                rr_rotation(node);
+                rr_rotate(e);
             }
         }
 
-        /*
-         * 重复节点，忽略
-         */
+        /* Duplicated and ignore. */
     } else {
         return 0;
     }
 
-    /* 更新节点高度 */
-    (*node)->height = MAX(height((*node)->left), height((*node)->right)) + 1;
-    return 1;
+    /* Update height*/
+    (*e)->height = MAX(get_height((*e)->left), get_height((*e)->right)) + 1;
+    return 0;
 }
 
-int avltree_add(AVLTree *avltree, AVLTreeValue value)
+int avltree_add(avltree_t *avl, void *value)
 {
-    return subtree_add(&avltree->root, value, avltree->cmp);
+    return subtree_add(&avl->root, value, avl->cmp);
 }
 
-int avltree_find(AVLTree *avltree, AVLTreeValue value)
+int avltree_contains(avltree_t *avl, void *value)
 {
-    AVLTreeNode *node;
-    AVLTreeCompareFunc cmp;
+    struct entry *e;
+    avltree_cf cmp;
 
-    node = avltree->root;
-    cmp  = avltree->cmp;
+    e = avl->root;
+    cmp  = avl->cmp;
 
-    while (node != NULL && cmp(value, node->data) != 0) {
-        if (cmp(value, node->data) < 0) {
-            node = node->left;
+    while (e != NULL && cmp(value, e->x) != 0) {
+        if (cmp(value, e->x) < 0) {
+            e = e->left;
         } else {
-            node = node->right;
+            e = e->right;
         }
     }
 
-    /*
-     * 存在匹配节点，则返回1，
-     * 不存在，则返回0。
-     */
-    return node != NULL;
+    return e != NULL;
 }
 
-/**
- * subree_del       删除节点
+/*
+ * subree_remove - Remove a target node in subtree
  *
- * @param node      待删除节点子树的根结点二级指针
- * @param value     匹配的元素值
- * @param cmp       元素值大小比较函数
- * @return          删除成功，则返回非0值，删除失败（不存在该
- *                  节点），则返回0。
+ * Return 0 if success, -1 if no match node found.
  */
-static int subtree_del(AVLTreeNode **node, AVLTreeValue value,
-                       AVLTreeCompareFunc cmp)
+static int subtree_remove(struct entry **e, void *value, avltree_cf cmp)
 {
-    AVLTreeNode *root;
-    AVLTreeNode *tmp;
+    struct entry *root;
+    struct entry *tmp;
 
-    root = *node;
+    root = *e;
 
-    /*
-     * 未查找到要删除的节点
-     */
     if (root == NULL) {
-        return 0;
+        return -1;
 
-    /*
-    * 待删除的节点在左子树中
-    */
-    } else if (cmp(value, root->data) < 0) {
-        subtree_del(&root->left, value, cmp);
+        /* Target node is in left subtree */
+    } else if (cmp(value, root->x) < 0) {
+        subtree_remove(&root->left, value, cmp);
 
-        /* 若右高左低，导致不平衡，则重新调整至平衡 */
-        if (height(root->right) - height(root->left) == 2) {
+        /* Re-balance */
+        if (get_height(root->right) - get_height(root->left) == 2) {
             tmp = root->right;
 
-            /* 对于node，相当于插入时的rr情况 */
-            if (height(tmp->right) > height(tmp->left)) {
-                rr_rotation(node);
-
-                /* 对于node，相当于插入时的ll情况 */
+            if (get_height(tmp->right) > get_height(tmp->left)) {
+                rr_rotate(e);
             } else {
-                rl_rotation(node);
+                rl_rotate(e);
             }
         }
 
-    /*
-     * 待删除节点在右子树中
-     */
-    } else if (cmp(value, root->data) > 0) {
-        subtree_del(&root->right, value, cmp);
+        /* Target node is in right subtree */
+    } else if (cmp(value, root->x) > 0) {
+        subtree_remove(&root->right, value, cmp);
 
-        /* 若左高右低，导致不平衡，则重新调整至平衡 */
-        if (height(root->left) - height(root->right) == 2) {
+        /* Re-balance */
+        if (get_height(root->left) - get_height(root->right) == 2) {
             tmp = root->left;
 
-            /* 对node，相当于ll情况 */
-            if (height(tmp->left) > height(tmp->right)) {
-                ll_rotation(node);
-
-                /* 对于node，相当于lr情况 */
+            if (get_height(tmp->left) > get_height(tmp->right)) {
+                ll_rotate(e);
             } else {
-                lr_rotation(node);
+                lr_rotate(e);
             }
         }
 
-    /*
-     * 当前节点即为要删除的节点
-     */
+        /* Current node is target node. */
     } else {
-        /* 左右子树都非空 */
-        if (root->left && root->right) {
+        if (root->left != NULL && root->right != NULL) {
             /*
-             * 如果左子树的高度大于右子树，
-             * 则（1）找出左子树中的最大值节点
-             *   （2）赋值给当前node节点
-             *   （3）删除该最大节点。
-             * 这么做的好处是：删除该节点后，avl树仍是平衡的。
+             * The height of left subtree is larger than 
+             * the height of right subtree. Find the precursor 
+             * in left subtree and copy value to current node, 
+             * and free precursor. Now, avl-tree is still balanced.
              */
-            if (height(root->left) > height(root->right)) {
-                AVLTreeNode *max;
+            if (get_height(root->left) > get_height(root->right)) {
+                struct entry *max;
 
                 max = root->left;
                 while (max && max->right) {
                     max = max->right;
                 }
-                root->data = max->data;
-                subtree_del(&root->left, max->data, cmp);
+                root->x = max->x;
+                subtree_remove(&root->left, max->x, cmp);
 
                 /*
-                 * 如果左子树的高度不大于右子树，
-                 * 则（1）找出右子树的最小值节点
-                 *   （2）赋值给当前node节点
-                 *   （3）删除该最小节点。
-                 * 这么做的好处是：删除该节点后，avl树仍是平衡的。
+                 * The height of left subtree is lower than 
+                 * the height of right subtree. Find the successor 
+                 * in right subtree and copy value to current node,
+                 * and free successor. Now, avl-tree is still balanced.
                  */
             } else {
-                AVLTreeNode *min;
+                struct entry *min;
 
                 min = root->right;
                 while (min && min->left) {
                     min = min->left;
                 }
-                root->data = min->data;
-                subtree_del(&root->right, min->data, cmp);
+                root->x = min->x;
+                subtree_remove(&root->right, min->x, cmp);
             }
 
-        /*
-         * 左子树或右子树为空
-         */
+        /* Left subtree or right subtree is NULL.  */
         } else {
-            tmp = *node;
+            tmp = *e;
 
-            *node = root->left ? root->left : root->right;
+            *e = root->left ? root->left : root->right;
             free(tmp);
         }
     }
 
-    /* 更新节点高度 */
-    if (*node != NULL) {
-        (*node)->height = MAX(height((*node)->left), height((*node)->right)) + 1;
+    /* Update the height of nodes */
+    if (*e != NULL) {
+        (*e)->height = MAX(get_height((*e)->left), get_height((*e)->right)) + 1;
     }
-    return 1;
+    return 0;
 }
 
 
-int avltree_del(AVLTree *avltree, AVLTreeValue value)
+int avltree_remove(avltree_t *avl, void *x)
 {
-    return subtree_del(&avltree->root, value, avltree->cmp);
+    return subtree_remove(&avl->root, x, avl->cmp);
 }
 
-int avltree_depth(AVLTree *avltree)
+int avltree_depth(avltree_t *avl)
 {
-    return height(avltree->root);
+    return get_height(avl->root);
 }
 
-int avltree_is_empty(AVLTree *avltree)
+int avltree_isempty(avltree_t *avl)
 {
-    return avltree->root == NULL;
+    return avl->root == NULL;
 }
 
-AVLTreeValue avltree_min(AVLTree *avltree)
+void *avltree_min(avltree_t *avl)
 {
-    AVLTreeNode *node;
+    struct entry *e;
 
-    node = avltree->root;
-
-    /* 转左，找最小值 */
-    while (node != NULL && node->left != NULL) {
-        node = node->left;
+    e = avl->root;
+    while (e != NULL && e->left != NULL) {
+        e = e->left;
     }
 
-    /* 树为空，无最小值 */
-    if (node == NULL) {
-        return AVLTREE_NULL;
-
-        /* 树不空，存在最小值 */
+    if (e != NULL) {
+        return e->x;
     } else {
-        return node->data;
+        return NULL;
     }
 }
 
-AVLTreeValue avltree_max(AVLTree *avltree)
+void *avl_max(avltree_t *avl)
 {
-    AVLTreeNode *node;
+    struct entry *e;
 
-    node = avltree->root;
-
-    /* 转右，找最大值 */
-    while (node != NULL && node->right != NULL) {
-        node = node->right;
+    e = avl->root;
+    while (e != NULL && e->right != NULL) {
+        e = e->right;
     }
 
-    /* 空树，无最大值 */
-    if (node == NULL) {
-        return AVLTREE_NULL;
-
-        /* 树不空，存在最大值 */
+    if (e != NULL) {
+        return e->x;
     } else {
-        return node->data;
+        return NULL;
     }
 }

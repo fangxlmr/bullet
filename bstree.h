@@ -58,7 +58,7 @@ extern int bstree_add(bstree_t *bstree, void *x);
 extern int bstree_remove(bstree_t *bstree, void *x);
 
 /**
- * bstree_contains
+ * bstree_contains - Check bstree contains given element or not
  *
  * @bstree: the bstree
  * @x: the value
