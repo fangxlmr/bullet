@@ -24,7 +24,7 @@
 #include <stdlib.h>
 
 /**
- * define a stack_t structure
+ * Define a new data type: stack_t
  */
 typedef struct _stack stack_t;
 
@@ -51,7 +51,7 @@ extern void stack_free(stack_t *stack);
  *
  * Return 0 if success, -1 otherwise.
  *
- * Note that NULL stack or NULL x are invalid.
+ * NULL stack and NULL x are invalid.
  */
 extern int stack_push(stack_t *stack, const void *x);
 
@@ -60,7 +60,7 @@ extern int stack_push(stack_t *stack, const void *x);
  *
  * @stack: the stack
  *
- * Return stack top value, NULL pointer if the stack is empty.
+ * Return top value of the stack , NULL pointer if the stack is empty.
  *
  * The top entry (if exists) of the stack will be
  * removed after this operation. 
@@ -72,7 +72,7 @@ extern void *stack_pop(stack_t *stack);
  *
  * @stack: the stack
  *
- * Return stack top value, NULL pointer if the stack is empty.
+ * Return top value of the stack, NULL pointer if the stack is empty.
  *
  * The top entry (if exists) of the stack will not be
  * remove unlike function stack_pop(), so that the
@@ -85,7 +85,7 @@ extern void *stack_peek(stack_t *stack);
  *
  * @stack: the stack
  *
- * Return 0 if the stack is empty, -1 if not.
+ * Return 0 if the stack is empty, -1 otherwise.
  */
 extern int stack_isempty(stack_t *stack);
 
@@ -94,7 +94,7 @@ extern int stack_isempty(stack_t *stack);
  *
  * @stack: the stack
  *
- * Return size of the stack. Return 0 if stack is empty.
+ * Return size of the stack, 0 if stack is empty.
  */
 extern size_t stack_size(stack_t *stack);
 

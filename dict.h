@@ -6,8 +6,10 @@
 #ifndef BULLET_DICT_H
 #define BULLET_DICT_H
 
+#include "comparator.h"
+
 /**
- * define a dict
+ * Define a new data type: dict_t
  */
 typedef struct _dict dict_t;
 
@@ -16,20 +18,7 @@ typedef struct _dict dict_t;
  *
  * @key: hash key
  */
-typedef unsigned int (*hash_f)(void *key);
-
-/**
- * dict_cf - Dict comparing function (call back function)
- *
- * @k1: key1
- * @k2: key2
- *
- * Return values depends on the two keys:
- * k1 < k2, return -1.
- * k1 = k2, return  0.
- * k1 > k2, return  1.
- */
-typedef int (*dict_cf)(void *k1, void *k2);
+typedef unsigned int (*hash_f)(const void *key);
 
 /**
  * dict_new - Create a new dict
@@ -38,8 +27,11 @@ typedef int (*dict_cf)(void *k1, void *k2);
  * @cmp: comparing function
  *
  * Return dict_t pointer if success, NULL pointer otherwise.
+ *
+ * If cmp set to be NULL, then default
+ * integer comparator will be used.
  */
-extern dict_t *dict_new(hash_f hash, dict_cf cmp);
+extern dict_t *dict_new(const hash_f hash, const comparator cmp);
 
 /**
  * dict_free - Destroy a dict
@@ -60,7 +52,7 @@ extern void dict_free(dict_t *dict);
  * If given key can be found in dict, this function
  * will update (overlay) the old value by the new given one.
  */
-extern int dict_add(dict_t *dict, void *k, void *v);
+extern int dict_add(dict_t *dict, const void *k, const void *v);
 
 /**
  * dict_get - Get value by key
@@ -71,7 +63,7 @@ extern int dict_add(dict_t *dict, void *k, void *v);
  * Return value if key-value pairs exists in dict,
  * NULL otherwise.
  */
-extern void *dict_get(dict_t *dict, void *k);
+extern void *dict_get(dict_t *dict, const void *k);
 
 /**
  * dict_pop - Remove key-value pair by given key
@@ -82,6 +74,6 @@ extern void *dict_get(dict_t *dict, void *k);
  * Return 0 if key-value pair exists and be removed successfully,
  * -1 if key-value doesn't exists.
  */
-extern int dict_pop(dict_t *dict, void *k);
+extern int dict_pop(dict_t *dict, const void *k);
 
 #endif /* BULLET_DICT_H */

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 /**
- * define a dynamic array structure - vector
+ * Define a new data type: vector_t
  */
 typedef struct _vector vector_t;
 
@@ -23,7 +23,7 @@ typedef struct _vector vector_t;
  *
  * The vector will not be initialized. If you
  * want to do so, please initialize it 
- * by vector_init();
+ * using vector_init().
  */
 extern vector_t *vector_new(const size_t n);
 
@@ -45,7 +45,7 @@ extern void vector_init(vector_t *vector);
 extern void vector_free(vector_t *vector);
 
 /**
- * vector_size - Get used space of vector
+ * vector_size - Get the size of current vector
  *
  * @vector: the vector
  *
@@ -61,7 +61,7 @@ extern size_t vector_size(vector_t *vector);
  *
  * Get value from vector by a given index.
  */
-extern void *vector_get(vector_t *vector, const int idx);
+extern void *vector_get(vector_t *vector, const size_t idx);
 
 /**
  * vector_set - Set value in vector
@@ -70,14 +70,17 @@ extern void *vector_get(vector_t *vector, const int idx);
  * @idx: the index
  * @x: set value
  *
- * Return 0 if success, -1 otherwise.
- *
- * Note:
- * 1) Pointer of the vestor may vary after resize,
- *    but variable "vector" still hold it.
- * 2) If idx is too big for vector, making blanks
- *    in the vector. These blanks will be init to 0.
+ * Return 0 if success, -1 if index exceeds the size of the vector.
  */
-extern int vector_set(vector_t *vector, int idx, void *x);
+extern int vector_set(vector_t *vector, const size_t idx, const void *x);
 
+/*
+ * vector_append - Append an element at the end of vector
+ *
+ * @vector: the vector
+ * @x: the value
+ *
+ * Return 0 if success, -1 if append failed.
+ */
+extern int vector_append(vector_t *vector, const void *x);
 #endif /* BULLET_VECTOR_H */

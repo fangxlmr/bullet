@@ -60,11 +60,16 @@ size_t vector_size(vector_t *vector)
     return vector->size;
 }
 
-void *vector_get(vector_t *vector, const int idx)
+void *vector_get(vector_t *vector, const size_t idx)
 {
     assert(vector);
-    assert(idx >=0 && idx < vector->size);
-    return (vector->array)[idx];
+    
+    if (idx >= vector->size) {
+        //TODO error handle
+        return NULL;
+    } else {
+        return (vector->array)[idx];
+    }
 }
 
 /**
@@ -106,10 +111,9 @@ static int vector_resize(vector_t *vector)
     }
 }
 
-int vector_set(vector_t *vector, const int idx, const void *x)
+int vector_set(vector_t *vector, const size_t idx, const void *x)
 {
     assert(vector);
-    assert(idx >= 0 && idx < vector->size);
     assert(x);
 
     void **array;
@@ -118,25 +122,31 @@ int vector_set(vector_t *vector, const int idx, const void *x)
     array = vector->array;
     size = vector->size;
 
-    if ((size_t) idx < vector->capacity) {
+    if (idx < vector->size) {
         array[idx] = (void *) x;
-
-        if ((size_t )idx + 1 > size) {
-            memset(array + size, 0, idx + 1 - size);
-            vector->size = idx + 1;
-        }
         return 0;
-
     } else {
-        /* resize  */
-        if (vector_resize(vector)) {
-            vector->array[idx] = (void *) x;
-            vector->size = (size_t) idx + 1 > vector->size ? \
-                           (size_t) idx + 1 : vector->size;
-            return 0;
+        //TODO error
+        return -1;
+    }
+}
 
-        } else {
+int vector_append(vector_t *vector, const void *x)
+{
+    assert(vector);
+    assert(x);
+
+    if (vector->size < vector->capacity) {
+        vector->array[vector->size] = (void *) x;
+        vector->size++;
+        return 0;
+    } else {
+        if (vector_resize(vector) == -1) {
             return -1;
+        } else {
+            vector->array[vector->size] = (void *) x;
+            vector->size++;
+            return 0;
         }
     }
 }

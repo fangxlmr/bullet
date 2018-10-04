@@ -6,37 +6,27 @@
 #define BULLET_HEAP_H
 
 #include <stdlib.h>
-
+#include "comparator.h"
 /**
- * define a heap_t structure
+ * Define a new data type: heap_t
  */
 typedef struct _heap heap_t;
-
-/**
- * heap_cf - Comparing function (call back function)
- *
- * x1 and x2 are two elements to be compared.
- * 
- * Return values must be as follows:
- * *x1 < *x2, return -1.
- * *x1 = *x2, return  0.
- * *x1 > *x2, return  1.
- */
-typedef int (*heap_cf)(const void *x1, const void *x2);
 
 /**
  * heap_new - Create a new heap
  *
  * @h_flag: a flag to denote minheap (0) or maxheap (1).
- *          Only 0 and 1 are allowed for now.
  * @n: size of heap
- * @cmp: comparing function
+ * @cmp: a comparator
  * 
  * Return heap_t pointer if success,
  * NULL pointer otherwise.
+ *
+ * If cmp set to be NULL, then default
+ * integer comparator will be used.
  */
 extern heap_t *heap_new(const int h_flag, 
-                        const size_t n, const heap_cf cmp);
+                        const size_t n, const comparator cmp);
 
 /**
  * heap_free - Destroy a heap
@@ -53,7 +43,7 @@ extern void heap_free(heap_t *heap);
  *
  * Return 0 if heap is not full, -1 otherwise.
  *
- * Note that NULL heap and NULL x are invalid.
+ * NULL heap and NULL x are invalid.
  */
 extern int heap_add(heap_t *heap, const void *x);
 
@@ -64,7 +54,7 @@ extern int heap_add(heap_t *heap, const void *x);
  *
  * Return root value if it exists, NULL otherwise.
  *
- * Note that root will be removed after this operation,
+ * Root will be removed after this operation,
  * and a new root will shiftup.
  */
 extern void *heap_poll(heap_t *heap);
@@ -76,7 +66,7 @@ extern void *heap_poll(heap_t *heap);
  *
  * Return root value if it exists, NULL otherwise.
  *
- * Note that heap will remain unchanged unlike heap_poll().
+ * The heap will remain unchanged unlike heap_poll().
  */
 extern void *heap_peek(heap_t *heap);
 
@@ -85,8 +75,7 @@ extern void *heap_peek(heap_t *heap);
  *
  * @heap: the heap
  * 
- * Return size of the heap. If heap is empty,
- * return 0.
+ * Return size of the heap.
  */
 extern int heap_size(heap_t *heap);
 

@@ -13,10 +13,10 @@ struct entry {
 
 struct _avltree {
     struct entry *root;
-    avltree_cf cmp;
+    comparator cmp;
 };
 
-avltree_t *avltree_new(avltree_cf cmp)
+avltree_t *avltree_new(const comparator cmp)
 {
     avltree_t *avl;
 
@@ -26,7 +26,7 @@ avltree_t *avltree_new(avltree_cf cmp)
 
     } else {
         avl->root = NULL;
-        avl->cmp  = cmp;
+        avl->cmp  = (cmp != NULL) ? cmp : cmp_int;
         return avl;
     }
 }
@@ -141,7 +141,7 @@ static void rl_rotate(struct entry **node)
 /*
  * subtree_add - Add a new node
  */
-static int subtree_add(struct entry **e, void *x, avltree_cf cmp)
+static int subtree_add(struct entry **e, const void *x, comparator cmp)
 {
     struct entry *new_e;
 
@@ -151,7 +151,7 @@ static int subtree_add(struct entry **e, void *x, avltree_cf cmp)
             return -1;
 
         } else {
-            new_e->x = x;
+            new_e->x = (void *) x;
             new_e->height = 1;
             new_e->left = NULL;
             new_e->right = NULL;
@@ -198,10 +198,10 @@ int avltree_add(avltree_t *avl, void *value)
     return subtree_add(&avl->root, value, avl->cmp);
 }
 
-int avltree_contains(avltree_t *avl, void *value)
+int avltree_contains(avltree_t *avl, const void *value)
 {
     struct entry *e;
-    avltree_cf cmp;
+    comparator cmp;
 
     e = avl->root;
     cmp  = avl->cmp;
@@ -222,7 +222,7 @@ int avltree_contains(avltree_t *avl, void *value)
  *
  * Return 0 if success, -1 if no match node found.
  */
-static int subtree_remove(struct entry **e, void *value, avltree_cf cmp)
+static int subtree_remove(struct entry **e, const void *value, comparator cmp)
 {
     struct entry *root;
     struct entry *tmp;
@@ -315,7 +315,7 @@ static int subtree_remove(struct entry **e, void *value, avltree_cf cmp)
 }
 
 
-int avltree_remove(avltree_t *avl, void *x)
+int avltree_remove(avltree_t *avl, const void *x)
 {
     return subtree_remove(&avl->root, x, avl->cmp);
 }

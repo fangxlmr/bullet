@@ -5,12 +5,12 @@
 #include "heap.h"
 
 struct _heap {
-    void **array; /* heap array  */
-    size_t free;  /* free space  */
-    size_t used;  /* used space  */
-    heap_cf cmp;  /* comparing function  */
-    int h_flag;   /* heap flag, 0 denotes minheap  */
-                  /* 1 denotes maxheap  */
+    void **array;    /* heap array  */
+    size_t free;     /* free space  */
+    size_t used;     /* used space  */
+    comparator cmp;  /* comparing function  */
+    int h_flag;      /* heap flag, 0 denotes minheap  */
+                     /* 1 denotes maxheap  */
 };
 
 static void swap(void *v[], const int x, const int y)
@@ -35,7 +35,7 @@ static void shiftdown(heap_t *heap, int idx)
     size_t n;
     size_t ileft, iright;
     void **h;
-    heap_cf cmp;
+    comparator cmp;
 
     /* flag to denote type of heap, 0 denotes
      * minheap while 1 denotes maxheap.  */
@@ -98,7 +98,7 @@ static void shiftup(heap_t *heap, int idx)
     int n;
     void **h;
     int parent;
-    heap_cf cmp;
+    comparator cmp;
 
     h_flag = heap->h_flag;
     n = heap->used;    /* used space  */
@@ -131,7 +131,7 @@ static void shiftup(heap_t *heap, int idx)
 }
 
 heap_t *heap_new(const int h_flag, 
-                 const size_t n, const heap_cf cmp)
+                 const size_t n, const comparator cmp)
 {
     void **array;
     heap_t *heap;
@@ -140,7 +140,7 @@ heap_t *heap_new(const int h_flag,
     if (!heap) {
         return NULL;
     } else {
-        heap->cmp  = cmp;
+        heap->cmp  = (cmp != NULL) ? cmp : cmp_int;
         heap->free = n;
         heap->used = 0;
         heap->h_flag = h_flag;
@@ -167,7 +167,7 @@ void heap_free(heap_t *heap)
 int heap_add(heap_t *heap, const void *x)
 {
     int h_flag;
-    heap_cf cmp;
+    comparator cmp;
 
     assert(heap);
     assert(x);
@@ -229,7 +229,7 @@ int heap_size(heap_t *heap)
 {
     assert(heap);
 
-    return heap->used;
+    return heap->free + heap->used;
 }
 
 int heap_isempty(heap_t *heap)

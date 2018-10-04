@@ -20,7 +20,7 @@ struct _dict {
     size_t count;    /* count of key-value pairs in dict  */
     size_t idx;      /* index in primes table  */
     hash_f hash;     /* hash function  */
-    dict_cf cmp;     /* comparing fucntion  */
+    comparator cmp;  /* comparing fucntion  */
 };
 
 /*
@@ -69,7 +69,7 @@ static int buckets_new(dict_t *dict)
     }
 }
 
-dict_t *dict_new(hash_f hash, dict_cf cmp)
+dict_t *dict_new(const hash_f hash, const comparator cmp)
 {
     dict_t *dict;
 
@@ -80,7 +80,7 @@ dict_t *dict_new(hash_f hash, dict_cf cmp)
 
     } else {
         dict->hash  = hash;
-        dict->cmp = cmp;
+        dict->cmp = (cmp != NULL) ? cmp : cmp_int;
         dict->count = 0;
         dict->idx = 0;     /* Use primes[0] as default buckets size  */
 
@@ -168,7 +168,7 @@ static int dict_resize(dict_t *dict)
 
 }
 
-int dict_add(dict_t *dict, void *k, void *v)
+int dict_add(dict_t *dict, const void *k, const void *v)
 {
     struct entry *e, *walk;
     pairs *pair;
@@ -193,8 +193,8 @@ int dict_add(dict_t *dict, void *k, void *v)
 
         /* Update key-value pairs if it exists already. */
         if (dict->cmp(pair->key, k) == 0) {
-            pair->key = k;
-            pair->value = v;
+            pair->key = (void *) k;
+            pair->value = (void *) v;
             return 0;
         }
         walk = walk->next;
@@ -206,8 +206,8 @@ int dict_add(dict_t *dict, void *k, void *v)
         return -1;
 
     } else {
-        e->pair.key = k;
-        e->pair.value = v;
+        e->pair.key = (void *) k;
+        e->pair.value = (void *) v;
 
         e->next = dict->buckets[i];
         dict->buckets[i] = e;
@@ -217,7 +217,7 @@ int dict_add(dict_t *dict, void *k, void *v)
     }
 }
 
-void *dict_get(dict_t *dict, void *k)
+void *dict_get(dict_t *dict, const void *k)
 {
     struct entry *walk;
     size_t i;
@@ -235,7 +235,7 @@ void *dict_get(dict_t *dict, void *k)
     return NULL;
 }
 
-int dict_pop(dict_t *dict, void *k)
+int dict_pop(dict_t *dict, const void *k)
 {
     struct entry **walk;
     struct entry *del;

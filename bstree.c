@@ -12,11 +12,11 @@ struct entry {
 };
 
 struct _bstree {
-    struct entry *root; /* root node of bstree */
-    bstree_cf cmp;      /* comparing function */
+    struct entry *root;  /* root node of bstree */
+    comparator cmp;      /* comparing function */
 };
 
-bstree_t *bstree_new(bstree_cf cmp)
+bstree_t *bstree_new(const comparator cmp)
 {
     bstree_t *bstree;
 
@@ -27,7 +27,7 @@ bstree_t *bstree_new(bstree_cf cmp)
 
     } else {
         bstree->root = NULL;
-        bstree->cmp  = cmp;
+        bstree->cmp  = (cmp != NULL) ? cmp : cmp_int;
 
         return bstree;
     }
@@ -64,7 +64,7 @@ void bstree_free(bstree_t *bstree)
  * Return 0 if success, -1 otherwise.
  * Return 0 if duplicated.
  */
-static int subtree_add(struct entry **root, void *x, bstree_cf cmp)
+static int subtree_add(struct entry **root, const void *x, comparator cmp)
 {
     struct entry *e;
 
@@ -89,7 +89,7 @@ static int subtree_add(struct entry **root, void *x, bstree_cf cmp)
         if (!e) {
             return -1;
         } else {
-            e->x = x;
+            e->x = (void *) x;
             e->left = NULL;
             e->right = NULL;
             *root = e;
@@ -98,7 +98,7 @@ static int subtree_add(struct entry **root, void *x, bstree_cf cmp)
     }
 }
 
-int bstree_add(bstree_t *bstree, void *value)
+int bstree_add(bstree_t *bstree, const void *value)
 {
     return subtree_add(&bstree->root, value, bstree->cmp);
 }
@@ -112,7 +112,7 @@ int bstree_add(bstree_t *bstree, void *value)
  *
  * Return 1 if contains, 0 otherwise.
  */
-static int subtree_contains(struct entry *root, void *x, bstree_cf cmp)
+static int subtree_contains(struct entry *root, const void *x, comparator cmp)
 {
     while (root != NULL && cmp(x, root->x) != 0) {
         /* Turn left */
@@ -220,7 +220,7 @@ static void delete_node(struct entry **node) {
  *
  * Return 0 if success, -1 otherwise.
  */
-static int subtree_remove(struct entry **root, void *x, bstree_cf cmp)
+static int subtree_remove(struct entry **root, const void *x, comparator cmp)
 {
     while (*root != NULL && cmp(x, (*root)->x) != 0) {
         /* Turn left */
@@ -241,7 +241,7 @@ static int subtree_remove(struct entry **root, void *x, bstree_cf cmp)
     }
 }
 
-int bstree_remove(bstree_t *bstree, void *value)
+int bstree_remove(bstree_t *bstree, const void *value)
 {
     return subtree_remove(&bstree->root, value, bstree->cmp);
 }

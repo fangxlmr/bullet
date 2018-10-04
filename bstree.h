@@ -5,19 +5,12 @@
 #ifndef BULLET_BSTREE_H
 #define BULLET_BSTREE_H
 
-/**
- * define a bstree_t
- */
-typedef struct _bstree bstree_t;
+#include "comparator.h"
 
 /**
- * bstree_cf - bstree comparing function (call back function)
- *
- * If *x1 < *x2, return -1.
- * If *x1 = *x2, return  0.
- * If *x1 > *x2, retutn  1.
+ * Define a new data type: bstee_t
  */
-typedef int (*bstree_cf)(void *x1, void *x2);
+typedef struct _bstree bstree_t;
 
 /**
  * bstree_new - Create a new bstree
@@ -25,8 +18,11 @@ typedef int (*bstree_cf)(void *x1, void *x2);
  * @cmp: comparing function
  *
  * Return 0 if success, -1 otherwise.
+ *
+ * If cmp set to be NULL, then default
+ * integer comparator will be used.
  */
-extern bstree_t *bstree_new(bstree_cf cmp);
+extern bstree_t *bstree_new(const comparator cmp);
 
 /**
  * bstree_free - Destroy a bstree
@@ -44,7 +40,7 @@ extern void bstree_free(bstree_t *bstree);
  * Return 0 if success, -1 otherwise.
  * Return 0 if duplicated.
  */
-extern int bstree_add(bstree_t *bstree, void *x);
+extern int bstree_add(bstree_t *bstree, const void *x);
 
 /**
  * bstree_remove - Remove an element from bstree
@@ -55,7 +51,7 @@ extern int bstree_add(bstree_t *bstree, void *x);
  * Return 0 if the match node is removed successfully,
  * -1 if no match node exists
  */
-extern int bstree_remove(bstree_t *bstree, void *x);
+extern int bstree_remove(bstree_t *bstree, const void *x);
 
 /**
  * bstree_contains - Check bstree contains given element or not
@@ -65,7 +61,7 @@ extern int bstree_remove(bstree_t *bstree, void *x);
  *
  * Return 1 if the value is in bstree, 0 otherwise.
  */
-extern int bstree_contains(bstree_t *bstree, void *x);
+extern int bstree_contains(bstree_t *bstree, const void *x);
 
 /**
  * bstree_depth - Find depth of bstree
