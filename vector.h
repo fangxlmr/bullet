@@ -1,6 +1,20 @@
-/**
- * vector.h
+/* 
+ * vector.h - Dynamic array
  *
+ * Copyright (C) 2018 by Xiaoliang Fang (fangxlmr@foxmail.com).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef BULLET_VECTOR_H
@@ -83,4 +97,5 @@ extern int vector_set(vector_t *vector, const size_t idx, const void *x);
  * Return 0 if success, -1 if append failed.
  */
 extern int vector_append(vector_t *vector, const void *x);
+
 #endif /* BULLET_VECTOR_H */
