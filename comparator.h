@@ -17,6 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef BULLET_COMPARATOR_H
+#define BULLET_COMPARATOR_H
+
 /**
  * Define a callback comparator
  */
@@ -59,3 +62,5 @@ extern int cmp_char(const void *x1, const void *x2);
  * If *x1 > *x2, return  1.
  */
 extern int cmp_pointer(const void *x1, const void *x2);
+
+#endif /* BULLET_COMPARATOR_H */
