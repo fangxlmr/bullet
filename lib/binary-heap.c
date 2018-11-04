@@ -18,7 +18,6 @@
  */
 
 #include <math.h>
-#include <assert.h>
 #include "heap.h"
 
 struct _heap {
@@ -175,7 +174,6 @@ heap_t *heap_new(const int h_flag,
 
 void heap_free(heap_t *heap)
 {
-    assert(heap);
 
     free(heap->array);
     free(heap);
@@ -185,9 +183,6 @@ int heap_add(heap_t *heap, const void *x)
 {
     int h_flag;
     comparator cmp;
-
-    assert(heap);
-    assert(x);
 
     h_flag = heap->h_flag;
     cmp = heap->cmp;
@@ -209,9 +204,6 @@ void *heap_poll(heap_t *heap)
     void **h;
     void *x;
 
-    assert(heap);
-    assert(x);
-
     h = heap->array;
     if (heap_isempty(heap)) {
         return NULL;
@@ -230,9 +222,6 @@ void *heap_peek(heap_t *heap)
 {
     void **h;
 
-    assert(heap);
-    assert(x);
-
     h = heap->array;
     if (heap_isempty(heap)) {
         return NULL;
@@ -244,19 +233,16 @@ void *heap_peek(heap_t *heap)
 
 int heap_size(heap_t *heap)
 {
-    assert(heap);
 
     return heap->free + heap->used;
 }
 
 int heap_isempty(heap_t *heap)
 {
-    assert(heap);
     return heap->used == 0;
 }
 
 int heap_isfull(heap_t *heap)
 {
-    assert(heap);
     return heap->free == 0;
 }
