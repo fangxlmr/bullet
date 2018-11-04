@@ -18,14 +18,13 @@
  */
 
 #include <string.h>
-#include <assert.h>
 #include "vector.h"
 #define RESIZE_FACTOR 2
 
 struct _vector {
     void **array;
     size_t capacity;  /* capacity of the array  */
-    size_t size;      /* used space of the array  */
+    size_t len;      /* used space of the array  */
 };
 
 vector_t *vector_new(const size_t n)
@@ -38,7 +37,7 @@ vector_t *vector_new(const size_t n)
         return NULL;
     } else {
         vector->capacity = n;
-        vector->size = 0;
+        vector->len = 0;
     }
 
     new_array  = (void **) malloc(n * sizeof(void *));
@@ -51,38 +50,21 @@ vector_t *vector_new(const size_t n)
     }
 }
 
-void vector_init(vector_t *vector)
-{
-    void **array;
-    size_t n;
-
-    assert(vector);
-    array = vector->array;
-    n  = vector->capacity;
-
-    memset(array, 0, n * sizeof(void *));
-    vector->size = 0;
-}
-
 void vector_free(vector_t *vector)
 {
-    assert(vector);
     free(vector->array);
     free(vector);
 }
 
-size_t vector_size(vector_t *vector)
+size_t vector_len(vector_t *vector)
 {
-    assert(vector);
-    return vector->size;
+    return vector->len;
 }
 
 void *vector_get(vector_t *vector, const size_t idx)
 {
-    assert(vector);
-    
-    if (idx >= vector->size) {
-        //TODO error handle
+    if (idx >= vector->len) {
+        //TODO error handling
         return NULL;
     } else {
         return (vector->array)[idx];
@@ -93,7 +75,7 @@ void *vector_get(vector_t *vector, const size_t idx)
  * vector_resize - Resize vector
  *
  * Resize factor is pre-defined at the beginning
- * of this file. Default value is 2.
+ * of this file with default value 2.
  *
  * Return 0 if resize success, -1 if failed.
  * If resize failed, variable "vector" still
@@ -106,7 +88,6 @@ static int vector_resize(vector_t *vector)
     void **old_array;
     void **new_array;
 
-    assert(vector);
     old_array = vector->array;
     old_capacity = vector->capacity;
 
@@ -128,42 +109,45 @@ static int vector_resize(vector_t *vector)
     }
 }
 
-int vector_set(vector_t *vector, const size_t idx, const void *x)
+int vector_set(vector_t *vector, const size_t idx, void *x)
 {
-    assert(vector);
-    assert(x);
-
     void **array;
-    size_t size;
+    size_t len;
 
     array = vector->array;
-    size = vector->size;
+    len = vector->len;
 
-    if (idx < vector->size) {
-        array[idx] = (void *) x;
+    if (idx < vector->len) {
+        array[idx] = x;
         return 0;
     } else {
-        //TODO error
+        //TODO error handling.
         return -1;
     }
 }
 
-int vector_append(vector_t *vector, const void *x)
+int vector_append(vector_t *vector, void *x)
 {
-    assert(vector);
-    assert(x);
-
-    if (vector->size < vector->capacity) {
-        vector->array[vector->size] = (void *) x;
-        vector->size++;
+    if (vector->len < vector->capacity) {
+        vector->array[vector->len] = x;
+        vector->len++;
         return 0;
     } else {
         if (vector_resize(vector) == -1) {
             return -1;
         } else {
-            vector->array[vector->size] = (void *) x;
-            vector->size++;
+            vector->array[vector->len] = x;
+            vector->len++;
             return 0;
         }
+    }
+}
+
+void *vector_pop(vector_t *vector)
+{
+    if (vector->len == 0) {
+        return -1;
+    } else {
+        return vector->arry[--vector->len];
     }
 }
