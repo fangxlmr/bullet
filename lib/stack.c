@@ -17,7 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <assert.h>
 #include "stack.h"
 
 struct entry {
@@ -46,26 +45,21 @@ stack_t *stack_new(void)
 
 void stack_free(stack_t *stack)
 {
-    assert(stack);
     while (! stack_isempty(stack)) {
         stack_pop(stack);
     }
     free(stack);
 }
 
-int stack_push(stack_t *stack, const void *x)
+int stack_push(stack_t *stack, void *x)
 {
     struct entry *e;
 
-    assert(stack);
-    assert(x);
     e = (struct entry *) malloc(sizeof(*e));
-
     if (e == NULL) {
         return -1;
-
     } else {
-        e->x = (void *) x;
+        e->x = x;
         e->next = stack->top;
         stack->top = e;
         stack->size++;
@@ -78,10 +72,8 @@ void *stack_pop(stack_t *stack)
     struct entry *e;
     void *x;
 
-    assert(stack);
     if (stack_isempty(stack)) {
         return NULL;
-
     } else {
         e = stack->top;
         stack->top = e->next;
@@ -95,22 +87,18 @@ void *stack_pop(stack_t *stack)
 
 void *stack_peek(stack_t *stack)
 {
-    assert(stack);
     if (stack_isempty(stack)) {
         return NULL;
-
     } else {
         return stack->top->x;
     }
 }
 
 int stack_isempty(stack_t *stack) {
-    assert(stack);
     return stack->top == NULL;
 }
 
 size_t stack_size(stack_t *stack)
 {
-    assert(stack);
     return stack->size;
 }

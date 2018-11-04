@@ -52,7 +52,7 @@ extern void stack_free(stack_t *stack);
  *
  * NULL stack and NULL x are invalid.
  */
-extern int stack_push(stack_t *stack, const void *x);
+extern int stack_push(stack_t *stack, void *x);
 
 /**
  * stack_pop - Stack pop
