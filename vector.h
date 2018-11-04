@@ -88,7 +88,7 @@ extern void *vector_get(vector_t *vector, const size_t idx);
  */
 extern int vector_set(vector_t *vector, const size_t idx, const void *x);
 
-/*
+/**
  * vector_append - Append an element at the end of vector
  *
  * @vector: the vector
