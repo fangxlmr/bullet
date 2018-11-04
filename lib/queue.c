@@ -17,7 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <assert.h>
 #include "queue.h"
 
 struct entry {
@@ -36,7 +35,6 @@ queue_t *queue_new(void)
     queue_t *queue;
 
     queue = (queue_t *) malloc(sizeof(*queue));
-
     if (queue == NULL) {
         return NULL;
     } else {
@@ -49,19 +47,16 @@ queue_t *queue_new(void)
 
 void queue_free(queue_t *queue)
 {
-    assert(queue);
     while (! queue_isempty(queue)) {
-        dequeue(queue);
+        queue_pop(queue);
     }
     free(queue);
 }
 
-int enqueue(queue_t *queue, const void *x)
+int queue_push(queue_t *queue, const void *x)
 {
     struct entry *e;
 
-    assert(queue);
-    assert(x);
 
     e = (struct entry *) malloc(sizeof(*e));
     if (e == NULL) {
@@ -82,11 +77,10 @@ int enqueue(queue_t *queue, const void *x)
     return 0;
 }
 
-void *dequeue(queue_t *queue) {
+void *queue_pop(queue_t *queue) {
     struct entry *e;
     void *x;
 
-    assert(queue);
 
     if (queue_isempty(queue)) {
         return NULL;
@@ -107,7 +101,6 @@ void *dequeue(queue_t *queue) {
 
 void *queue_peek(queue_t *queue)
 {
-    assert(queue);
     if (queue_isempty(queue)) {
         return NULL;
     } else {
@@ -117,12 +110,10 @@ void *queue_peek(queue_t *queue)
 
 int queue_isempty(queue_t *queue)
 {
-    assert(queue);
     return queue->head == NULL;
 }
 
 size_t queue_size(queue_t *queue)
 {
-    assert(queue);
     return queue->size;
 }
