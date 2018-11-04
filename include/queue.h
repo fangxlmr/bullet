@@ -52,7 +52,7 @@ extern void queue_free(queue_t *queue);
  *
  * NULL queue and NULL x are invalid.
  */
-extern int queue_push(queue_t *queue, const void *x);
+extern int queue_push(queue_t *queue, void *x);
 
 /**
  * queue_pop - Dequeue an element

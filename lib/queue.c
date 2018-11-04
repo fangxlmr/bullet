@@ -53,7 +53,7 @@ void queue_free(queue_t *queue)
     free(queue);
 }
 
-int queue_push(queue_t *queue, const void *x)
+int queue_push(queue_t *queue, void *x)
 {
     struct entry *e;
 
@@ -62,7 +62,7 @@ int queue_push(queue_t *queue, const void *x)
     if (e == NULL) {
         return -1;
     } else {
-        e->x = (void *) x;
+        e->x = x;
         e->next = NULL;
     }
 
@@ -81,10 +81,8 @@ void *queue_pop(queue_t *queue) {
     struct entry *e;
     void *x;
 
-
     if (queue_isempty(queue)) {
         return NULL;
-
     } else {
         e = queue->head;
         queue->head = e->next;
