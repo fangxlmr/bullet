@@ -43,7 +43,7 @@ extern queue_t *queue_new(void);
 extern void queue_free(queue_t *queue);
 
 /**
- * enqueue - Enqueue an element
+ * queue_push - Enqueue an element
  *
  * @queue: the queue
  * @x: value to be stored
@@ -52,17 +52,17 @@ extern void queue_free(queue_t *queue);
  *
  * NULL queue and NULL x are invalid.
  */
-extern int enqueue(queue_t *queue, const void *x);
+extern int queue_push(queue_t *queue, const void *x);
 
 /**
- * dequeue - Dequeue an element
+ * queue_pop - Dequeue an element
  *
  * @queue: the queue
  *
  * Return the value of head node and remove it from queue.
  * If the queue is already empty, return NULL.
  */
-extern void *dequeue(queue_t *queue);
+extern void *queue_pop(queue_t *queue);
 
 /**
  * queue_peek - Peek value of head node in queue
