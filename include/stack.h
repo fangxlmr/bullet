@@ -84,7 +84,7 @@ extern void *stack_peek(stack_t *stack);
  *
  * @stack: the stack
  *
- * Return 0 if the stack is empty, -1 otherwise.
+ * Return 1 if the stack is empty, 0 otherwise.
  */
 extern int stack_isempty(stack_t *stack);
 
