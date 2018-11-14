@@ -84,12 +84,12 @@ extern void *queue_peek(queue_t *queue);
 extern int queue_isempty(queue_t *queue);
 
 /**
- * queue_size - Get size of queue
+ * queue_get_size - Get size of queue
  *
  * @queue: the queue
  *
  * Return size of the queue, 0 if queue is already empty.
  */
-extern size_t queue_size(queue_t *queue);
+extern size_t queue_get_size(queue_t *queue);
 
 #endif /* BULLET_QUEUE_H */

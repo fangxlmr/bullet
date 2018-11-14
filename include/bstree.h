@@ -79,13 +79,13 @@ extern int bstree_remove(bstree_t *bstree, const void *x);
 extern int bstree_contains(bstree_t *bstree, const void *x);
 
 /**
- * bstree_depth - Find depth of bstree
+ * bstree_get_hight - Get hight of bstree
  *
  * @bstree: the bstree
  *
  * Return depth of the bstree, 0 if bstree is empty.
  */
-extern int bstree_depth(bstree_t *bstree);
+extern int bstree_get_hight(bstree_t *bstree);
 
 /**
  * bstree_isempty - Check bstree is empty or not
@@ -97,21 +97,21 @@ extern int bstree_depth(bstree_t *bstree);
 extern int bstree_isempty(bstree_t *bstree);
 
 /**
- * bstree_min - Find min value in bstree
+ * bstree_get_min - Get min value in bstree
  *
  * @bstree: the bstree
  *
  * Return min value in bstree, NULL if bstree is empty.
  */
-extern void *bstree_min(bstree_t *bstree);
+extern void *bstree_get_min(bstree_t *bstree);
 
 /**
- * bstree_max - Find max value in bstree
+ * bstree_get_max - Get max value in bstree
  *
  * @bstree: the bstree
  *
  * Return max value in bstree, NULL if bstree is empty.
  */
-extern void *bstree_max(bstree_t *bstree);
+extern void *bstree_get_max(bstree_t *bstree);
 
 #endif /* BULLET_BSTREE_H */

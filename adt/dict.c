@@ -53,7 +53,7 @@ static const unsigned int primes[] = {
 static const unsigned int primes_size
         = sizeof(primes) / sizeof(primes[0]);
 
-/**
+/*
  * buckets_new - Alloc memory for buckets
  *
  * @dict: the dict

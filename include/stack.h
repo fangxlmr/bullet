@@ -89,12 +89,12 @@ extern void *stack_peek(stack_t *stack);
 extern int stack_isempty(stack_t *stack);
 
 /**
- * stack_size - Get size of the stack
+ * stack_get_size - Get size of the stack
  *
  * @stack: the stack
  *
  * Return size of the stack, 0 if stack is empty.
  */
-extern size_t stack_size(stack_t *stack);
+extern size_t stack_get_size(stack_t *stack);
 
 #endif /* BULLET_STACK_H */

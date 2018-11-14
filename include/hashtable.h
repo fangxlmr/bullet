@@ -23,6 +23,14 @@
 
 typedef struct _hashtable hashtable_t;
 
-extern hashtable_t
+extern hashtable_t *hashtable_new(void);
+
+extern void hashtable_free(hashtable_t *ht);
+
+extern int hashtable_set(hashtable_t *ht,
+        size_t key_size, const void *key,
+        size_t value_size, const void *value);
+
+extern int hashtale_get(hashtable_t *ht, )
 
 #endif /* BULLET_HASHTABLE_H */

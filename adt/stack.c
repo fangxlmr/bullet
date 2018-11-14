@@ -98,7 +98,7 @@ int stack_isempty(stack_t *stack) {
     return stack->top == NULL;
 }
 
-size_t stack_size(stack_t *stack)
+size_t stack_get_size(stack_t *stack)
 {
     return stack->size;
 }

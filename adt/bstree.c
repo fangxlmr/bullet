@@ -265,9 +265,9 @@ int bstree_remove(bstree_t *bstree, const void *value)
 }
 
 /**
- * subtree_depth - Find depth of subtree
+ * subtree_get_hight - Get hight of subtree
  */
-static int subtree_depth(struct entry *root)
+static int subtree_get_hight(struct entry *root)
 {
     if (!root)
         return 0;
@@ -276,7 +276,7 @@ static int subtree_depth(struct entry *root)
                     subtree_depth(root->right) );
 }
 
-int bstree_depth(bstree_t *bstree)
+int bstree_get_hight(bstree_t *bstree)
 {
     return subtree_depth(bstree->root);
 }
@@ -286,7 +286,7 @@ int bstree_isempty(bstree_t *bstree)
     return bstree->root == NULL;
 }
 
-void *bstree_min(bstree_t *bstree)
+void *bstree_get_min(bstree_t *bstree)
 {
     struct entry *e;
 
@@ -302,7 +302,7 @@ void *bstree_min(bstree_t *bstree)
     }
 }
 
-void *bstree_max(bstree_t *bstree)
+void *bstree_get_max(bstree_t *bstree)
 {
     struct entry *e;
 

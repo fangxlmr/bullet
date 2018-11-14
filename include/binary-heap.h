@@ -86,13 +86,13 @@ extern void *heap_poll(heap_t *heap);
 extern void *heap_peek(heap_t *heap);
 
 /**
- * heap_size - Count elements in heap
+ * heap_get_size - Count elements in heap
  *
  * @heap: the heap
- * 
- * Return size of the heap.
+ *
+ * Count the elements in heap.
  */
-extern int heap_size(heap_t *heap);
+extern int heap_get_size(heap_t *heap);
 
 /**
  * heap_isempty - Check the heap is empty or not

@@ -111,7 +111,7 @@ int queue_isempty(queue_t *queue)
     return queue->head == NULL;
 }
 
-size_t queue_size(queue_t *queue)
+size_t queue_get_size(queue_t *queue)
 {
     return queue->size;
 }

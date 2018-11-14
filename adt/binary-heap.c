@@ -231,10 +231,10 @@ void *heap_peek(heap_t *heap)
     }
 }
 
-int heap_size(heap_t *heap)
+int heap_get_size(heap_t *heap)
 {
 
-    return heap->free + heap->used;
+    return heap->used;
 }
 
 int heap_isempty(heap_t *heap)
