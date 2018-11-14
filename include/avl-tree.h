@@ -22,7 +22,7 @@
 
 #include "comparator.h"
 
-/*
+/**
  * Define a new data type: avltree_t
  */
 typedef struct _avltree avltree_t;
@@ -79,13 +79,13 @@ extern int avltree_remove(avltree_t *avl, const void *x);
 extern int avltree_contains(avltree_t *avl, const void *x);
 
 /**
- * avltree_depth - Find depth of avl-tree
+ * avltree_get_hight - Find hight of avl-tree
  *
  * @avltree: the avltree
  *
- * Return depth of the avl-tree, 0 if avltree is empty.
+ * Return hight of the avl-tree, 0 if avltree is empty.
  */
-extern int avltree_depth(avltree_t *avl);
+extern int avltree_get_hight(avltree_t *avl);
 
 /**
  * avltree_isempty - Check avl-tree is empty or not
@@ -97,20 +97,20 @@ extern int avltree_depth(avltree_t *avl);
 extern int avltree_isempty(avltree_t *avl);
 
 /**
- * avltree_min - Find min value in avl-tree
+ * avltree_get_min - Find min value in avl-tree
  *
  * @avltree: the avlt-ree
  *
  * Return min value in avl-tree, NULL if avl-tree is empty.
  */
-extern void *avltree_min(avltree_t *avl);
+extern void *avltree_get_min(avltree_t *avl);
 
 /**
- * avltree_max - Find max value in avl-tree
+ * avltree_get_max - Find max value in avl-tree
  *
  * @avltree: the avl-tree
  *
  * Return max value in avl-tree, NULL if avl-tree is empty.
  */
-extern void *avltree_max(avltree_t *avl);
+extern void *avltree_get_max(avltree_t *avl);
 #endif /* BULLET_AVLTREE_H */

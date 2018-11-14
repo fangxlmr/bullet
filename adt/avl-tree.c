@@ -338,7 +338,7 @@ int avltree_remove(avltree_t *avl, const void *x)
     return subtree_remove(&avl->root, x, avl->cmp);
 }
 
-int avltree_depth(avltree_t *avl)
+int avltree_get_hight(avltree_t *avl)
 {
     return get_height(avl->root);
 }
@@ -348,7 +348,7 @@ int avltree_isempty(avltree_t *avl)
     return avl->root == NULL;
 }
 
-void *avltree_min(avltree_t *avl)
+void *avltree_get_min(avltree_t *avl)
 {
     struct entry *e;
 
@@ -364,7 +364,7 @@ void *avltree_min(avltree_t *avl)
     }
 }
 
-void *avl_max(avltree_t *avl)
+void *avl_get_max(avltree_t *avl)
 {
     struct entry *e;
 
