@@ -25,70 +25,91 @@
 /**
  * Define a new data type: vector_t
  */
-typedef struct _vector vector_t;
+typedef struct _vector *vector_t;
+
+/**
+ * Define vectorEntry type
+ */
+typedef void *vectorEntry;
 
 /**
  * vector_new - Create a new vector
  *
- * @n: size of vetor
+ * @vector[out]: the vector
  *
- * Return vector_t pointer if success, NULL
- * pointer if failed.
+ * Return 0 if success and set vector to the new pointer,
+ * -1 if fail to alloc memory.
  */
-extern vector_t *vector_new(const size_t n);
+extern int vector_new(vector_t *vector);
 
 /**
  * vector_free - Destroy a vector
  *
- * @vector: the vector
+ * @vector[in]: the vector
  */
 extern void vector_free(vector_t *vector);
 
 /**
- * vector_len - Get the size of current vector
+ * vector_get_size - Get the size of current vector
  *
- * @vector: the vector
+ * @vector[in]: the vector
  *
- * Return used space of vector.
+ * Return 0 if vector is empty, otherwise return actual size of the vecor.
  */
-extern size_t vector_len(vector_t *vector);
+extern size_t vector_get_size(vector_t vector);
 
 /**
  * vector_get - Get value from vector
  *
- * @vector: the vector
- * @idx: the index
+ * @vector[in]: the vector
+ * @idx[in]: the index
+ * @e[out]: output entry value
  *
  * Get value from vector by a given index.
+ * Return -1 if idx exceeds the size of the vector, otherwise return 0.
  */
-extern void *vector_get(vector_t *vector, const size_t idx);
+extern int vector_get_entry(vector_t vector, const size_t idx, vectorEntry *e);
 
 /**
- * vector_set - Set value in vector
+ * vector_set_entry - Set entry value in a vector
  *
- * @vector: the vector
- * @idx: the index
- * @x: set value
+ * @vector[in]: the vector
+ * @idx[in]: the index
+ * @e[in]: input value
  *
  * Return 0 if success, -1 if index exceeds the size of the vector.
  */
-extern int vector_set(vector_t *vector, const size_t idx, void *x);
+extern int vector_set_entry(vector_t vector, const size_t idx, vectorEntry e);
 
 /**
- * vector_append - Append an element at the end of vector
+ * vector_append_entry - Append an entry to a vector
  *
- * @vector: the vector
- * @x: the value
+ * @vector[in]: the vector
+ * @e[in]: input value
  *
- * Return 0 if success, -1 if append failed.
+ * Return 0 if success, -1 if failed to alloc memory.
  */
-extern int vector_append(vector_t *vector, void *x);
+extern int vector_append_entry(vector_t vector, vectorEntry e);
 
 /**
-  * vector_pop - Pop the value at the end of vector
+  * vector_pop_entry - Pop the value at the end of vector
   *
-  * @vector: the vector
+  * @vector[in]: the vector
+  * @e[out]: output value
+  *
+  * Return -1 if the vector is already empty, otherwise pop out
+  * the end entry of the vector.
   */
-extern void *vector_pop(vector_t *vector);
+extern int vector_pop_entry(vector_t vector, vectorEntry *e);
+
+
+/**
+ * vector_isempty - Check if vector is empty
+ *
+ * @vector[in]: the vector
+ *
+ * Return non-zero if vector is empty, 0 if not.
+ */
+extern int vector_isempty(vector_t vector);
 
 #endif /* BULLET_VECTOR_H */

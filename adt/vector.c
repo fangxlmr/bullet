@@ -19,135 +19,143 @@
 
 #include <string.h>
 #include "vector.h"
-#define RESIZE_FACTOR 2
+#define RESIZE_FACTOR 1.5
+static const size_t DEFAULT_SIZE = 10;
 
 struct _vector {
-    void **array;
-    size_t capacity;  /* capacity of the array  */
-    size_t len;      /* used space of the array  */
+    vectorEntry *array;
+    size_t free;    /* Free space. */
+    size_t used;    /* used space. */
 };
 
-vector_t *vector_new(const size_t n)
+static int vector_isfull(vector_t vector)
 {
-    void **new_array;
-    vector_t *vector;
-
-    vector = (vector_t *) malloc(sizeof(*vector));
-    if (vector == NULL) {
-        return NULL;
-    } else {
-        vector->capacity = n;
-        vector->len = 0;
-    }
-
-    new_array  = (void **) malloc(n * sizeof(void *));
-    if (new_array == NULL) {
-        free(vector);
-        return NULL;
-    } else {
-        vector->array = new_array;
-        return vector;
-    }
-}
-
-void vector_free(vector_t *vector)
-{
-    free(vector->array);
-    free(vector);
-}
-
-size_t vector_len(vector_t *vector)
-{
-    return vector->len;
-}
-
-void *vector_get(vector_t *vector, const size_t idx)
-{
-    if (idx >= vector->len) {
-        //TODO error handling
-        return NULL;
-    } else {
-        return (vector->array)[idx];
-    }
+    return vector->free == 0;
 }
 
 /**
  * vector_resize - Resize vector
  *
- * Resize factor is pre-defined at the beginning
- * of this file with default value 2.
+ * Resize according to RESIZE_FACOTR.
  *
- * Return 0 if resize success, -1 if failed.
- * If resize failed, variable "vector" still
- * hold the pointer of old vector.
+ * Return 0 if resize success, -1 if failed to alloc memory.
  */
-static int vector_resize(vector_t *vector)
+static int vector_resize(vector_t vector)
 {
-    size_t old_capacity;
-    size_t new_capacity;
-    void **old_array;
-    void **new_array;
+    size_t old_cap;
+    size_t new_cap;
+    vectorEntry *old_array;
+    vectorEntry *new_array;
 
+    old_cap = vector->used;
     old_array = vector->array;
-    old_capacity = vector->capacity;
 
-    new_capacity = RESIZE_FACTOR * old_capacity;
-    new_array = (void **) malloc(new_capacity * sizeof(void *));
+    new_cap = RESIZE_FACTOR * old_cap;
+    new_array = (vectorEntry *) malloc(new_cap * sizeof(vectorEntry));
 
-    if (new_array == NULL) {  /* resize failed.  */
+    if (new_array == NULL) {  /* No enough memory. */
         return -1;
 
-    } else {        /* resize success  */
-        memcpy(new_array, old_array, old_capacity * sizeof(void *));
-        memset(new_array + old_capacity, 0,(new_capacity - old_capacity) * sizeof(void *));
+    } else {        /* Resize successfuuly.  */
+        memcpy(new_array, old_array, old_cap * sizeof(vectorEntry));
+        memset(new_array + old_cap, 0,(new_cap - old_cap) * sizeof(void *));
 
-        vector->capacity = new_capacity;
         vector->array = new_array;
+        vector->used = old_cap;
+        vector->free = new_cap - old_cap;
         free(old_array);
 
         return 0;
     }
 }
 
-int vector_set(vector_t *vector, const size_t idx, void *x)
+int vector_new(vector_t *vector)
 {
-    void **array;
-    size_t len;
+    vector_t new_vector;
+    vectorEntry *new_array;
 
-    array = vector->array;
-    len = vector->len;
-
-    if (idx < vector->len) {
-        array[idx] = x;
-        return 0;
-    } else {
-        //TODO error handling.
+    new_vector = (vector_t) malloc(sizeof(*new_vector));
+    if (new_vector == NULL) {
         return -1;
-    }
-}
-
-int vector_append(vector_t *vector, void *x)
-{
-    if (vector->len < vector->capacity) {
-        vector->array[vector->len] = x;
-        vector->len++;
-        return 0;
     } else {
-        if (vector_resize(vector) == -1) {
+        new_array  = (vectorEntry *) malloc(DEFAULT_SIZE * sizeof(vectorEntry));
+        if (new_array == NULL) {
+            free(vector);
             return -1;
         } else {
-            vector->array[vector->len] = x;
-            vector->len++;
+            new_vector->array = new_array;
+            new_vector->free = DEFAULT_SIZE;
+            new_vector->used = 0;
+            *vector = new_vector;
             return 0;
         }
     }
 }
 
-void *vector_pop(vector_t *vector)
+void vector_free(vector_t *vector)
 {
-    if (vector->len == 0) {
+    free((*vector)->array);
+    free(*vector);
+    *vector = NULL;
+}
+
+size_t vector_get_size(vector_t vector)
+{
+    return vector->used;
+}
+
+int vector_get_entry(vector_t vector, const size_t idx, vectorEntry *e)
+{
+    if (idx >= vector->used) {
         return -1;
     } else {
-        return vector->arry[--vector->len];
+        *e = (vector->array)[idx];
+        return 0;
     }
+}
+
+int vector_set_entry(vector_t vector, const size_t idx, vectorEntry e)
+{
+    if (idx >= vector->used) {
+        return -1;
+    } else {
+        vector->array[idx] = e;
+        return 0;
+    }
+}
+
+int vector_append_entry(vector_t vector, vectorEntry e)
+{
+    if (vector_isfull(vector) == 0) {
+        vector->array[vector->used] = e;
+        vector->used++;
+        vector->free--;
+        return 0;
+    } else {
+        if (vector_resize(vector) == -1) {
+            return -1;
+        } else {
+            vector->array[vector->used] = e;
+            vector->used++;
+            vector->free++;
+            return 0;
+        }
+    }
+}
+
+int vector_pop_entry(vector_t vector, vectorEntry *e)
+{
+    if (vector_isempty(vector)) {
+        return -1;
+    } else {
+        *e = vector->array[vector->used];
+        vector->used--;
+        vector->used++;
+        return 0;
+    }
+}
+
+int vector_isempty(vector_t vector)
+{
+    return vector->used == 0;
 }
