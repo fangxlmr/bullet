@@ -104,7 +104,7 @@ size_t vector_get_size(vector_t vector)
     return vector->used;
 }
 
-int vector_get_entry(vector_t vector, const size_t idx, vectorEntry *e)
+int vector_get(vector_t vector, const size_t idx, vectorEntry *e)
 {
     if (idx >= vector->used) {
         return -1;
@@ -114,7 +114,7 @@ int vector_get_entry(vector_t vector, const size_t idx, vectorEntry *e)
     }
 }
 
-int vector_set_entry(vector_t vector, const size_t idx, vectorEntry e)
+int vector_set(vector_t vector, const size_t idx, vectorEntry e)
 {
     if (idx >= vector->used) {
         return -1;
@@ -143,7 +143,7 @@ int vector_append_entry(vector_t vector, vectorEntry e)
     }
 }
 
-int vector_pop_entry(vector_t vector, vectorEntry *e)
+int vector_pop(vector_t vector, vectorEntry *e)
 {
     if (vector_isempty(vector)) {
         return -1;
