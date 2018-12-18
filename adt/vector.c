@@ -58,7 +58,7 @@ static int vector_resize(vector_t vector)
 
     } else {        /* Resize successfuuly.  */
         memcpy(new_array, old_array, old_cap * sizeof(vectorElem));
-        memset(new_array + old_cap, 0,(new_cap - old_cap) * sizeof(void *));
+        memset(new_array + old_cap, 0,(new_cap - old_cap) * sizeof(vectorElem));
 
         vector->array = new_array;
         vector->used = old_cap;
@@ -104,30 +104,30 @@ size_t vector_get_size(vector_t vector)
     return vector->used;
 }
 
-int vector_get(vector_t vector, const size_t idx, vectorElem *e)
+int vector_get(vector_t vector, const size_t idx, vectorElem *x)
 {
     if (idx >= vector->used) {
         return -1;
     } else {
-        *e = (vector->array)[idx];
+        *x = (vector->array)[idx];
         return 0;
     }
 }
 
-int vector_set(vector_t vector, const size_t idx, vectorElem e)
+int vector_set(vector_t vector, const size_t idx, vectorElem x)
 {
     if (idx >= vector->used) {
         return -1;
     } else {
-        vector->array[idx] = e;
+        vector->array[idx] = x;
         return 0;
     }
 }
 
-int vector_append_entry(vector_t vector, vectorElem e)
+int vector_append(vector_t vector, vectorElem x)
 {
     if (vector_isfull(vector) == 0) {
-        vector->array[vector->used] = e;
+        vector->array[vector->used] = x;
         vector->used++;
         vector->free--;
         return 0;
@@ -135,7 +135,7 @@ int vector_append_entry(vector_t vector, vectorElem e)
         if (vector_resize(vector) == -1) {
             return -1;
         } else {
-            vector->array[vector->used] = e;
+            vector->array[vector->used] = x;
             vector->used++;
             vector->free++;
             return 0;
@@ -143,12 +143,12 @@ int vector_append_entry(vector_t vector, vectorElem e)
     }
 }
 
-int vector_pop(vector_t vector, vectorElem *e)
+int vector_pop(vector_t vector, vectorElem *x)
 {
     if (vector_isempty(vector)) {
         return -1;
     } else {
-        *e = vector->array[vector->used];
+        *x = vector->array[vector->used];
         vector->used--;
         vector->used++;
         return 0;

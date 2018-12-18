@@ -63,44 +63,44 @@ extern size_t vector_get_size(vector_t vector);
  *
  * @vector[in]: the vector
  * @idx[in]: the index
- * @e[out]: output entry value
+ * @x[out]: output entry value
  *
  * Get value from vector by a given index.
  * Return -1 if idx exceeds the size of the vector, otherwise return 0.
  */
-extern int vector_get(vector_t vector, const size_t idx, vectorElem *e);
+extern int vector_get(vector_t vector, const size_t idx, vectorElem *x);
 
 /**
  * vector_set - Set entry value in a vector
  *
  * @vector[in]: the vector
  * @idx[in]: the index
- * @e[in]: input value
+ * @x[in]: input value
  *
  * Return 0 if success, -1 if index exceeds the size of the vector.
  */
-extern int vector_set(vector_t vector, const size_t idx, vectorElem e);
+extern int vector_set(vector_t vector, const size_t idx, vectorElem x);
 
 /**
  * vector_append - Append an entry to a vector
  *
  * @vector[in]: the vector
- * @e[in]: input value
+ * @x[in]: input value
  *
  * Return 0 if success, -1 if failed to alloc memory.
  */
-extern int vector_append(vector_t vector, vectorElem e);
+extern int vector_append(vector_t vector, vectorElem x);
 
 /**
   * vector_pop - Pop the value at the end of vector
   *
   * @vector[in]: the vector
-  * @e[out]: output value
+  * @x[out]: output value
   *
   * Return -1 if the vector is already empty, otherwise pop out
   * the end entry of the vector.
   */
-extern int vector_pop(vector_t vector, vectorElem *e);
+extern int vector_pop(vector_t vector, vectorElem *x);
 
 
 /**
