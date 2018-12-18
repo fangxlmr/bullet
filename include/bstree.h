@@ -20,98 +20,103 @@
 #ifndef BULLET_BSTREE_H
 #define BULLET_BSTREE_H
 
+#include <stddef.h>
 #include "comparator.h"
 
 /**
  * Define a new data type: bstee_t
  */
-typedef struct _bstree bstree_t;
+typedef struct _bstree *bstree_t;
+
+/**
+ * Define a new bstreeElem type
+ */
+typedef void *bstreeElem;
 
 /**
  * bstree_new - Create a new bstree
  *
- * @cmp: comparing function
+ * @cmp[in]: comparing function
  *
- * Return 0 if success, -1 otherwise.
- *
- * If cmp set to be NULL, then default
- * integer comparator will be used.
+ * Return 0 if success, -1 if failed to alloc memory.
+ * If cmp = NULL, then default comparator function would be used.
  */
-extern bstree_t *bstree_new(const comparator cmp);
+extern int bstree_new(bstree_t *bstree, const comparator cmp);
 
 /**
  * bstree_free - Destroy a bstree
  *
- * @bstree: the bstree
+ * @bstree[in]: the bstree
  */
 extern void bstree_free(bstree_t *bstree);
 
 /**
- * bstee_add - Add an element into bstree
+ * bstee_add - Add an element to bstree
  *
- * @bstree: the bstree
- * @x: the value
+ * @bstree[in]: the bstree
+ * @x[in]: input value
  *
- * Return 0 if success, -1 otherwise.
- * Return 0 if duplicated.
+ * Return 0 if success, -1 if failed to alloc memory.
+ * Duplicate value will be ignored, and return 0.
  */
-extern int bstree_add(bstree_t *bstree, const void *x);
+extern int bstree_add(bstree_t bstree, const bstreeElem x);
 
 /**
  * bstree_remove - Remove an element from bstree
  *
- * @bstree: the bstree
- * @x: the value
+ * @bstree[in]: the bstree
+ * @x[in]: the value
  *
- * Return 0 if the match node is removed successfully,
- * -1 if no match node exists
+ * Return 0 if remove node successfully, -1 if not find.
  */
-extern int bstree_remove(bstree_t *bstree, const void *x);
+extern int bstree_remove(bstree_t bstree, const bstreeElem x);
 
 /**
  * bstree_contains - Check bstree contains given element or not
  *
- * @bstree: the bstree
- * @x: the value
+ * @bstree[in]: the bstree
+ * @x[in]: the value
  *
  * Return 1 if the value is in bstree, 0 otherwise.
  */
-extern int bstree_contains(bstree_t *bstree, const void *x);
+extern int bstree_contains(bstree_t bstree, const bstreeElem x);
 
 /**
- * bstree_get_hight - Get hight of bstree
+ * bstree_get_height - Get height of bstree
  *
- * @bstree: the bstree
+ * @bstree[in]: the bstree
  *
- * Return depth of the bstree, 0 if bstree is empty.
+ * Return height of the bstree, 0 if bstree is empty.
  */
-extern int bstree_get_hight(bstree_t *bstree);
+extern size_t bstree_get_height(bstree_t bstree);
 
 /**
- * bstree_isempty - Check bstree is empty or not
+ * bstree_isempty - Check if bstree is empty
  *
- * @bstree: the bstree
+ * @bstree[in]: the bstree
  *
- * Return 1 if bstree is empty, 0 otherwise.
+ * Return non-zero if bstree is empty, 0 otherwise.
  */
-extern int bstree_isempty(bstree_t *bstree);
+extern int bstree_isempty(bstree_t bstree);
 
 /**
  * bstree_get_min - Get min value in bstree
  *
- * @bstree: the bstree
+ * @bstree[in]: the bstree
+ * @x[out]: output value
  *
- * Return min value in bstree, NULL if bstree is empty.
+ * Return 0 if find minimum element, -1 if not find.
  */
-extern void *bstree_get_min(bstree_t *bstree);
+extern int bstree_get_min(bstree_t bstree, bstreeElem *x);
 
 /**
  * bstree_get_max - Get max value in bstree
  *
- * @bstree: the bstree
+ * @bstree[in]: the bstree
+ * @x[out]: output value
  *
- * Return max value in bstree, NULL if bstree is empty.
+ * Return 0 if find maximum element, -1 if not find.
  */
-extern void *bstree_get_max(bstree_t *bstree);
+extern int bstree_get_max(bstree_t bstree, bstreeElem *x);
 
 #endif /* BULLET_BSTREE_H */

@@ -19,12 +19,11 @@
  */
 
 #include <stdlib.h>
-#include <assert.h>
 #include "bstree.h"
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
 
 struct entry {
-    void *x;
+    bstreeElem x;
     struct entry *left;
     struct entry *right;
 };
@@ -34,20 +33,20 @@ struct _bstree {
     comparator cmp;      /* comparing function */
 };
 
-bstree_t *bstree_new(const comparator cmp)
+int bstree_new(bstree_t *bstree, const comparator cmp)
 {
-    bstree_t *bstree;
+    bstree_t new_bstree;
 
-    bstree = (bstree_t *) malloc(sizeof(*bstree));
+    new_bstree = (bstree_t) malloc(sizeof(*new_bstree));
 
-    if (bstree == NULL) {
-        return NULL;
+    if (new_bstree == NULL) {
+        return -1;
 
     } else {
-        bstree->root = NULL;
-        bstree->cmp  = (cmp != NULL) ? cmp : cmp_int;
-
-        return bstree;
+        new_bstree->root = NULL;
+        new_bstree->cmp  = (cmp != NULL) ? cmp : cmp_int;
+        *bstree = new_bstree;
+        return 0;
     }
 
 }
@@ -68,8 +67,9 @@ static void subtree_free(struct entry *root)
 
 void bstree_free(bstree_t *bstree)
 {
-    subtree_free(bstree->root);
-    free(bstree);
+    subtree_free((*bstree)->root);
+    free(*bstree);
+    *bstree = NULL;
 }
 
 /**
@@ -82,7 +82,7 @@ void bstree_free(bstree_t *bstree)
  * Return 0 if success, -1 otherwise.
  * Return 0 if duplicated.
  */
-static int subtree_add(struct entry **root, const void *x, comparator cmp)
+static int subtree_add(struct entry **root, const bstreeElem x, comparator cmp)
 {
     struct entry *e;
 
@@ -107,7 +107,7 @@ static int subtree_add(struct entry **root, const void *x, comparator cmp)
         if (!e) {
             return -1;
         } else {
-            e->x = (void *) x;
+            e->x = x;
             e->left = NULL;
             e->right = NULL;
             *root = e;
@@ -116,9 +116,9 @@ static int subtree_add(struct entry **root, const void *x, comparator cmp)
     }
 }
 
-int bstree_add(bstree_t *bstree, const void *value)
+int bstree_add(bstree_t bstree, const bstreeElem x)
 {
-    return subtree_add(&bstree->root, value, bstree->cmp);
+    return subtree_add(&bstree->root, x, bstree->cmp);
 }
 
 /**
@@ -130,7 +130,7 @@ int bstree_add(bstree_t *bstree, const void *value)
  *
  * Return 1 if contains, 0 otherwise.
  */
-static int subtree_contains(struct entry *root, const void *x, comparator cmp)
+static int subtree_contains(struct entry *root, const bstreeElem x, comparator cmp)
 {
     while (root != NULL && cmp(x, root->x) != 0) {
         /* Turn left */
@@ -145,9 +145,9 @@ static int subtree_contains(struct entry *root, const void *x, comparator cmp)
     return root != NULL;
 }
 
-int bstree_contains(bstree_t *bstree, void *value)
+int bstree_contains(bstree_t bstree, const bstreeElem x)
 {
-    return subtree_contains(bstree->root, value, bstree->cmp);
+    return subtree_contains(bstree->root, x, bstree->cmp);
 }
 
 /**
@@ -238,7 +238,7 @@ static void delete_node(struct entry **node) {
  *
  * Return 0 if success, -1 otherwise.
  */
-static int subtree_remove(struct entry **root, const void *x, comparator cmp)
+static int subtree_remove(struct entry **root, const bstreeElem x, comparator cmp)
 {
     while (*root != NULL && cmp(x, (*root)->x) != 0) {
         /* Turn left */
@@ -259,34 +259,34 @@ static int subtree_remove(struct entry **root, const void *x, comparator cmp)
     }
 }
 
-int bstree_remove(bstree_t *bstree, const void *value)
+int bstree_remove(bstree_t bstree, const bstreeElem x)
 {
-    return subtree_remove(&bstree->root, value, bstree->cmp);
+    return subtree_remove(&bstree->root, x, bstree->cmp);
 }
 
 /**
- * subtree_get_hight - Get hight of subtree
+ * subtree_get_height - Get height of subtree
  */
-static int subtree_get_hight(struct entry *root)
+static int subtree_get_height(struct entry *root)
 {
     if (!root)
         return 0;
 
-    return 1 + MAX( subtree_depth(root->left),
-                    subtree_depth(root->right) );
+    return 1 + max(subtree_get_height(root->left),
+            subtree_get_height(root->right));
 }
 
-int bstree_get_hight(bstree_t *bstree)
+size_t bstree_get_height(bstree_t bstree)
 {
-    return subtree_depth(bstree->root);
+    return subtree_get_height(bstree->root);
 }
 
-int bstree_isempty(bstree_t *bstree)
+int bstree_isempty(bstree_t bstree)
 {
     return bstree->root == NULL;
 }
 
-void *bstree_get_min(bstree_t *bstree)
+int bstree_get_min(bstree_t bstree, bstreeElem *x)
 {
     struct entry *e;
 
@@ -296,13 +296,14 @@ void *bstree_get_min(bstree_t *bstree)
     }
 
     if (e != NULL) {
-        return e->x;
+        *x = e->x;
+        return 0;
     } else {
-        return NULL;
+        return -1;
     }
 }
 
-void *bstree_get_max(bstree_t *bstree)
+int bstree_get_max(bstree_t bstree, bstreeElem *x)
 {
     struct entry *e;
 
@@ -312,9 +313,10 @@ void *bstree_get_max(bstree_t *bstree)
     }
 
     if (e != NULL) {
-        return e->x;
+        *x = e->x;
+        return 0;
     } else {
-        return NULL;
+        return -1;
     }
 
 }
