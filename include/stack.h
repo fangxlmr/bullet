@@ -25,76 +25,76 @@
 /**
  * Define a new data type: stack_t
  */
-typedef struct _stack stack_t;
+typedef struct _stack *stack_t;
+
+/**
+ * Define a new stackElem type
+ */
+typedef void *stackElem;
 
 /**
  * stack_new - Create a new stack
  *
- * Return a stack_t pointer if success,
- * NULL pointer otherwise.
+ * @stack[out]: the stack
+ *
+ * Return 0 if create a new stack successfully,
+ * -1 if failed to alloc memory.
  */
-extern stack_t *stack_new(void);
+extern int stack_new(stack_t *stack);
 
 /**
  * stack_free - Destroy a stack
  *
- * @stack: a stack to be destroyed
+ * @stack[in]: the stack
  */
 extern void stack_free(stack_t *stack);
 
 /**
- * stack_push - Stack push
+ * stack_push - Push an entry on top of a stack
  *
- * @stack: the stack
- * @x: value to be stored
+ * @stack[in]: the stack
+ * @x[in]: input entry value
  *
- * Return 0 if success, -1 otherwise.
- *
- * NULL stack and NULL x are invalid.
+ * Return 0 if success, -1 if failed to alloc memory.
  */
-extern int stack_push(stack_t *stack, void *x);
+extern int stack_push(stack_t stack, stackElem x);
 
 /**
- * stack_pop - Stack pop
+ * stack_pop - Pop out an entry
  *
- * @stack: the stack
+ * @stack[in]: the stack
+ * @x[out]: output entry value
  *
- * Return top value of the stack , NULL pointer if the stack is empty.
- *
- * The top entry (if exists) of the stack will be
- * removed after this operation. 
+ * Return 0 if success, -1 if stack is already empty.
  */
-extern void *stack_pop(stack_t *stack);
+extern int stack_pop(stack_t stack, stackElem *x);
 
 /**
- * stack_peek - Peek top value of the stack
+ * stack_peek - Peek top entry of a stack
  *
- * @stack: the stack
+ * @stack[in]: the stack
+ * @x[out]: peeked value
  *
- * Return top value of the stack, NULL pointer if the stack is empty.
- *
- * The top entry (if exists) of the stack will not be
- * remove unlike function stack_pop(), so that the
- * stack will remain unchanged.
+ * Return 0 if success, -1 if stack is already empty.
  */
-extern void *stack_peek(stack_t *stack);
+extern int stack_peek(stack_t stack, stackElem *x);
 
 /**
  * stack_isempty - Check stack is empty or not
  *
- * @stack: the stack
+ * @stack[in]: the stack
  *
- * Return 1 if the stack is empty, 0 otherwise.
+ * Return non-zero value if the stack is empty, 0 otherwise.
  */
-extern int stack_isempty(stack_t *stack);
+extern int stack_isempty(stack_t stack);
 
 /**
  * stack_get_size - Get size of the stack
  *
- * @stack: the stack
+ * @stack[in]: the stack
  *
  * Return size of the stack, 0 if stack is empty.
  */
-extern size_t stack_get_size(stack_t *stack);
+extern size_t stack_get_size(stack_t stack);
 
 #endif /* BULLET_STACK_H */
