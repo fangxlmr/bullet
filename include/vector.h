@@ -28,9 +28,9 @@
 typedef struct _vector *vector_t;
 
 /**
- * Define vectorEntry type
+ * Define vectorElem type
  */
-typedef void *vectorEntry;
+typedef void *vectorElem;
 
 /**
  * vector_new - Create a new vector
@@ -68,7 +68,7 @@ extern size_t vector_get_size(vector_t vector);
  * Get value from vector by a given index.
  * Return -1 if idx exceeds the size of the vector, otherwise return 0.
  */
-extern int vector_get(vector_t vector, const size_t idx, vectorEntry *e);
+extern int vector_get(vector_t vector, const size_t idx, vectorElem *e);
 
 /**
  * vector_set - Set entry value in a vector
@@ -79,7 +79,7 @@ extern int vector_get(vector_t vector, const size_t idx, vectorEntry *e);
  *
  * Return 0 if success, -1 if index exceeds the size of the vector.
  */
-extern int vector_set(vector_t vector, const size_t idx, vectorEntry e);
+extern int vector_set(vector_t vector, const size_t idx, vectorElem e);
 
 /**
  * vector_append - Append an entry to a vector
@@ -89,7 +89,7 @@ extern int vector_set(vector_t vector, const size_t idx, vectorEntry e);
  *
  * Return 0 if success, -1 if failed to alloc memory.
  */
-extern int vector_append(vector_t vector, vectorEntry e);
+extern int vector_append(vector_t vector, vectorElem e);
 
 /**
   * vector_pop - Pop the value at the end of vector
@@ -100,7 +100,7 @@ extern int vector_append(vector_t vector, vectorEntry e);
   * Return -1 if the vector is already empty, otherwise pop out
   * the end entry of the vector.
   */
-extern int vector_pop(vector_t vector, vectorEntry *e);
+extern int vector_pop(vector_t vector, vectorElem *e);
 
 
 /**

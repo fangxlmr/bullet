@@ -23,7 +23,7 @@
 static const size_t DEFAULT_SIZE = 10;
 
 struct _vector {
-    vectorEntry *array;
+    vectorElem *array;
     size_t free;    /* Free space. */
     size_t used;    /* used space. */
 };
@@ -44,20 +44,20 @@ static int vector_resize(vector_t vector)
 {
     size_t old_cap;
     size_t new_cap;
-    vectorEntry *old_array;
-    vectorEntry *new_array;
+    vectorElem *old_array;
+    vectorElem *new_array;
 
     old_cap = vector->used;
     old_array = vector->array;
 
     new_cap = RESIZE_FACTOR * old_cap;
-    new_array = (vectorEntry *) malloc(new_cap * sizeof(vectorEntry));
+    new_array = (vectorElem *) malloc(new_cap * sizeof(vectorElem));
 
     if (new_array == NULL) {  /* No enough memory. */
         return -1;
 
     } else {        /* Resize successfuuly.  */
-        memcpy(new_array, old_array, old_cap * sizeof(vectorEntry));
+        memcpy(new_array, old_array, old_cap * sizeof(vectorElem));
         memset(new_array + old_cap, 0,(new_cap - old_cap) * sizeof(void *));
 
         vector->array = new_array;
@@ -72,13 +72,13 @@ static int vector_resize(vector_t vector)
 int vector_new(vector_t *vector)
 {
     vector_t new_vector;
-    vectorEntry *new_array;
+    vectorElem *new_array;
 
     new_vector = (vector_t) malloc(sizeof(*new_vector));
     if (new_vector == NULL) {
         return -1;
     } else {
-        new_array  = (vectorEntry *) malloc(DEFAULT_SIZE * sizeof(vectorEntry));
+        new_array  = (vectorElem *) malloc(DEFAULT_SIZE * sizeof(vectorElem));
         if (new_array == NULL) {
             free(vector);
             return -1;
@@ -104,7 +104,7 @@ size_t vector_get_size(vector_t vector)
     return vector->used;
 }
 
-int vector_get(vector_t vector, const size_t idx, vectorEntry *e)
+int vector_get(vector_t vector, const size_t idx, vectorElem *e)
 {
     if (idx >= vector->used) {
         return -1;
@@ -114,7 +114,7 @@ int vector_get(vector_t vector, const size_t idx, vectorEntry *e)
     }
 }
 
-int vector_set(vector_t vector, const size_t idx, vectorEntry e)
+int vector_set(vector_t vector, const size_t idx, vectorElem e)
 {
     if (idx >= vector->used) {
         return -1;
@@ -124,7 +124,7 @@ int vector_set(vector_t vector, const size_t idx, vectorEntry e)
     }
 }
 
-int vector_append_entry(vector_t vector, vectorEntry e)
+int vector_append_entry(vector_t vector, vectorElem e)
 {
     if (vector_isfull(vector) == 0) {
         vector->array[vector->used] = e;
@@ -143,7 +143,7 @@ int vector_append_entry(vector_t vector, vectorEntry e)
     }
 }
 
-int vector_pop(vector_t vector, vectorEntry *e)
+int vector_pop(vector_t vector, vectorElem *e)
 {
     if (vector_isempty(vector)) {
         return -1;
