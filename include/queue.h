@@ -25,71 +25,75 @@
 /**
  * Define a new data type: queue_t 
  */
-typedef struct _queue queue_t;
+typedef struct _queue *queue_t;
+
+/**
+ * Define a new queueElem type.
+ */
+typedef void *queueElem;
 
 /**
  * queue_new - Create a new queue
  *
- * Return a queue_t pointer if success,
- * NULL pointer otherwise.
+ * @queue[out]: the queue
+ *
+ * Return 0 if success, -1 if failed to alloc memory.
  */
-extern queue_t *queue_new(void);
+extern int queue_new(queue_t *queue);
 
 /**
  * queue_free - Destroy a queue
  *
- * @queue: the queue to be destoyed
+ * @queue[in]: the queue to be destoyed
  */
 extern void queue_free(queue_t *queue);
 
 /**
  * queue_push - Enqueue an element
  *
- * @queue: the queue
- * @x: value to be stored
+ * @queue[in]: the queue
+ * @x[in]: value to be stored
  *
- * Return 0 if success, -1 otherwise.
- *
- * NULL queue and NULL x are invalid.
+ * Return 0 if success, -1 if failed to alloc memory.
  */
-extern int queue_push(queue_t *queue, void *x);
+extern int queue_push(queue_t queue, queueElem x);
 
 /**
  * queue_pop - Dequeue an element
  *
- * @queue: the queue
+ * @queue[in]: the queue
+ * @x[out]: output value
  *
- * Return the value of head node and remove it from queue.
- * If the queue is already empty, return NULL.
+ * Return 0 if success, -1 if queue is already empty.
  */
-extern void *queue_pop(queue_t *queue);
+extern int queue_pop(queue_t queue, queueElem *x);
 
 /**
- * queue_peek - Peek value of head node in queue
+ * queue_peek - Peek value without removing it
  *
- * @queue: the queue
+ * @queue[in]: the queue
+ * @x[out]: output value
  *
- * Return value of head node and queue remain 
- * unchanged. Return NULL if the queue is empty.
+ * Return 0 if success, -1 if queue is already empty.
  */
-extern void *queue_peek(queue_t *queue);
+extern int queue_peek(queue_t queue, queueElem *x);
 
 /**
- * queue_isempty - Check queue is empty or not
+ * queue_isempty - Check if queue is empty or not
  *
- * @queue: the queue
+ * @queue[in]: the queue
  *
- * Return 1 if the queue is empty, 0 otherwise.
+ * Return non-zero if the queue is empty, 0 it is.
  */
-extern int queue_isempty(queue_t *queue);
+extern int queue_isempty(queue_t queue);
 
 /**
  * queue_get_size - Get size of queue
  *
- * @queue: the queue
+ * @queue[in]: the queue
  *
  * Return size of the queue, 0 if queue is already empty.
  */
-extern size_t queue_get_size(queue_t *queue);
+extern size_t queue_get_size(queue_t queue);
 
 #endif /* BULLET_QUEUE_H */

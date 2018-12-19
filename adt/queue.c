@@ -17,10 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stddef.h>
 #include "queue.h"
-
 struct entry {
-    void *x;
+    queueElem x;
     struct entry *next;
 };
 
@@ -30,33 +30,36 @@ struct _queue {
     size_t size;
 };
 
-queue_t *queue_new(void)
+int queue_new(queue_t *queue)
 {
-    queue_t *queue;
+    queue_t new_queue;
 
-    queue = (queue_t *) malloc(sizeof(*queue));
+    new_queue = (queue_t) malloc(sizeof(*new_queue));
     if (queue == NULL) {
-        return NULL;
+        return -1;
     } else {
-        queue->head = NULL;
-        queue->tail = NULL;
-        queue->size = 0;
-        return queue;
+        new_queue->head = NULL;
+        new_queue->tail = NULL;
+        new_queue->size = 0;
+        *queue = new_queue;
+        return 0;
     }
 }
 
 void queue_free(queue_t *queue)
 {
-    while (! queue_isempty(queue)) {
-        queue_pop(queue);
+    queueElem x;
+
+    while (queue_isempty(*queue) == 0) {
+        queue_pop(*queue, &x);
     }
-    free(queue);
+    free(*queue);
+    *queue = NULL;
 }
 
-int queue_push(queue_t *queue, void *x)
+int queue_push(queue_t queue, queueElem x)
 {
     struct entry *e;
-
 
     e = (struct entry *) malloc(sizeof(*e));
     if (e == NULL) {
@@ -77,41 +80,42 @@ int queue_push(queue_t *queue, void *x)
     return 0;
 }
 
-void *queue_pop(queue_t *queue) {
+int queue_pop(queue_t queue, queueElem *x)
+{
     struct entry *e;
-    void *x;
 
     if (queue_isempty(queue)) {
-        return NULL;
+        return -1;
     } else {
         e = queue->head;
         queue->head = e->next;
-        x = e->x;
+        *x = e->x;
         free(e);
 
         if (queue->head == NULL) {
             queue->tail = NULL;
         }
         queue->size--;
-        return x;
+        return 0;
     }
 }
 
-void *queue_peek(queue_t *queue)
+int queue_peek(queue_t queue, queueElem *x)
 {
     if (queue_isempty(queue)) {
-        return NULL;
+        return -1;
     } else {
-        return queue->head->x;
+        *x = queue->head->x;
+        return 0;
     }
 }
 
-int queue_isempty(queue_t *queue)
+int queue_isempty(queue_t queue)
 {
     return queue->head == NULL;
 }
 
-size_t queue_get_size(queue_t *queue)
+size_t queue_get_size(queue_t queue)
 {
     return queue->size;
 }
