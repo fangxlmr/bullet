@@ -20,11 +20,11 @@
 
 #include <stdlib.h>
 #include "avl-tree.h"
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
 
 struct entry {
-    void *x;                /* data */
-    int height;             /* balance factor */
+    avltreeElem x;          /* data */
+    int height;             /* height of sub-avltree */
     struct entry *left;     /* left child of the node */
     struct entry *right;    /* right child of the node */
 };
@@ -34,18 +34,19 @@ struct _avltree {
     comparator cmp;
 };
 
-avltree_t *avltree_new(const comparator cmp)
+int avltree_new(avltree_t *avl, const comparator cmp)
 {
-    avltree_t *avl;
+    avltree_t new_avl;
 
-    avl = (avltree_t *) malloc(sizeof(avltree_t));
-    if (!avl) {
-        return NULL;
+    new_avl = (avltree_t) malloc(sizeof(*new_avl));
+    if (new_avl == NULL) {
+        return -1;
 
     } else {
-        avl->root = NULL;
-        avl->cmp  = (cmp != NULL) ? cmp : cmp_int;
-        return avl;
+        new_avl->root = NULL;
+        new_avl->cmp  = (cmp != NULL) ? cmp : cmp_int;
+        *avl = new_avl;
+        return 0;
     }
 }
 
@@ -61,11 +62,13 @@ static void subtree_free(struct entry *root)
     subtree_free(root->left);
     subtree_free(root->right);
     free(root);
+    root = NULL;
 }
 
 void avltree_free(avltree_t *avl)
 {
-    subtree_free(avl->root);
+    subtree_free((*avl)->root);
+    *avl = NULL;
 }
 
 /*
@@ -82,6 +85,15 @@ static int get_height(struct entry *e)
 
 /*
  * rr_rotate - Right-right rotate (left rotation)
+ *
+ * Schema:
+ *    root--> x                      root--> y
+ *           / \          rr_rotate        /   \
+ *          a   y <--tmp     ==>          x     z
+ *             / \                       / \   / \
+ *            b   z                     a   b c   d
+ *               / \
+ *              c   d
  */
 static void rr_rotate(struct entry **e)
 {
@@ -95,8 +107,8 @@ static void rr_rotate(struct entry **e)
     tmp->left = root;
 
     /* Update height of nodes */
-    root->height = MAX(get_height(root->left), get_height(root->right)) + 1;
-    tmp->height  = MAX(get_height(tmp->left),  get_height(tmp->right)) + 1;
+    root->height = max(get_height(root->left), get_height(root->right)) + 1;
+    tmp->height  = max(get_height(tmp->left),  get_height(tmp->right)) + 1;
 
     /* Update root node */
     *e = tmp;
@@ -104,6 +116,16 @@ static void rr_rotate(struct entry **e)
 
 /*
  * ll_rotate - Left-left rotate (right rotation)
+ *
+ * Schema:
+ *
+ *    root--> x                  root--> y
+ *           / \     ll_rotate         /   \
+ *   tmp--> y   a       ==>           z     x
+ *         / \                       / \   / \
+ *        z   b                     c   d b   a
+ *       / \
+ *      c   d
  */
 static void ll_rotate(struct entry **e)
 {
@@ -117,8 +139,8 @@ static void ll_rotate(struct entry **e)
     tmp->right = root;
     
     /* Update height of nodes */
-    root->height = MAX(get_height(root->left), get_height(root->right)) + 1;
-    tmp->height  = MAX(get_height(tmp->left),  get_height(tmp->right)) + 1;
+    root->height = max(get_height(root->left), get_height(root->right)) + 1;
+    tmp->height  = max(get_height(tmp->left),  get_height(tmp->right)) + 1;
     
     /* Update root node */
     *e = tmp;
@@ -126,40 +148,46 @@ static void ll_rotate(struct entry **e)
 
 /*
  * lr_rotate - Left-right double rotation
+ *
+ * Schema:
+ *
+ *    root--> x                root--> x                  root--> z
+ *           / \   rr_rotate         /   \    ll_rotate         /   \
+ *          y   b      ==>          z     b      ==>           y     x
+ *         / \                     / \                        / \   / \
+ *        a   z                   y   d                      a   c d   b
+ *           / \                 / \
+ *          c   d               a   c
  */
 static void lr_rotate(struct entry **node)
 {
-    /*
-     * 
-     * 
-     */
     rr_rotate(&(*node)->left);
-    /*
-     * 
-     */
     ll_rotate(node);
 }
 
 /*
  * rl_rotate - Right-left double rotation
+ *
+ * Schema:
+ *
+ *    root--> x                root--> x                  root--> z
+ *           / \   ll_rotate         /   \    rr_rotate         /   \
+ *          a   y      ==>          a     z      ==>           x     y
+ *             / \                       / \                  / \   / \
+ *            z   b                     c   y                a   c d   b
+ *           / \                           / \
+ *          c   d                         d   b
  */
 static void rl_rotate(struct entry **node)
 {
-    /*
-     * 
-     * 
-     */
     ll_rotate(&(*node)->right);
-    /*
-     * 
-     */
     rr_rotate(node);
 }
 
 /*
  * subtree_add - Add a new node
  */
-static int subtree_add(struct entry **e, const void *x, comparator cmp)
+static int subtree_add(struct entry **e, const avltreeElem x, comparator cmp)
 {
     struct entry *new_e;
 
@@ -169,7 +197,7 @@ static int subtree_add(struct entry **e, const void *x, comparator cmp)
             return -1;
 
         } else {
-            new_e->x = (void *) x;
+            new_e->x = (avltreeElem ) x;
             new_e->height = 1;
             new_e->left = NULL;
             new_e->right = NULL;
@@ -207,16 +235,16 @@ static int subtree_add(struct entry **e, const void *x, comparator cmp)
     }
 
     /* Update height*/
-    (*e)->height = MAX(get_height((*e)->left), get_height((*e)->right)) + 1;
+    (*e)->height = max(get_height((*e)->left), get_height((*e)->right)) + 1;
     return 0;
 }
 
-int avltree_add(avltree_t *avl, void *value)
+int avltree_add(avltree_t avl, const avltreeElem x)
 {
-    return subtree_add(&avl->root, value, avl->cmp);
+    return subtree_add(&avl->root, x, avl->cmp);
 }
 
-int avltree_contains(avltree_t *avl, const void *value)
+int avltree_contains(avltree_t avl, const avltreeElem x)
 {
     struct entry *e;
     comparator cmp;
@@ -224,8 +252,8 @@ int avltree_contains(avltree_t *avl, const void *value)
     e = avl->root;
     cmp  = avl->cmp;
 
-    while (e != NULL && cmp(value, e->x) != 0) {
-        if (cmp(value, e->x) < 0) {
+    while (e != NULL && cmp(x, e->x) != 0) {
+        if (cmp(x, e->x) < 0) {
             e = e->left;
         } else {
             e = e->right;
@@ -240,7 +268,7 @@ int avltree_contains(avltree_t *avl, const void *value)
  *
  * Return 0 if success, -1 if no match node found.
  */
-static int subtree_remove(struct entry **e, const void *value, comparator cmp)
+static int subtree_remove(struct entry **e, const avltreeElem x, comparator cmp)
 {
     struct entry *root;
     struct entry *tmp;
@@ -251,8 +279,8 @@ static int subtree_remove(struct entry **e, const void *value, comparator cmp)
         return -1;
 
         /* Target node is in left subtree */
-    } else if (cmp(value, root->x) < 0) {
-        subtree_remove(&root->left, value, cmp);
+    } else if (cmp(x, root->x) < 0) {
+        subtree_remove(&root->left, x, cmp);
 
         /* Re-balance */
         if (get_height(root->right) - get_height(root->left) == 2) {
@@ -266,8 +294,8 @@ static int subtree_remove(struct entry **e, const void *value, comparator cmp)
         }
 
         /* Target node is in right subtree */
-    } else if (cmp(value, root->x) > 0) {
-        subtree_remove(&root->right, value, cmp);
+    } else if (cmp(x, root->x) > 0) {
+        subtree_remove(&root->right, x, cmp);
 
         /* Re-balance */
         if (get_height(root->left) - get_height(root->right) == 2) {
@@ -286,7 +314,7 @@ static int subtree_remove(struct entry **e, const void *value, comparator cmp)
             /*
              * The height of left subtree is larger than 
              * the height of right subtree. Find the precursor 
-             * in left subtree and copy value to current node, 
+             * in left subtree and copy x to current node, 
              * and free precursor. Now, avl-tree is still balanced.
              */
             if (get_height(root->left) > get_height(root->right)) {
@@ -302,7 +330,7 @@ static int subtree_remove(struct entry **e, const void *value, comparator cmp)
                 /*
                  * The height of left subtree is lower than 
                  * the height of right subtree. Find the successor 
-                 * in right subtree and copy value to current node,
+                 * in right subtree and copy x to current node,
                  * and free successor. Now, avl-tree is still balanced.
                  */
             } else {
@@ -327,28 +355,28 @@ static int subtree_remove(struct entry **e, const void *value, comparator cmp)
 
     /* Update the height of nodes */
     if (*e != NULL) {
-        (*e)->height = MAX(get_height((*e)->left), get_height((*e)->right)) + 1;
+        (*e)->height = max(get_height((*e)->left), get_height((*e)->right)) + 1;
     }
     return 0;
 }
 
 
-int avltree_remove(avltree_t *avl, const void *x)
+int avltree_remove(avltree_t avl, const avltreeElem x)
 {
     return subtree_remove(&avl->root, x, avl->cmp);
 }
 
-int avltree_get_hight(avltree_t *avl)
+int avltree_get_hight(avltree_t avl)
 {
     return get_height(avl->root);
 }
 
-int avltree_isempty(avltree_t *avl)
+int avltree_isempty(avltree_t avl)
 {
     return avl->root == NULL;
 }
 
-void *avltree_get_min(avltree_t *avl)
+int avltree_get_min(avltree_t avl, avltreeElem *x)
 {
     struct entry *e;
 
@@ -358,13 +386,13 @@ void *avltree_get_min(avltree_t *avl)
     }
 
     if (e != NULL) {
-        return e->x;
+        *x = e->x;
     } else {
-        return NULL;
+        return -1;
     }
 }
 
-void *avl_get_max(avltree_t *avl)
+int avl_get_max(avltree_t avl, avltreeElem *x)
 {
     struct entry *e;
 
@@ -374,8 +402,9 @@ void *avl_get_max(avltree_t *avl)
     }
 
     if (e != NULL) {
-        return e->x;
+        *x = e->x;
+        return 0;
     } else {
-        return NULL;
+        return -1;
     }
 }
