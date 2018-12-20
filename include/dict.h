@@ -25,7 +25,17 @@
 /**
  * Define a new data type: dict_t
  */
-typedef struct _dict dict_t;
+typedef struct _dict *dict_t;
+
+/**
+ * Define a new dictKey type
+ */
+typedef void *dictKey;
+
+/**
+ * Define a new dictValue type
+ */
+typedef void *dictValue;
 
 /**
  * hash_f - Hash function
@@ -37,57 +47,69 @@ typedef unsigned int (*hash_f)(const void *key);
 /**
  * dict_new - Create a new dict
  *
- * @hash: hash function
+ * @dict[out]: the dict
+ * @hash[in]: hash function
  * @cmp: comparing function
  *
- * Return dict_t pointer if success, NULL pointer otherwise.
+ * Return 0 if success, -1 if failed to alloc memory.
  *
- * If cmp set to be NULL, then default
- * integer comparator will be used.
+ * If cmp set to be NULL, then default integer comparator will be used.
+ * So do the cmp function.
  */
-extern dict_t *dict_new(const hash_f hash, const comparator cmp);
+extern int dict_new(dict_t *dict, const hash_f hash, const comparator cmp);
 
 /**
  * dict_free - Destroy a dict
  *
- * @dict: the dict
+ * @dict[in]: the dict
  */
 extern void dict_free(dict_t *dict);
 
 /**
  * dict_add - Add a new key-value pair
  *
- * @dict: the dict
- * @k: the key
- * @v: the value
+ * @dict[in]: the dict
+ * @key[in]: the key
+ * @value[in]: the value
  *
- * Return 0 if success, -1 otherwise.
+ * Return 0 if success, -1 if failed to alloc memory.
  *
  * If given key can be found in dict, this function
- * will update (overlay) the old value by the new given one.
+ * will update the old value by the new one.
  */
-extern int dict_add(dict_t *dict, const void *k, const void *v);
+extern int dict_add(dict_t dict, const dictKey key, const dictValue value);
 
 /**
- * dict_get - Get value by key
+ * dict_remove_key - Remove key-value pair by given key
  *
- * @dict: the dict
- * @k: the key
+ * @dict[in]: the dict
+ * @key[in]: the key
  *
- * Return value if key-value pairs exists in dict,
- * NULL otherwise.
+ * Return 0 if key exists and key-value pair is removed successfully,
+ * -1 if key doesn't exists in the dict.
  */
-extern void *dict_get(dict_t *dict, const void *k);
+extern int dict_remove(dict_t dict, const dictKey key);
 
 /**
- * dict_pop - Remove key-value pair by given key
+ * dict_contains_key - Check if dict contains key or not
  *
- * @dict: the dict
- * @k: the key
+ * @dict[in]: the dict
+ * @key[in]: given key
  *
- * Return 0 if key-value pair exists and be removed successfully,
- * -1 if key-value doesn't exists.
+ * Return non-zero if dict contains the given key, -1 if not.
  */
-extern int dict_pop(dict_t *dict, const void *k);
+extern int dict_contains_key(dict_t dict, const dictKey key);
+
+/**
+ * dict_get_value - Get value by key
+ *
+ * @dict[in]: the dict
+ * @key[in]: the key
+ * @value[out]: output value
+ *
+ * Return 0 if key-value pairs exists in dict,
+ * -1 if the key doesn't exists in dict.
+ */
+extern int dict_get_value(dict_t dict, const dictKey key, dictValue *value);
 
 #endif /* BULLET_DICT_H */

@@ -22,12 +22,12 @@
 #define LOAD_FACTOR 0.75
 
 struct pairs {
-    void *key;
-    void *value;
+    dictKey key;
+    dictValue value;
 };
 
 struct entry {
-    pairs pair;
+    struct pairs pair;
     struct entry *next;
 };
 
@@ -60,7 +60,7 @@ static const unsigned int primes_size
  *
  * Return 0 if success, -1 otherwise.
  */
-static int buckets_new(dict_t *dict)
+static int buckets_new(dict_t dict)
 {
     size_t new_size;
 
@@ -86,26 +86,26 @@ static int buckets_new(dict_t *dict)
     }
 }
 
-dict_t *dict_new(const hash_f hash, const comparator cmp)
+int dict_new(dict_t *dict, const hash_f hash, const comparator cmp)
 {
-    dict_t *dict;
+    dict_t new_dict;
 
-    dict = (dict_t *) malloc(sizeof(*dict));
+    new_dict = (dict_t) malloc(sizeof(*new_dict));
 
-    if (!dict) {
-        return NULL;
-
+    if (new_dict == NULL) {
+        return -1;
     } else {
-        dict->hash  = hash;
-        dict->cmp = (cmp != NULL) ? cmp : cmp_int;
-        dict->count = 0;
-        dict->idx = 0;     /* Use primes[0] as default buckets size  */
+        new_dict->hash  = hash;
+        new_dict->cmp = (cmp != NULL) ? cmp : cmp_int;
+        new_dict->count = 0;
+        new_dict->idx = 0;     /* Use primes[0] as default buckets size  */
 
-        if (buckets_new(dict) == -1) {  /* Alloc memory failed  */
-            free(dict);
-            return NULL;
+        if (buckets_new(new_dict) == -1) {  /* Alloc memory failed  */
+            free(new_dict);
+            return -1;
         } else {
-            return dict;
+            *dict = new_dict;
+            return 0;
         }
     }
 }
@@ -116,9 +116,8 @@ void dict_free(dict_t *dict)
     struct entry *del;
     size_t i;
 
-    for (i = 0; i < dict->size; ++i) {
-        walk = dict->buckets[i];
-
+    for (i = 0; i < (*dict)->size; ++i) {
+        walk = (*dict)->buckets[i];
         while (walk != NULL) {
             del = walk;
             walk  = walk->next;
@@ -126,8 +125,9 @@ void dict_free(dict_t *dict)
         }
     }
 
-    free(dict->buckets);
-    free(dict);
+    free((*dict)->buckets);
+    free(*dict);
+    *dict = NULL;
 }
 
 /**
@@ -138,13 +138,13 @@ void dict_free(dict_t *dict)
  * Return 0 if success, -1 otherwise.
  * If resize failed, dict will remain unchanged.
  */
-static int dict_resize(dict_t *dict)
+static int dict_resize(dict_t dict)
 {
     struct entry **old_buckets;
     struct entry *walk, *next;
     size_t old_size;
     size_t old_idx;
-    pairs *pair;
+    struct pairs *pair;
 
     old_buckets = dict->buckets;
     old_size = dict->size;
@@ -185,10 +185,10 @@ static int dict_resize(dict_t *dict)
 
 }
 
-int dict_add(dict_t *dict, const void *k, const void *v)
+int dict_add(dict_t dict, const dictKey key, const dictValue value)
 {
     struct entry *e, *walk;
-    pairs *pair;
+    struct pairs *pair;
     size_t i;
     
     /*
@@ -202,16 +202,16 @@ int dict_add(dict_t *dict, const void *k, const void *v)
     }
     
     /* Calcular hash code */
-    i = dict->hash(k) % dict->size;
+    i = dict->hash(key) % dict->size;
     walk = dict->buckets[i];
 
     while (walk != NULL) {
         pair = &(walk->pair);
 
         /* Update key-value pairs if it exists already. */
-        if (dict->cmp(pair->key, k) == 0) {
-            pair->key = (void *) k;
-            pair->value = (void *) v;
+        if (dict->cmp(pair->key, key) == 0) {
+            pair->key = key;
+            pair->value = value;
             return 0;
         }
         walk = walk->next;
@@ -223,8 +223,8 @@ int dict_add(dict_t *dict, const void *k, const void *v)
         return -1;
 
     } else {
-        e->pair.key = (void *) k;
-        e->pair.value = (void *) v;
+        e->pair.key = key;
+        e->pair.value = value;
 
         e->next = dict->buckets[i];
         dict->buckets[i] = e;
@@ -234,40 +234,41 @@ int dict_add(dict_t *dict, const void *k, const void *v)
     }
 }
 
-void *dict_get(dict_t *dict, const void *k)
+int dict_get_value(dict_t dict, const dictKey key, dictValue *value)
 {
     struct entry *walk;
     size_t i;
 
-    i = dict->hash(k) % dict->size;
+    i = dict->hash(key) % dict->size;
     walk = dict->buckets[i];
 
     while (walk != NULL) {
-        if (dict->cmp(walk->pair.key, k) == 0) {
-            return walk->pair.value;
+        if (dict->cmp(walk->pair.key, key) == 0) {
+            *value = walk->pair.value;
+            return 0;
         }
         walk = walk->next;
     }
 
-    return NULL;
+    return -1;
 }
 
-int dict_pop(dict_t *dict, const void *k)
+int dict_remove(dict_t dict, const dictKey key)
 {
     struct entry **walk;
     struct entry *del;
-    pairs  *pair;
+    struct pairs  *pair;
     size_t i;
 
     /* hash code */ 
-    i = dict->hash(k) % dict->size;
+    i = dict->hash(key) % dict->size;
     walk = &(dict->buckets[i]);
 
     /* Find and delete match pair. */
     while (*walk != NULL) {
         pair = &((*walk)->pair);
 
-        if (dict->cmp(pair->key, k) == 0) {
+        if (dict->cmp(pair->key, key) == 0) {
             del = *walk;
             *walk = del->next;
             free(del);
