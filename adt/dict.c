@@ -234,6 +234,24 @@ int dict_add(dict_t dict, const dictKey key, const dictValue value)
     }
 }
 
+int dict_contains_key(dict_t dict, const dictKey key)
+{
+    struct entry *walk;
+    size_t i;
+
+    i = dict->hash(key) % dict->size;
+    walk = dict->buckets[i];
+
+    while (walk != NULL) {
+        if (dict->cmp(walk->pair.key, key) == 0) {
+            return 1;
+        }
+        walk = walk->next;
+    }
+
+    return 0;
+}
+
 int dict_get_value(dict_t dict, const dictKey key, dictValue *value)
 {
     struct entry *walk;
