@@ -17,4 +17,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
 #include "hashtable.h"
+
+int hashtable_new(hashtable_t *hashtable, const hash_f hash, const comparator cmp) {
+    return dict_new(hashtable, hash, cmp);
+}
+
+void hashtable_free(hashtable_t *hashtable)
+{
+    dict_free(hashtable);
+}
+
+int hashtable_add(hashtable_t hashtable, const hashtableElem x)
+{
+    return dict_add(hashtable, x, NULL);
+}
+
+int hashtable_contains(hashtable_t hashtable, const hashtableElem x)
+{
+    return dict_contains_key(hashtable, x);
+}
+
+int hashtable_remove(hashtable_t hashtable, const hashtableElem x)
+{
+    return dict_remove(hashtable, x);
+}

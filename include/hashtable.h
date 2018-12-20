@@ -21,16 +21,77 @@
 #ifndef BULLET_HASHTABLE_H
 #define BULLET_HASHTABLE_H
 
-typedef struct _hashtable hashtable_t;
+#include "dict.h"
 
-extern hashtable_t *hashtable_new(void);
+/**
+ * Define a new data type: hashtable_t
+ */
+typedef dict_t hashtable_t;
 
-extern void hashtable_free(hashtable_t *ht);
+/**
+ * Define a new hashtableElem type
+ */
+typedef void *hashtableElem;
 
-extern int hashtable_set(hashtable_t *ht,
-        size_t key_size, const void *key,
-        size_t value_size, const void *value);
+/**
+ * hash_f - Hash function
+ *
+ * @key: the key
+ */
+typedef unsigned int (*hash_f)(const void *key);
 
-extern int hashtale_get(hashtable_t *ht, )
+/**
+ * hashtable_new - Create a new hashtable
+ *
+ * @hashtable[out]: the hashtable
+ * @hash[in]: hash function
+ * @cmp[in]: comparing function
+ *
+ * Return 0 if success, -1 if failed to alloc memeory.
+ *
+ * If cmp set to be NULL, then default
+ * integer comparator will be used. So do the cmp function.
+ */
+extern int hashtable_new(hashtable_t *hashtable, 
+        const hash_f hash, const comparator cmp);
+
+/**
+ * hashtable_free - Destroy a hashtable
+ *
+ * @hashtable: the hashtable
+ */
+extern void hashtable_free(hashtable_t *hashtable);
+
+/**
+ * hashtable_add - Add a new element
+ *
+ * @hashtable[in]: the hashtable
+ * @x[in]: input value
+ *
+ * Return 0 if success, -1 if failed to alloc memory.
+ * Duplicate value will be ignored.
+ */
+extern int hashtable_add(hashtable_t hashtable, const hashtableElem x);
+
+/**
+ * hashtable_contaisn - Check if hashtabke contains element or not
+ *
+ * @hashtable[in]: the hashtable
+ * @x[in]: input value
+ *
+ * Return non-zero if hashtable contains given element, 0 if not.
+ */
+extern int hashtable_contains(hashtable_t hashtable, const hashtableElem x);
+
+/**
+ * hashtable_remove - Remove the given element in hashtable
+ *
+ * @hashtable[in]: the hashtable
+ * @x[in]: input value
+ *
+ * Return 0 if given element exists and be removed successfully,
+ * -1 if given element doesn't exists in hashtable.
+ */
+extern int hashtable_remove(hashtable_t hashtable, const hashtableElem x);
 
 #endif /* BULLET_HASHTABLE_H */
