@@ -1,35 +1,28 @@
 #include <stdio.h>
-#include "maxheap.h"
+#include <gtest/gtest.h>
+#include "vector.h"
 
-int compare(void *key1, void *key2)
+static int a[3] = {1, 2, 3};
+static vector_t vector;
+
+TEST(vector, create_vector)
 {
-    return *(int *)key1 - *(int *)key2;
+    ASSERT_EQ(0, vector_new(&vector));
 }
 
-int main (void) {
-    int a[] = {233333333, 9, 39, 28323, 999, -5, 23, 45, 1, -2, 555, 2222222};
-    int b = 233333334;
-    int c = 20;
-    printf("hello, world.\n");
+TEST(vector, append_value)
+{
+    EXPECT_EQ(0, vector_append(vector, &a[0]));
+    EXPECT_EQ(0, vector_append(vector, &a[1]));
+    EXPECT_EQ(0, vector_append(vector, &a[2]));
+}
 
-    MaxHeap *maxheap;
-
-    maxheap = maxheap_new(20, compare);
-    for (int i = 0; i < sizeof(a) / sizeof(a[0]); ++i) {
-        maxheap_add(maxheap, a + i);
-    }
-    printf("max = %d\n", *(int *) maxheap_get_root(maxheap));
-    printf("max heap %d full.\n", maxheap_is_full(maxheap));
-    printf("depth of maxheap = %d\n", maxheap_depth(maxheap));
-    maxheap_add(maxheap, &b);
-    printf("max = %d\n", *(int *) maxheap_get_root(maxheap));
-    maxheap_pop_root(maxheap);
-    printf("max = %d\n", *(int *) maxheap_get_root(maxheap));
-    maxheap_find(maxheap, a + 0);
-    printf("a + 0 is %d in maxheap.\n", maxheap_find(maxheap, a + 0));
-    maxheap_del(maxheap, a + 0);
-    printf("a + 0 is %d in maxheap.\n", maxheap_find(maxheap, a + 0));
-    printf("c is %d in maxheap.\n", maxheap_find(maxheap, &c));
-    printf("Done.\n");
-    return 0;
+TEST(vector, set_value)
+{
+    EXPECT_EQ(-1, vector_set(vector, 3, &a[2]));
+    EXPECT_EQ(-1, vector_set(vector, 4, &a[2]));
+}
+int main (int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
