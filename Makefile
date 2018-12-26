@@ -13,22 +13,21 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
-CC=gcc
-C_INCLUDE_PATH=./include:./common
-export C_INCLUDE_PATH
-SRCS_PATH=./adt
-#COMMON_PATH=./common
+CC=g++
+CPLUS_INCLUDE_PATH=./include:./common
+export CPLUS_INCLUDE_PATH
 
 vpath %.h ./include ./common
 vpath %c ./adt ./common ./tests
 
+FLAGS=-lgtest -lgtest_main -L/usr/src/gtest/build/ -lpthread
 OBJS=vector.o stack.o queue.o bstree.o avl-tree.o \
 	 binary-minheap.o hashtable.o dict.o \
 	 comparator.o
+
 test: test.o $(OBJS)
-	$(CC) -o ./build/$@ $^ -lm
-	mv *o ./build/
+	$(CC) $? $(FLAGS) -lm -o $@
+	mv *o test ./build/
 
 vector.o: vector.h
 stack.o: stack.h
@@ -39,6 +38,10 @@ avl-tree.o: avl-tree.h comparator.h
 bstree.o: bstree.h comparator.h
 hashtable.o: hashtable.h dict.h comparator.h
 dict.o: dict.h comparator.h
+
+.PHONY: run
+run:
+	./build/test
 
 .PHONY: clean
 clean:
