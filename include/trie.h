@@ -52,17 +52,6 @@ void trie_free(trie_t *trie);
 int trie_add(trie_t trie, char *word);
 
 /**
- * trie_remove - Remove a word from trie
- *
- * @trie[in]: the trie
- * @word[in]: the word
- *
- * Return 0 if remove the given word successfully,
- * -1 if the given word is not in trie.
- */
-int trie_remove(trie_t trie, char *word);
-
-/**
  * trie_contains - Check if trie contains a word
  *
  * @trie[in]: the trie
@@ -72,5 +61,16 @@ int trie_remove(trie_t trie, char *word);
  * word, 0 if not.
  */
 int trie_contains(trie_t trie, char *word);
+
+/**
+ * trie_startswith - Check if it is a prefix in trie
+ *
+ * @trie[in]: the trie
+ * @word[in]: the prefix word
+ *
+ * Return non-zero if the word is a prefix in trie,
+ * 0 if the given word is not a prefix in trie.
+ */
+int trie_startswith(trie_t trie, char *prefix);
 
 #endif /* _BULLET_TRIE_H */

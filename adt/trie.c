@@ -17,6 +17,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 #include "trie.h"
 /*
  * Only support 26 lower case letters for now.
@@ -25,9 +26,10 @@
 #define ALPHABAT_SIZE 26
 
 struct _trie {
-    struct _trie *children[ALPHABAT_SIZE];
-    int word;           /* Is a word or not. */
+    char c;
+    int eow;           /* End of word, which means if it is a word. */
     size_t count;       /* Frequency. */
+    struct _trie *children[ALPHABAT_SIZE];
 };
 
 static int get_index(char c)
@@ -35,67 +37,29 @@ static int get_index(char c)
     return c - 'a';
 }
 
-static int new_trie_node(trie_t *trie)
+static int new_trie_node(trie_t *trie, char c)
 {
     *trie = (trie_t) malloc(sizeof(struct _trie));
 
     if (*trie == NULL) {
         return -1;
     } else {
+        /* Initialize node. */
+        (*trie)->c = c;
+        (*trie)->count = 1;
+        memset((*trie)->children, 0, ALPHABAT_SIZE * sizeof(struct _trie));
         return 0;
     }
 }
 
-static void init_trie_node(trie_t trie)
-{
-    int i;
-
-    for (i = 0; i < ALPHABAT_SIZE; ++i) {
-        trie->children[i] = NULL;
-    }
-    trie->word = 0;     /* Not a word in the beginning. */
-    trie->count = 0;    /* Frequency is 0. */
-}
-
-/*
- * add_trie_node - Add a new trie node to a the given trie
- *
- * @trie[in]: the trie
- * @c[in]: given char
- * @word[in]: is end of a word
- *
- * Return 0 if add trie node successfully,
- * -1 if out of memory.
- */
-static int add_trie_node(trie_t *trie, int i, int word)
-{
-    trie_t nb;  /* New node. */
-
-    if (*trie == NULL) {
-        if (new_trie_node(&nb) == -1) {
-            return -1;
-        } else {
-            init_trie_node(nb);
-            (*trie)->children[i] = nb;
-        }
-    }
-    (*trie)->word = word;
-    (*trie)->count = word ? (*trie)->count++ : (*trie)->count;
-}
-
-static void free_trie_node(trie_t node)
-{
-    free(node);
-}
-
 int trie_new(trie_t *trie)
 {
-    if (new_trie_node(trie) == 0) {
+    if (new_trie_node(trie, '\0') == -1) {
         return -1;
     } else {
-        init_trie_node(*trie);
+        (*trie)->eow = 1;
+        return 0;
     }
-    return 0;
 }
 
 void trie_free(trie_t *trie)
@@ -108,45 +72,29 @@ void trie_free(trie_t *trie)
         for (i = 0; i < ALPHABAT_SIZE; ++i) {
             trie_free(&(*trie)->children[i]);
         }
-        free_trie_node(*trie);
+        free(*trie);
     }
     *trie = NULL;
 }
 
 int trie_add(trie_t trie, char *word)
 {
-    int i;
+    int i, j;
     char *p = word;
 
     while (*p) {
         i = get_index(*p);
-        if (add_trie_node(&trie, i, *(p + 1) == '\0') == -1) {
-            return -1;
-        } else {
-            trie = trie->children[i];
-            p++;
+        if (trie->children[i] == NULL) {     /* Need to alloc new node. */
+            if (new_trie_node(&trie->children[i], *p) == -1) {
+                return -1;
+            }
         }
-    }
-}
-
-int trie_remove(trie_t trie, char *word)
-{
-    int i;
-    char *p =  word;
-
-    while (*p) {
-        i = get_index(*p);
         trie = trie->children[i];
+        p++;
     }
-    if (trie->word == 0) {
-        return -1;      /* Not found. */
-    } else {
-        trie->count--;
-        if (trie->count <= 0) {     /* Delete the word. */
-            trie->word = 0;
-        }
-        return 0;
-    }
+    trie->eow = 1;
+    trie->count++;
+    return 0;
 }
 
 int trie_contains(trie_t trie, char *word)
@@ -156,7 +104,29 @@ int trie_contains(trie_t trie, char *word)
 
     while (*p) {
         i = get_index(*p);
-        trie = trie->children[i];
+        if (trie->children[i] == NULL) {
+            return 0;
+        } else {
+            trie = trie->children[i];
+            p++;
+        }
     }
-    return trie->word;
+    return trie->eow;
+}
+
+int trie_startswith(trie_t trie, char *word)
+{
+    int i;
+    char *p = word;
+
+    while (*p) {
+        i = get_index(*p);
+        if (trie->children[i] == NULL) {
+            return 0;
+        } else {
+            trie = trie->children[i];
+            p++;
+        }
+    }
+    return 1;
 }
