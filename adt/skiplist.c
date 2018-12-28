@@ -88,7 +88,7 @@ int skiplist_new(skiplist_t *skiplist, comparator cmp)
     skiplist_t new_skiplist;
     struct boxes *new_head;
 
-    new_skiplist = (skiplist_t) malloc(sizeof(*skiplist_new));
+    new_skiplist = (skiplist_t) malloc(sizeof(*new_skiplist));
     if (new_skiplist == NULL) {
         return -1;
     } else {
