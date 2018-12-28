@@ -22,8 +22,8 @@ vpath %c ./adt ./common ./tests
 
 FLAGS=-lgtest -lgtest_main -L/usr/src/gtest/build/ -lpthread
 OBJS=vector.o stack.o queue.o bstree.o avl-tree.o \
-	 binary-minheap.o hashtable.o dict.o \
-	 comparator.o
+	 binary-minheap.o hashtable.o dict.o skiplist.o \
+	 trie.o comparator.o
 
 test: test.o $(OBJS)
 	$(CC) $? $(FLAGS) -lm -o $@
@@ -38,6 +38,8 @@ avl-tree.o: avl-tree.h comparator.h
 bstree.o: bstree.h comparator.h
 hashtable.o: hashtable.h dict.h comparator.h
 dict.o: dict.h comparator.h
+skiplist.o: skiplist.h comparator.h
+trie.o: trie.h
 
 .PHONY: run
 run:
