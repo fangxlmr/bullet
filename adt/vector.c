@@ -150,7 +150,7 @@ int vector_pop(vector_t vector, vectorElem *x)
     } else {
         *x = vector->array[vector->used];
         vector->used--;
-        vector->used++;
+        vector->free++;
         return 0;
     }
 }
