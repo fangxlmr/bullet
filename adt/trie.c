@@ -54,6 +54,7 @@ static int new_trie_node(trie_t *trie, char c)
 
 int trie_new(trie_t *trie)
 {
+    /* Have a root with '\0'. */
     if (new_trie_node(trie, '\0') == -1) {
         return -1;
     } else {
