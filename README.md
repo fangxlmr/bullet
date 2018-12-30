@@ -17,7 +17,7 @@ Already finished:
 
 To do list:
 
-- binomial tree
+- binomial heap
 - rb-tree
 - union & find (disjoint set)
 - LRU
