@@ -29,11 +29,11 @@ struct _stack {
     size_t size;
 };
 
-int stack_new(stack_t *stack)
+int stack_new(_stack_t *stack)
 {
-    stack_t new_stack;
+    _stack_t new_stack;
 
-    new_stack = (stack_t) malloc(sizeof(*new_stack));
+    new_stack = (_stack_t) malloc(sizeof(*new_stack));
     if (new_stack == NULL) {
         return -1;
     } else {
@@ -44,17 +44,17 @@ int stack_new(stack_t *stack)
     }
 }
 
-void stack_free(stack_t *stack)
+void stack_free(_stack_t *stack)
 {
     stackElem x;
-    while (stack_isempty(*stack) != 0) {
+    while (stack_isempty(*stack) == 0) {
         stack_pop(*stack, &x);
     }
     free(*stack);
     *stack = NULL;
 }
 
-int stack_push(stack_t stack, stackElem x)
+int stack_push(_stack_t stack, stackElem x)
 {
     struct entry *e;
 
@@ -70,7 +70,7 @@ int stack_push(stack_t stack, stackElem x)
     }
 }
 
-int stack_pop(stack_t stack, stackElem *x)
+int stack_pop(_stack_t stack, stackElem *x)
 {
     struct entry *e;
 
@@ -87,7 +87,7 @@ int stack_pop(stack_t stack, stackElem *x)
     }
 }
 
-int stack_peek(stack_t stack, stackElem *x)
+int stack_peek(_stack_t stack, stackElem *x)
 {
     if (stack_isempty(stack)) {
         return -1;
@@ -97,12 +97,12 @@ int stack_peek(stack_t stack, stackElem *x)
     }
 }
 
-int stack_isempty(stack_t stack)
+int stack_isempty(_stack_t stack)
 {
     return stack->top == NULL;
 }
 
-size_t stack_get_size(stack_t stack)
+size_t stack_get_size(_stack_t stack)
 {
     return stack->size;
 }

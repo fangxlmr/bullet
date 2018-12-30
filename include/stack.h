@@ -23,9 +23,9 @@
 #include <stdlib.h>
 
 /**
- * Define a new data type: stack_t
+ * Define a new data type: _stack_t
  */
-typedef struct _stack *stack_t;
+typedef struct _stack *_stack_t;
 
 /**
  * Define a new stackElem type
@@ -40,14 +40,14 @@ typedef void *stackElem;
  * Return 0 if create a new stack successfully,
  * -1 if failed to alloc memory.
  */
-extern int stack_new(stack_t *stack);
+extern int stack_new(_stack_t *stack);
 
 /**
  * stack_free - Destroy a stack
  *
  * @stack[in]: the stack
  */
-extern void stack_free(stack_t *stack);
+extern void stack_free(_stack_t *stack);
 
 /**
  * stack_push - Push an entry on top of a stack
@@ -57,7 +57,7 @@ extern void stack_free(stack_t *stack);
  *
  * Return 0 if success, -1 if failed to alloc memory.
  */
-extern int stack_push(stack_t stack, stackElem x);
+extern int stack_push(_stack_t stack, stackElem x);
 
 /**
  * stack_pop - Pop out an entry
@@ -67,7 +67,7 @@ extern int stack_push(stack_t stack, stackElem x);
  *
  * Return 0 if success, -1 if stack is already empty.
  */
-extern int stack_pop(stack_t stack, stackElem *x);
+extern int stack_pop(_stack_t stack, stackElem *x);
 
 /**
  * stack_peek - Peek top entry of a stack
@@ -77,7 +77,7 @@ extern int stack_pop(stack_t stack, stackElem *x);
  *
  * Return 0 if success, -1 if stack is already empty.
  */
-extern int stack_peek(stack_t stack, stackElem *x);
+extern int stack_peek(_stack_t stack, stackElem *x);
 
 /**
  * stack_isempty - Check stack is empty or not
@@ -86,7 +86,7 @@ extern int stack_peek(stack_t stack, stackElem *x);
  *
  * Return non-zero value if the stack is empty, 0 otherwise.
  */
-extern int stack_isempty(stack_t stack);
+extern int stack_isempty(_stack_t stack);
 
 /**
  * stack_get_size - Get size of the stack
@@ -95,6 +95,6 @@ extern int stack_isempty(stack_t stack);
  *
  * Return size of the stack, 0 if stack is empty.
  */
-extern size_t stack_get_size(stack_t stack);
+extern size_t stack_get_size(_stack_t stack);
 
 #endif /* BULLET_STACK_H */
