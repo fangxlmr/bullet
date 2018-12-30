@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include "vector.h"
 #include "stack.h"
+#include "queue.h"
 
 static int a[] = {
     11, 23, 35, 20, 
@@ -45,7 +46,7 @@ TEST(vector, testing_vector)
     vector_free(&vector);
 }
 
-TEST(stack, stackk_testing) {
+TEST(stack, stack_testing) {
     int i;
     stackElem x;
     _stack_t stack;
@@ -70,11 +71,36 @@ TEST(stack, stackk_testing) {
     EXPECT_EQ(-1, stack_pop(stack, &x));
     EXPECT_EQ(-1, stack_peek(stack, &x));
     EXPECT_TRUE(stack_isempty(stack));
-printf("here1.\n");
     stack_free(&stack);
-printf("here2.\n");
 }
 
+TEST(queue, queue_testing) {
+    int i;
+    queueElem x;
+    queue_t queue;
+
+    ASSERT_EQ(0, queue_new(&queue));
+    for (i = 0; i < LEN; i++) {
+        EXPECT_EQ(0, queue_push(queue, &a[i]));
+    }
+
+    EXPECT_EQ(0, queue_pop(queue, &x));
+    EXPECT_EQ(0, queue_push(queue, &a[2]));
+    EXPECT_EQ(0, queue_peek(queue, &x));
+    EXPECT_EQ(a[1], *(int *) x);
+
+    EXPECT_EQ(LEN, queue_get_size(queue));
+    EXPECT_FALSE(queue_isempty(queue));
+
+    for (i = 0; i < LEN; i++) {
+        EXPECT_EQ(0, queue_pop(queue, &x));
+    }
+
+    EXPECT_EQ(-1, queue_pop(queue, &x));
+    EXPECT_EQ(-1, queue_peek(queue, &x));
+    EXPECT_TRUE(queue_isempty(queue));
+    queue_free(&queue);
+}
 int main (int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
