@@ -26,7 +26,7 @@
 /**
  * Define a new data type: hashtable_t
  */
-typedef dict_t hashtable_t;
+typedef struct _dict *hashtable_t;
 
 /**
  * Define a new hashtableElem type
@@ -34,17 +34,9 @@ typedef dict_t hashtable_t;
 typedef void *hashtableElem;
 
 /**
- * hash_f - Hash function
- *
- * @key: the key
- */
-typedef unsigned int (*hash_f)(const void *key);
-
-/**
  * hashtable_new - Create a new hashtable
  *
  * @hashtable[out]: the hashtable
- * @hash[in]: hash function
  * @cmp[in]: comparing function
  *
  * Return 0 if success, -1 if failed to alloc memeory.
@@ -52,8 +44,7 @@ typedef unsigned int (*hash_f)(const void *key);
  * If cmp set to be NULL, then default
  * integer comparator will be used. So do the cmp function.
  */
-extern int hashtable_new(hashtable_t *hashtable, 
-        const hash_f hash, const comparator cmp);
+extern int hashtable_new(hashtable_t *hashtable, const comparator cmp);
 
 /**
  * hashtable_free - Destroy a hashtable
