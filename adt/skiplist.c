@@ -26,7 +26,7 @@ static const size_t MAX_LEVEL = 32;
 
 struct boxes {      /* Node structure */
     skiplistElem x;
-    size_t level;
+    size_t level;           /* Current level. */
     struct boxes **next;
 };
 
@@ -38,17 +38,17 @@ struct _skiplist {
 
 static size_t get_level(void)
 {
-    size_t level = 0;
+    int level = 1;
 
-    srand((unsigned)time(NULL));
-    while (rand() % 2) {    /* Coin filp */
+    srand((unsigned int) time(NULL));
+    while (rand() % 2) {    /* Coin flip. */
         level++;
     }
-    return level < MAX_LEVEL ? level: MAX_LEVEL;
+    return level < MAX_LEVEL ? level : MAX_LEVEL;
 }
 
 /*
- * new_boxes - Create new boxes
+ * new_boxes - Create and initialize new boxes
  *
  * @nb[out]: new boxes
  * @x[in]: input value
@@ -58,19 +58,21 @@ static size_t get_level(void)
  */
 static int new_boxes(struct boxes **nb, const skiplistElem x, const size_t level)
 {
-    struct boxes **next;
+    struct boxes **new_next;
 
     *nb = (struct boxes *) malloc(sizeof(struct boxes));
     if (*nb == NULL) {
         return -1;
     } else {
-        next = (struct boxes **) malloc(level * sizeof(*next));
-        if (next == NULL) {
+        new_next = (struct boxes **) malloc(level * sizeof(new_next[0]));
+        if (new_next == NULL) {
             free(nb);
             return -1;
         } else {
-            (*nb)->next = next;
+            /* Init new box with `x`, `level`. */
+            (*nb)->x = x;
             (*nb)->level = level;
+            (*nb)->next = new_next;
             return 0;
         }
     }
@@ -92,13 +94,20 @@ int skiplist_new(skiplist_t *skiplist, comparator cmp)
     if (new_skiplist == NULL) {
         return -1;
     } else {
-        if (new_boxes(&new_head, 0, MAX_LEVEL) == 0){
+        /* Init head with value of 0. */
+        if (new_boxes(&new_head, 0, MAX_LEVEL) == -1){
             free(new_skiplist);
             return -1;
         } else {
+            /* Init head with NULL pointers. */
+            int i;
+            for (i = 0; i < MAX_LEVEL; ++i) {
+                new_head->next[i] = NULL;
+            }
             new_skiplist->head = new_head;
             new_skiplist->levels = MAX_LEVEL;
             new_skiplist->cmp = (cmp != NULL) ? cmp : cmp_int;
+
             *skiplist = new_skiplist;
             return 0;
         }
@@ -122,36 +131,36 @@ void skiplist_free(skiplist_t *skiplist)
 int skiplist_add(skiplist_t skiplist, skiplistElem x)
 {
     /* 
-     * p is work pointer, update is used to store prev pointers of
-     * new boxes.
+     * p is work pointer, update array is used
+     * to store prev pointers of new boxes.
      */
     struct boxes *p, *update[MAX_LEVEL];
     struct boxes *nb;   /* New boxes */
     comparator cmp;
-    size_t i, level;
+    int i;
 
     p = skiplist->head;
     cmp = skiplist->cmp;
 
     /* Find the correct position to insert.  */
     for (i = skiplist->levels - 1; i >= 0; i--) {
-        while (p->next && cmp(x, p->next[i]->x) < 0) {
+        while (p->next[i] && cmp(x, p->next[i]->x) > 0) {
             p = p->next[i];
         }
-        if (p->next != NULL && cmp(x, p->next[i]->x) == 0) {
+        if (p->next[i] != NULL && cmp(x, p->next[i]->x) == 0) {
             return 0;       /* Ignore dupllicate value. */
         } else {
             update[i] = p;  /* Memorizing prev pointers. */
         }
     }
 
-    /* Get a level by coin flip. */
-    level = get_level();
-    if (new_boxes(&nb, x, level) == 0) {
+    /* Get a random level by coin flip. */
+    size_t level = get_level();
+    if (new_boxes(&nb, x, level) == -1) {
         return -1;
     } else {
-        /* Insert and update new boxes' prev and next pointers. */
-        for (i = 0; i < level; i++) {
+        /* Insert and update new boxes */
+        for (i = 0; i < level; ++i) {
             nb->next[i] = update[i]->next[i];
             update[i]->next[i] = nb;
         }
@@ -161,24 +170,30 @@ int skiplist_add(skiplist_t skiplist, skiplistElem x)
 
 int skiplist_remove(skiplist_t skiplist, skiplistElem x)
 {
-    struct boxes *p, *update[MAX_LEVEL];
+    struct boxes *p, *q, *update[MAX_LEVEL];
     comparator cmp;
-    size_t i;
+    int i;
+
+    p = skiplist->head;
+    cmp = skiplist->cmp;
 
     for (i = skiplist->levels - 1; i >= 0; i--) {
-        while (p->next && cmp(x, p->next[i]->x) < 0) {
-            p = p->next[i];
+        while (p->next[i] && cmp(x, p->next[i]->x) > 0) {
+            p = p->next[i];     /* Level scan. */
         }
-        update[i] = p;
+        update[i] = p;   /* Save prev pointers for updating later on. */
     }
-    if (p->next != NULL && cmp(x, p->next[0]->x) == 0) {
-        for (i = p->level - 1; i >= 0; i--) {
-            update[i]->next[i] = p->next[i];
+
+    /* Found and remove. */
+    if (p->next[0] != NULL && cmp(x, p->next[0]->x) == 0) {
+        q = p->next[0];
+        for (i = q->level - 1; i >= 0; i--) {
+            update[i]->next[i] = q->next[i];    /* Update. */
         }
-        free_boxes(&p);
+        free_boxes(&q);
         return 0;
     } else {
-        return -1;
+        return -1;   /* Not found. */
     }
 }
 
@@ -186,17 +201,17 @@ int skiplist_contains(skiplist_t skiplist, skiplistElem x)
 {
     struct boxes *p;
     comparator cmp;
-    size_t i;
+    int i;
 
     p = skiplist->head;
     cmp = skiplist->cmp;
     for (i = skiplist->levels - 1; i >= 0; i--) {
-        while (p->next && cmp(x, p->next[i]->x) < 0) {  /* Level scan. */
+        while (p->next[i] && cmp(x, p->next[i]->x) > 0) {  /* Level scan. */
             p = p->next[i];
         }
-        if (p->next != NULL && cmp(x, p->next[i]->x) == 0) {
+        if (p->next[i] != NULL && cmp(x, p->next[i]->x) == 0) {
             return 1;       /* Found it. */
         }
     }
-    return 0;
+    return 0;   /* Not found. */
 }
