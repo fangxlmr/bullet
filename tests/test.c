@@ -4,6 +4,7 @@
 #include "stack.h"
 #include "queue.h"
 #include "dict.h"
+#include "hashtable.h"
 
 static int a[] = {
     11, 23, 35, 20, 
@@ -122,6 +123,8 @@ TEST(dict, dict_testing) {
         EXPECT_EQ(0, dict_add(dict, &a[i], &b[i]));
     }
     EXPECT_TRUE(dict_contains_key(dict, &a[0]));
+    EXPECT_FALSE(dict_contains_key(dict, &b[0]));
+
     EXPECT_EQ(0, dict_remove(dict, &a[0]));
     EXPECT_FALSE(dict_contains_key(dict, &a[0]));
 
@@ -131,6 +134,29 @@ TEST(dict, dict_testing) {
     }
 
     dict_free(&dict);
+}
+
+TEST(hashtable, hashtable_testing) {
+    int i;
+    hashtableElem x;
+    hashtable_t hashtable;
+
+    ASSERT_EQ(0, hashtable_new(&hashtable, NULL));
+    for (i = 0; i < LEN_A; i++) {
+        EXPECT_EQ(0, hashtable_add(hashtable, &a[i]));
+    }
+    EXPECT_TRUE(hashtable_contains(hashtable, &a[0]));
+    EXPECT_FALSE(hashtable_contains(hashtable, &b[0]));
+
+    EXPECT_EQ(0, hashtable_remove(hashtable, &a[0]));
+    EXPECT_FALSE(hashtable_contains(hashtable, &a[0]));
+
+    for (i = 1; i < LEN_A; i++) {
+        EXPECT_EQ(0, hashtable_remove(hashtable, &a[i]));
+    }
+    EXPECT_EQ(-1, hashtable_remove(hashtable, &a[1]));
+
+    hashtable_free(&hashtable);
 }
 
 int main (int argc, char **argv) {
