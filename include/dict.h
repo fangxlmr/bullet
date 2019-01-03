@@ -38,25 +38,16 @@ typedef void *dictKey;
 typedef void *dictValue;
 
 /**
- * hash_f - Hash function
- *
- * @key: hash key
- */
-typedef unsigned int (*hash_f)(const void *key);
-
-/**
  * dict_new - Create a new dict
  *
  * @dict[out]: the dict
- * @hash[in]: hash function
  * @cmp: comparing function
  *
  * Return 0 if success, -1 if failed to alloc memory.
  *
  * If cmp set to be NULL, then default integer comparator will be used.
- * So do the cmp function.
  */
-extern int dict_new(dict_t *dict, const hash_f hash, const comparator cmp);
+extern int dict_new(dict_t *dict, const comparator cmp);
 
 /**
  * dict_free - Destroy a dict

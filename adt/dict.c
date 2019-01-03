@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <stdint.h>
 #include "dict.h"
 #define LOAD_FACTOR 0.75
 
@@ -36,9 +37,26 @@ struct _dict {
     size_t size;     /* size of buckests  */
     size_t count;    /* count of key-value pairs in dict  */
     size_t idx;      /* index in primes table  */
-    hash_f hash;     /* hash function  */
     comparator cmp;  /* comparing fucntion  */
 };
+
+/**
+ * hash_code - Hash function
+ *
+ * @key: hash key
+ * @size: capacity of hashtable array
+ *
+ * Return hash code.
+ */
+static size_t hash_code(const void *key, const size_t size)
+{
+    /* TODO this may need change in some maechines.
+     * Here I cast a pointer to unsigned int, they both 
+     * have 4 bytes in 32 bits machine. Things may different
+     * on other platform.
+     */
+    return (uintptr_t) key % size;
+}
 
 /*
  * Primes table in common use
@@ -86,7 +104,7 @@ static int buckets_new(dict_t dict)
     }
 }
 
-int dict_new(dict_t *dict, const hash_f hash, const comparator cmp)
+int dict_new(dict_t *dict, const comparator cmp)
 {
     dict_t new_dict;
 
@@ -95,7 +113,6 @@ int dict_new(dict_t *dict, const hash_f hash, const comparator cmp)
     if (new_dict == NULL) {
         return -1;
     } else {
-        new_dict->hash  = hash;
         new_dict->cmp = (cmp != NULL) ? cmp : cmp_int;
         new_dict->count = 0;
         new_dict->idx = 0;     /* Use primes[0] as default buckets size  */
@@ -168,7 +185,7 @@ static int dict_resize(dict_t dict)
                 pair = &(walk->pair);
 
                 /* Re-hash */
-                i = dict->hash(pair->key) % dict->size;
+                i = hash_code(pair->key, dict->size);
                 next = walk->next;
 
                 /* Add to new dict. */
@@ -202,7 +219,7 @@ int dict_add(dict_t dict, const dictKey key, const dictValue value)
     }
     
     /* Calcular hash code */
-    i = dict->hash(key) % dict->size;
+    i = hash_code(key, dict->size);
     walk = dict->buckets[i];
 
     while (walk != NULL) {
@@ -239,7 +256,7 @@ int dict_contains_key(dict_t dict, const dictKey key)
     struct entry *walk;
     size_t i;
 
-    i = dict->hash(key) % dict->size;
+    i = hash_code(key, dict->size);
     walk = dict->buckets[i];
 
     while (walk != NULL) {
@@ -257,7 +274,7 @@ int dict_get_value(dict_t dict, const dictKey key, dictValue *value)
     struct entry *walk;
     size_t i;
 
-    i = dict->hash(key) % dict->size;
+    i = hash_code(key, dict->size);
     walk = dict->buckets[i];
 
     while (walk != NULL) {
@@ -279,7 +296,7 @@ int dict_remove(dict_t dict, const dictKey key)
     size_t i;
 
     /* hash code */ 
-    i = dict->hash(key) % dict->size;
+    i = hash_code(key, dict->size);
     walk = &(dict->buckets[i]);
 
     /* Find and delete match pair. */
@@ -292,7 +309,7 @@ int dict_remove(dict_t dict, const dictKey key)
             free(del);
             dict->count--;
 
-            return 1;
+            return 0;
         }
         walk = &(*walk)->next;
     }

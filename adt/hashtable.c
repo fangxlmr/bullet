@@ -20,8 +20,8 @@
 #include <stdlib.h>
 #include "hashtable.h"
 
-int hashtable_new(hashtable_t *hashtable, const hash_f hash, const comparator cmp) {
-    return dict_new(hashtable, hash, cmp);
+int hashtable_new(hashtable_t *hashtable, const comparator cmp) {
+    return dict_new(hashtable, cmp);
 }
 
 void hashtable_free(hashtable_t *hashtable)
