@@ -87,7 +87,7 @@ extern int dict_remove(dict_t dict, const dictKey key);
  * @dict[in]: the dict
  * @key[in]: given key
  *
- * Return non-zero if dict contains the given key, -1 if not.
+ * Return non-zero if dict contains the given key, 0 if not.
  */
 extern int dict_contains_key(dict_t dict, const dictKey key);
 
