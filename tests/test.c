@@ -5,6 +5,7 @@
 #include "queue.h"
 #include "dict.h"
 #include "hashtable.h"
+#include "skiplist.h"
 
 static int a[] = {
     11, 23, 35, 20, 
@@ -157,6 +158,29 @@ TEST(hashtable, hashtable_testing) {
     EXPECT_EQ(-1, hashtable_remove(hashtable, &a[1]));
 
     hashtable_free(&hashtable);
+}
+
+TEST(skiplist, skiplist_testing) {
+    int i;
+    skiplistElem x;
+    skiplist_t skiplist;
+
+    ASSERT_EQ(0, skiplist_new(&skiplist, NULL));
+    for (i = 0; i < LEN_A; i++) {
+        EXPECT_EQ(0, skiplist_add(skiplist, &a[i]));
+    }
+    EXPECT_TRUE(skiplist_contains(skiplist, &a[0]));
+    EXPECT_FALSE(skiplist_contains(skiplist, &b[0]));
+
+    EXPECT_EQ(0, skiplist_remove(skiplist, &a[0]));
+    EXPECT_FALSE(skiplist_contains(skiplist, &a[0]));
+
+    for (i = 1; i < LEN_A; i++) {
+        EXPECT_EQ(0, skiplist_remove(skiplist, &a[i]));
+    }
+    EXPECT_EQ(-1, skiplist_remove(skiplist, &a[1]));
+
+    skiplist_free(&skiplist);
 }
 
 int main (int argc, char **argv) {
