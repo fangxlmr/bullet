@@ -117,15 +117,13 @@ TEST(dict, dict_testing) {
     dictValue y;
     dict_t dict;
 
-    ASSERT_EQ(0, dict_new(&dict, NULL, NULL));
+    ASSERT_EQ(0, dict_new(&dict, NULL));
     for (i = 0; i < LEN_A; i++) {
         EXPECT_EQ(0, dict_add(dict, &a[i], &b[i]));
     }
     EXPECT_TRUE(dict_contains_key(dict, &a[0]));
     EXPECT_EQ(0, dict_remove(dict, &a[0]));
     EXPECT_FALSE(dict_contains_key(dict, &a[0]));
-
-    EXPECT_EQ(a[1], *(int *) x);
 
     for (i = 1; i < LEN_A; i++) {
         EXPECT_EQ(0, dict_get_value(dict, &a[i], &y));
