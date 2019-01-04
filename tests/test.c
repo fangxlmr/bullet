@@ -11,7 +11,7 @@
 static int a[] = {
     11, 23, 35, 20, 
     2, -10, 330, -501,
-    0, 0, 25, 78
+    0, 25, 78, 0,
 };
 
 static int b[] = {
@@ -176,14 +176,14 @@ TEST(skiplist, skiplist_testing) {
     EXPECT_EQ(0, skiplist_remove(skiplist, &a[0]));
     EXPECT_FALSE(skiplist_contains(skiplist, &a[0]));
 
-    for (i = 1; i < LEN_A; i++) {
+    for (i = 1; i < LEN_A - 1; i++) {
         EXPECT_EQ(0, skiplist_remove(skiplist, &a[i]));
     }
+    EXPECT_EQ(-1, skiplist_remove(skiplist, &a[LEN_A - 1]));    /* Duplicate value. */
     EXPECT_EQ(-1, skiplist_remove(skiplist, &a[1]));
 
     skiplist_free(&skiplist);
 }
-
 
 TEST(avl_tree, avltree_testing) {
     int i;
@@ -202,16 +202,16 @@ TEST(avl_tree, avltree_testing) {
 
     EXPECT_FALSE(avltree_isempty(avl));
 
-
     EXPECT_EQ(0, avltree_get_min(avl, &x));
     EXPECT_EQ(-501, *(int *) x);
 
     EXPECT_EQ(0, avltree_get_max(avl, &x));
     EXPECT_EQ(330, *(int *) x);
 
-    for (i = 1; i < LEN_A; i++) {
+    for (i = 1; i < LEN_A - 1; i++) {
         EXPECT_EQ(0, avltree_remove(avl, &a[i]));
     }
+    EXPECT_EQ(-1, avltree_remove(avl, &a[LEN_A - 1]));
     EXPECT_EQ(-1, avltree_remove(avl, &a[1]));
 
     EXPECT_TRUE(avltree_isempty(avl));
