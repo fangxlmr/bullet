@@ -8,6 +8,7 @@
 #include "skiplist.h"
 #include "avl-tree.h"
 #include "bstree.h"
+#include "binary-minheap.h"
 
 static int a[] = {
     11, 23, 35, 20, 
@@ -253,6 +254,44 @@ TEST(bstree, bstree_testing) {
 
     bstree_free(&bstree);
 }
+
+TEST(binary_minheap, binary_minheap_testing) {
+    int i;
+    binaryMinHeapElem x;
+    binary_minheap_t mh;    /* Min heap. */
+
+    ASSERT_EQ(0, binary_minheap_new(&mh, LEN_A, NULL));
+    for (i = 0; i < LEN_A; i++) {
+        EXPECT_EQ(0, binary_minheap_add(mh, &a[i]));
+    }
+
+    EXPECT_FALSE(binary_minheap_isempty(mh));
+    EXPECT_TRUE(binary_minheap_isfull(mh));
+
+    EXPECT_EQ(0, binary_minheap_peek(mh, &x));
+    EXPECT_EQ(-501, *(int *) x);
+
+    EXPECT_EQ(0, binary_minheap_poll(mh, &x));
+    EXPECT_EQ(-501, *(int *) x);
+
+    EXPECT_EQ(0, binary_minheap_poll(mh, &x));
+    EXPECT_EQ(-10, *(int *) x);
+
+    EXPECT_EQ(LEN_A - 2, binary_minheap_get_size(mh));
+
+    for (i = 1; i < LEN_A - 1; i++) {
+        EXPECT_EQ(0, binary_minheap_poll(mh, &x));
+    }
+
+    EXPECT_EQ(-1, binary_minheap_poll(mh, &x));
+    EXPECT_EQ(0, binary_minheap_get_size(mh));
+
+    EXPECT_TRUE(binary_minheap_isempty(mh));
+    EXPECT_FALSE(binary_minheap_isfull(mh));
+
+    binary_minheap_free(&mh);
+}
+
 int main (int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
