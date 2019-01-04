@@ -6,6 +6,7 @@
 #include "dict.h"
 #include "hashtable.h"
 #include "skiplist.h"
+#include "avl-tree.h"
 
 static int a[] = {
     11, 23, 35, 20, 
@@ -181,6 +182,41 @@ TEST(skiplist, skiplist_testing) {
     EXPECT_EQ(-1, skiplist_remove(skiplist, &a[1]));
 
     skiplist_free(&skiplist);
+}
+
+
+TEST(avl_tree, avltree_testing) {
+    int i;
+    avltreeElem x;
+    avltree_t avl;
+
+    ASSERT_EQ(0, avltree_new(&avl, NULL));
+    for (i = 0; i < LEN_A; i++) {
+        EXPECT_EQ(0, avltree_add(avl, &a[i]));
+    }
+    EXPECT_TRUE(avltree_contains(avl, &a[0]));
+    EXPECT_FALSE(avltree_contains(avl, &b[0]));
+
+    EXPECT_EQ(0, avltree_remove(avl, &a[0]));
+    EXPECT_FALSE(avltree_contains(avl, &a[0]));
+
+    EXPECT_FALSE(avltree_isempty(avl));
+
+
+    EXPECT_EQ(0, avltree_get_min(avl, &x));
+    EXPECT_EQ(-501, *(int *) x);
+
+    EXPECT_EQ(0, avltree_get_max(avl, &x));
+    EXPECT_EQ(330, *(int *) x);
+
+    for (i = 1; i < LEN_A; i++) {
+        EXPECT_EQ(0, avltree_remove(avl, &a[i]));
+    }
+    EXPECT_EQ(-1, avltree_remove(avl, &a[1]));
+
+    EXPECT_TRUE(avltree_isempty(avl));
+
+    avltree_free(&avl);
 }
 
 int main (int argc, char **argv) {
