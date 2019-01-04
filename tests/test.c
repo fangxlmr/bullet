@@ -9,6 +9,7 @@
 #include "avl-tree.h"
 #include "bstree.h"
 #include "binary-minheap.h"
+#include "trie.h"
 
 static int a[] = {
     11, 23, 35, 20, 
@@ -290,6 +291,37 @@ TEST(binary_minheap, binary_minheap_testing) {
     EXPECT_FALSE(binary_minheap_isfull(mh));
 
     binary_minheap_free(&mh);
+}
+
+static const char *str[] = {
+        "hello", "world", "this",
+        "is", "an", "simple",
+        "example", "exam", "he",
+};
+
+TEST(trie, trie_testing) {
+    int i, len;
+    trie_t trie;
+
+    len = sizeof(str) / sizeof(str[0]);
+    ASSERT_EQ(0, trie_new(&trie));
+
+    for (i = 0; i < len; ++i) {
+        EXPECT_EQ(0, trie_add(trie, str[i]));
+    }
+
+    for (i = 0; i < len; ++i) {
+        EXPECT_TRUE(trie_contains(trie, str[i]));
+    }
+    EXPECT_FALSE(trie_contains(trie, "what"));
+    EXPECT_FALSE(trie_contains(trie, "how"));
+
+    EXPECT_TRUE(trie_startswith(trie, "worl"));
+    EXPECT_TRUE(trie_startswith(trie, "exam"));
+    EXPECT_TRUE(trie_startswith(trie, "sim"));
+    EXPECT_FALSE(trie_startswith(trie, "she"));
+
+    trie_free(&trie);
 }
 
 int main (int argc, char **argv) {
