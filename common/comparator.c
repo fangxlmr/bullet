@@ -32,5 +32,5 @@ int cmp_char(const void *x1, const void *x2)
 
 int cmp_pointer(const void *x1, const void *x2)
 {
-    return (uintptr_t) x1 - (uintptr_t) x2;
+    return *(uintptr_t *) x1 - *(uintptr_t *) x2;
 }
