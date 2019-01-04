@@ -47,7 +47,7 @@ static int new_trie_node(trie_t *trie, char c)
         /* Initialize node. */
         (*trie)->c = c;
         (*trie)->count = 1;
-        memset((*trie)->children, 0, ALPHABAT_SIZE * sizeof(struct _trie));
+        memset((*trie)->children, 0, ALPHABAT_SIZE * sizeof(struct _trie *));
         return 0;
     }
 }
@@ -78,10 +78,10 @@ void trie_free(trie_t *trie)
     *trie = NULL;
 }
 
-int trie_add(trie_t trie, char *word)
+int trie_add(trie_t trie, const char *word)
 {
     int i, j;
-    char *p = word;
+    const char *p = word;
 
     while (*p) {
         i = get_index(*p);
@@ -98,10 +98,10 @@ int trie_add(trie_t trie, char *word)
     return 0;
 }
 
-int trie_contains(trie_t trie, char *word)
+int trie_contains(trie_t trie, const char *word)
 {
     int i;
-    char *p = word;
+    const char *p = word;
 
     while (*p) {
         i = get_index(*p);
@@ -115,10 +115,10 @@ int trie_contains(trie_t trie, char *word)
     return trie->eow;
 }
 
-int trie_startswith(trie_t trie, char *word)
+int trie_startswith(trie_t trie, const char *word)
 {
     int i;
-    char *p = word;
+    const char *p = word;
 
     while (*p) {
         i = get_index(*p);

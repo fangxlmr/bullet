@@ -49,7 +49,7 @@ void trie_free(trie_t *trie);
  * Return 0 if add word to trie successfully,
  * -1 if out of memory.
  */
-int trie_add(trie_t trie, char *word);
+int trie_add(trie_t trie, const char *word);
 
 /**
  * trie_contains - Check if trie contains a word
@@ -60,7 +60,7 @@ int trie_add(trie_t trie, char *word);
  * Return non-zero if the trie contains the given
  * word, 0 if not.
  */
-int trie_contains(trie_t trie, char *word);
+int trie_contains(trie_t trie, const char *word);
 
 /**
  * trie_startswith - Check if it is a prefix in trie
@@ -71,6 +71,6 @@ int trie_contains(trie_t trie, char *word);
  * Return non-zero if the word is a prefix in trie,
  * 0 if the given word is not a prefix in trie.
  */
-int trie_startswith(trie_t trie, char *prefix);
+int trie_startswith(trie_t trie, const char *prefix);
 
 #endif /* _BULLET_TRIE_H */
