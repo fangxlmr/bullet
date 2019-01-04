@@ -7,6 +7,7 @@
 #include "hashtable.h"
 #include "skiplist.h"
 #include "avl-tree.h"
+#include "bstree.h"
 
 static int a[] = {
     11, 23, 35, 20, 
@@ -219,6 +220,39 @@ TEST(avl_tree, avltree_testing) {
     avltree_free(&avl);
 }
 
+TEST(bstree, bstree_testing) {
+    int i;
+    bstreeElem x;
+    bstree_t bstree;
+
+    ASSERT_EQ(0, bstree_new(&bstree, NULL));
+    for (i = 0; i < LEN_A; i++) {
+        EXPECT_EQ(0, bstree_add(bstree, &a[i]));
+    }
+    EXPECT_TRUE(bstree_contains(bstree, &a[0]));
+    EXPECT_FALSE(bstree_contains(bstree, &b[0]));
+
+    EXPECT_EQ(0, bstree_remove(bstree, &a[0]));
+    EXPECT_FALSE(bstree_contains(bstree, &a[0]));
+
+    EXPECT_FALSE(bstree_isempty(bstree));
+
+    EXPECT_EQ(0, bstree_get_min(bstree, &x));
+    EXPECT_EQ(-501, *(int *) x);
+
+    EXPECT_EQ(0, bstree_get_max(bstree, &x));
+    EXPECT_EQ(330, *(int *) x);
+
+    for (i = 1; i < LEN_A - 1; i++) {
+        EXPECT_EQ(0, bstree_remove(bstree, &a[i]));
+    }
+    EXPECT_EQ(-1, bstree_remove(bstree, &a[LEN_A - 1]));
+    EXPECT_EQ(-1, bstree_remove(bstree, &a[1]));
+
+    EXPECT_TRUE(bstree_isempty(bstree));
+
+    bstree_free(&bstree);
+}
 int main (int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
