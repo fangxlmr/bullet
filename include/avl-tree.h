@@ -120,5 +120,5 @@ extern int avltree_get_min(avltree_t avl, avltreeElem *x);
  *
  * Return 0 if find maximum value in avl-tree, -1 if avl-tree is empty.
  */
-extern avltreeElem avltree_get_max(avltree_t avl, avltreeElem *x);
+extern int avltree_get_max(avltree_t avl, avltreeElem *x);
 #endif /* BULLET_AVLTREE_H */

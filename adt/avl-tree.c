@@ -84,6 +84,14 @@ static int get_height(struct entry *e)
 }
 
 /*
+ * get_height_diff - Get diff of height between left and right child.
+ */
+static int get_height_diff(struct entry *e)
+{
+    return get_height(e->left) - get_height(e->right);
+}
+
+/*
  * rr_rotate - Right-right rotate (left rotation)
  *
  * Schema:
@@ -185,11 +193,34 @@ static void rl_rotate(struct entry **node)
 }
 
 /*
+ * rebalance - Re-balance the sub-avl tree
+ */
+static void rebalance(struct entry **e)
+{
+
+    if (get_height_diff(*e) == 2) {
+        if (get_height_diff((*e)->left) > 0) {
+            ll_rotate(e);
+        } else {
+            lr_rotate(e);
+        }
+    } else if (get_height_diff(*e) == -2) {
+        if (get_height_diff((*e)->right) > 0) {
+            rl_rotate(e);
+        } else {
+            rr_rotate(e);
+        }
+    }
+
+}
+
+/*
  * subtree_add - Add a new node
  */
 static int subtree_add(struct entry **e, const avltreeElem x, comparator cmp)
 {
     struct entry *new_e;
+    int res;
 
     if (*e == NULL) {
         new_e = (struct entry *) malloc(sizeof(struct entry));
@@ -197,7 +228,7 @@ static int subtree_add(struct entry **e, const avltreeElem x, comparator cmp)
             return -1;
 
         } else {
-            new_e->x = (avltreeElem ) x;
+            new_e->x = x;
             new_e->height = 1;
             new_e->left = NULL;
             new_e->right = NULL;
@@ -206,36 +237,23 @@ static int subtree_add(struct entry **e, const avltreeElem x, comparator cmp)
         }
 
     } else if (cmp(x, (*e)->x) < 0) {
-        subtree_add(&(*e)->left, x, cmp);
-
-        /* Re-balance */
-        if (get_height((*e)->left) - get_height((*e)->right) == 2) {
-            if (cmp(x, (*e)->left) < 0) {
-                ll_rotate(e);
-            } else {
-                lr_rotate(e);
-            }
-        }
+        res = subtree_add(&(*e)->left, x, cmp);     /* Go left subtree. */
 
     } else if (cmp(x, (*e)->x) > 0) {
-        subtree_add(&(*e)->right, x, cmp);
+        res = subtree_add(&(*e)->right, x, cmp);    /* Go right subtree. */
 
-        /* Re-balance */
-        if (get_height((*e)->right) - get_height((*e)->left) == 2) {
-            if (cmp(x, (*e)->x) < 0) {
-                rl_rotate(e);
-            } else {
-                rr_rotate(e);
-            }
-        }
-
-        /* Duplicated and ignore. */
     } else {
-        return 0;
+        return 0;   /* Duplicated and ignore. */
     }
 
-    /* Update height*/
-    (*e)->height = max(get_height((*e)->left), get_height((*e)->right)) + 1;
+    if (res == -1) {
+        return -1;  /* Out of memory, failed to add new node. */
+    } else {
+        rebalance(e);   /* Re-balance subree. */
+
+        (*e)->height = 1 + max(get_height((*e)->left),
+                               get_height((*e)->right));    /* Update height*/
+    }
     return 0;
 }
 
@@ -387,12 +405,13 @@ int avltree_get_min(avltree_t avl, avltreeElem *x)
 
     if (e != NULL) {
         *x = e->x;
+        return 0;
     } else {
         return -1;
     }
 }
 
-int avl_get_max(avltree_t avl, avltreeElem *x)
+int avltree_get_max(avltree_t avl, avltreeElem *x)
 {
     struct entry *e;
 
